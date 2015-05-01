@@ -1,8 +1,7 @@
-package com.losd.reqbot;
+package com.losd.reqbot.controller;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import com.losd.reqbot.model.Request;
+import com.losd.reqbot.repository.RequestRepo;
 
 /**
  * The MIT License (MIT)
@@ -27,9 +26,9 @@ import static org.junit.Assert.assertEquals;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class MostSimpleTest {
-    @Test
-    public void simpleTest() {
-        assertEquals(2, 1+1);
+public class ReqBotController {
+    public void handle(Request request) {
+        RequestRepo repo = new RequestRepo();
+        repo.save(request);
     }
 }

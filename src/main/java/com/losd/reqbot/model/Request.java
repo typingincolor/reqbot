@@ -1,8 +1,6 @@
-package com.losd.reqbot;
+package com.losd.reqbot.model;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import java.util.Map;
 
 /**
  * The MIT License (MIT)
@@ -27,9 +25,43 @@ import static org.junit.Assert.assertEquals;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class MostSimpleTest {
-    @Test
-    public void simpleTest() {
-        assertEquals(2, 1+1);
+public class Request {
+    private String bucket;
+    private Map<String, String> headers;
+    private String body;
+    private Map<String, String> queryParameters;
+    private String path;
+    private String method;
+
+    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String path, String method) {
+        this.bucket = bucket;
+        this.headers = headers;
+        this.body = body;
+        this.queryParameters = queryParameters;
+        this.path = path;
+        this.method = method;
+    }
+
+    public String getBucket() {
+        return bucket;
+    }
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public Map<String, String> getQueryParameters() {
+        return queryParameters;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getMethod() {
+        return method;
     }
 }

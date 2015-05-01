@@ -1,8 +1,16 @@
-package com.losd.reqbot;
+package com.losd.reqbot.repository;
 
-import org.junit.Test;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.losd.reqbot.model.Request;
 
-import static org.junit.Assert.assertEquals;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * The MIT License (MIT)
@@ -27,9 +35,23 @@ import static org.junit.Assert.assertEquals;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class MostSimpleTest {
-    @Test
-    public void simpleTest() {
-        assertEquals(2, 1+1);
+public class RequestRepo {
+    private String s3bucket = System.getenv("AWS_BUCKET_NAME");
+    public void save(Request request) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        AmazonS3 s3Client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
+
+        try {
+            File temp = File.createTempFile("tempfile", ".tmp");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
+            gson.toJson(request, bw);
+            bw.close();
+
+            s3Client.putObject(s3bucket, request.getBucket() + '-' + System.currentTimeMillis() + ".json", temp);
+            temp.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
