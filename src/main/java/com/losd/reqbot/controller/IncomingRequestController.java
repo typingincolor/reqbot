@@ -39,22 +39,24 @@ public class IncomingRequestController {
     @RequestMapping(value = "/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     String savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        Request request = new Request(bucket, headers, body, queryParams, RequestMethod.POST.name());
-        handle(request);
-
-        return "OK";
+        return handle(RequestMethod.GET, bucket, queryParams, headers, body);
     }
 
     @RequestMapping(value = "/{bucket}", method = RequestMethod.GET)
     @ResponseBody
     String saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        Request request = new Request(bucket, headers, null, queryParams, RequestMethod.GET.name());
-        handle(request);
+
+        return handle(RequestMethod.GET, bucket, queryParams, headers, null);
+    }
+
+    private String handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+        Request request = new Request(bucket, headers, body, queryParams, method.name());
+        save(request);
 
         return "OK";
     }
 
-    private void handle(Request request) {
+    private void save(Request request) {
         repo.save(request);
     }
 }
