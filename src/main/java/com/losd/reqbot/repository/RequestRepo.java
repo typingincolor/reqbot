@@ -1,16 +1,9 @@
 package com.losd.reqbot.repository;
 
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Request;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -36,22 +29,9 @@ import java.io.IOException;
  * THE SOFTWARE.
  */
 public class RequestRepo {
-    private String s3bucket = System.getenv("AWS_BUCKET_NAME");
     public void save(Request request) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        AmazonS3 s3Client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
-
-        try {
-            File temp = File.createTempFile("tempfile", ".tmp");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
-            gson.toJson(request, bw);
-            bw.close();
-
-            s3Client.putObject(s3bucket, request.getBucket() + '-' + System.currentTimeMillis() + ".json", temp);
-            temp.delete();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Gson gson = new GsonBuilder().create();
+        Jedis jedis = new Jedis("localhost");
+        jedis.set(String.format("%s:%d", request.getBucket(), System.currentTimeMillis()), gson.toJson(request));
     }
 }
