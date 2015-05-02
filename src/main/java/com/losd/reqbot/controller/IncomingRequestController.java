@@ -1,11 +1,14 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.model.KeyValuePair;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.repository.RequestRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +53,13 @@ public class IncomingRequestController {
     }
 
     private String handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
-        Request request = new Request(bucket, headers, body, queryParams, method.name());
+        List<KeyValuePair> headerList = new ArrayList<>();
+        List<KeyValuePair> queryParmList = new ArrayList<>();
+
+        headers.forEach((key, value) -> headerList.add(new KeyValuePair(key, value)));
+        queryParams.forEach((key, value) -> queryParmList.add(new KeyValuePair(key, value)));
+
+        Request request = new Request(bucket, headerList, body, queryParmList, method.name());
         save(request);
 
         return "OK";

@@ -1,5 +1,7 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.repository.RequestRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +33,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class WebController {
+    @Autowired
+    private RequestRepo repo = null;
+
     @RequestMapping(value = "/{bucket}/view", method = RequestMethod.GET)
     public String view(@PathVariable String bucket, Model model) {
         model.addAttribute("bucket", bucket);
+        model.addAttribute("requests", repo.getBucket(bucket));
         return "view";
     }
 }

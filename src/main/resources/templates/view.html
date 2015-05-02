@@ -1,7 +1,22 @@
 <!DOCTYPE html>
-<html>
     <head></head>
-    <body>
         <h1>hello {{bucket}}</h1>
+        {{#requests}}
+            <h2>headers</h2>
+            {{#headers}}
+            <ul>
+                <li>{{key}} : {{value}}</li>
+            </ul>
+            {{/headers}}
+            <h2>query parameters</h2>
+            {{#queryParameters}}
+            <ul>
+                <li>{{key}} : {{value}}</li>
+            </ul>
+            {{/queryParameters}}
+            <h2>other stuff</h2>
+            {{timestamp}} || {{method}} <br/>
+            <hr/>
+        {{/requests}}
     </body>
 </html>

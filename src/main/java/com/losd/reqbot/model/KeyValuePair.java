@@ -1,13 +1,4 @@
-package com.losd.reqbot.repository;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.losd.reqbot.model.Request;
-import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.losd.reqbot.model;
 
 /**
  * The MIT License (MIT)
@@ -32,24 +23,12 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@Component
-public class RequestRedisRepo implements RequestRepo {
-    @Override
-    public void save(Request request) {
-        Gson gson = new GsonBuilder().create();
-        Jedis jedis = new Jedis("localhost");
-        jedis.lpush(request.getBucket(), gson.toJson(request));
-        jedis.ltrim(request.getBucket(), 0, 5);
-    }
+public class KeyValuePair {
+    private String key;
+    private String value;
 
-    @Override
-    public List<Request> getBucket(String bucket) {
-        List<Request> result = new ArrayList<>();
-        Gson gson = new GsonBuilder().create();
-        Jedis jedis = new Jedis("localhost");
-        List<String> requests = jedis.lrange(bucket, 0, 5);
-
-        requests.forEach(request -> result.add(gson.fromJson(request, Request.class)));
-        return result;
+    public KeyValuePair(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 }

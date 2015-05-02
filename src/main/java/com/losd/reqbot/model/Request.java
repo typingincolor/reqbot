@@ -1,7 +1,7 @@
 package com.losd.reqbot.model;
 
 import java.time.Instant;
-import java.util.Map;
+import java.util.List;
 
 /**
  * The MIT License (MIT)
@@ -29,14 +29,14 @@ import java.util.Map;
 @SuppressWarnings("all")
 public class Request {
     private String bucket;
-    private Map<String, String> headers;
+    private List<KeyValuePair> headers;
     private String body;
-    private Map<String, String> queryParameters;
+    private List<KeyValuePair> queryParameters;
     private String method;
     private String timestamp;
 
 
-    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String method) {
+    public Request(String bucket, List<KeyValuePair> headers, String body, List<KeyValuePair> queryParameters, String method) {
         this.bucket = bucket;
         this.headers = headers;
         this.body = body;
