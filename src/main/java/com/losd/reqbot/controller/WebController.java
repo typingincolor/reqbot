@@ -1,7 +1,10 @@
-package com.losd.reqbot.model;
+package com.losd.reqbot.controller;
 
-import java.time.Instant;
-import java.util.Map;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * The MIT License (MIT)
@@ -26,26 +29,11 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@SuppressWarnings("all")
-public class Request {
-    private String bucket;
-    private Map<String, String> headers;
-    private String body;
-    private Map<String, String> queryParameters;
-    private String method;
-    private String timestamp;
-
-
-    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String method) {
-        this.bucket = bucket;
-        this.headers = headers;
-        this.body = body;
-        this.queryParameters = queryParameters;
-        this.method = method;
-        this.timestamp = Instant.now().toString();
-    }
-
-    public String getBucket() {
-        return bucket;
+@Controller
+public class WebController {
+    @RequestMapping(value = "/{bucket}/view", method = RequestMethod.GET)
+    public String view(@PathVariable String bucket, Model model) {
+        model.addAttribute("bucket", bucket);
+        return "view";
     }
 }
