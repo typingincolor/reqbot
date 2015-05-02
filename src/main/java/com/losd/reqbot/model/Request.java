@@ -33,12 +33,11 @@ public class Request {
     private String path;
     private String method;
 
-    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String path, String method) {
+    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String method) {
         this.bucket = bucket;
         this.headers = headers;
         this.body = body;
         this.queryParameters = queryParameters;
-        this.path = path;
         this.method = method;
     }
 
@@ -57,9 +56,6 @@ public class Request {
         return queryParameters;
     }
 
-    public String getPath() {
-        return path;
-    }
 
     public String getMethod() {
         return method;

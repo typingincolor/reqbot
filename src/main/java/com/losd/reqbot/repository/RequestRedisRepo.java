@@ -1,14 +1,10 @@
-package com.losd.reqbot.app;
+package com.losd.reqbot.repository;
 
-import com.losd.reqbot.controller.ReqBotController;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Request;
-import spark.Route;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static spark.Spark.get;
-import static spark.Spark.post;
+import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -33,32 +29,13 @@ import static spark.Spark.post;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class ReqBot {
-    public static void main(String[] args) {
-        Route route = (req, res) -> {
-            String bucket = req.params(":bucket");
-            Map<String, String> headers = new HashMap<>();
-            Map<String, String> queryParams = new HashMap<>();
-
-            req.headers()
-               .forEach(header ->
-                                headers.put(header, req.headers(header))
-               );
-
-            req.queryParams()
-               .forEach(queryParam ->
-                                queryParams.put(queryParam, req.queryParams(queryParam))
-               );
-
-            Request request = new Request(bucket, headers, req.body(), queryParams, req.pathInfo(), req.requestMethod());
-
-            ReqBotController controller = new ReqBotController();
-            controller.handle(request);
-
-            return "Hello World " + bucket;
-        };
-
-        get("/:bucket", route);
-        post("/:bucket", route);
+@Component
+public class RequestRedisRepo implements RequestRepo {
+    @Override
+    public void save(Request request) {
+        Gson gson = new GsonBuilder().create();
+        Jedis jedis = new Jedis("localhost");
+        jedis.lpush(request.getBucket(), gson.toJson(request));
+        jedis.ltrim(request.getBucket(), 0, 5);
     }
 }

@@ -9,9 +9,15 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    all*.exclude group: 'logback'
+    all*.exclude group: 'log4j'
+}
+
 dependencies {
-    compile group: 'com.sparkjava', name: 'spark-core', version: '2.1'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
     compile group: 'redis.clients', name: 'jedis', version: '2.6.2'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.2.3.RELEASE'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

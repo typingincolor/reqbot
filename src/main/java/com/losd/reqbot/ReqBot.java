@@ -1,7 +1,9 @@
-package com.losd.reqbot.controller;
+package com.losd.reqbot;
 
-import com.losd.reqbot.model.Request;
-import com.losd.reqbot.repository.RequestRepo;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * The MIT License (MIT)
@@ -26,9 +28,11 @@ import com.losd.reqbot.repository.RequestRepo;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class ReqBotController {
-    public void handle(Request request) {
-        RequestRepo repo = new RequestRepo();
-        repo.save(request);
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+public class ReqBot {
+    public static void main(String[] args) {
+        SpringApplication.run(ReqBot.class, args);
     }
 }

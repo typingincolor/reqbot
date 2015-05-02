@@ -1,9 +1,6 @@
 package com.losd.reqbot.repository;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Request;
-import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -28,10 +25,6 @@ import redis.clients.jedis.Jedis;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class RequestRepo {
-    public void save(Request request) {
-        Gson gson = new GsonBuilder().create();
-        Jedis jedis = new Jedis("localhost");
-        jedis.set(String.format("%s:%d", request.getBucket(), System.currentTimeMillis()), gson.toJson(request));
-    }
+public interface RequestRepo {
+    void save(Request request);
 }
