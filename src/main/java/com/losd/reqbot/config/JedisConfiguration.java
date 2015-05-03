@@ -1,9 +1,8 @@
-package com.losd.reqbot;
+package com.losd.reqbot.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +27,10 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
-@ComponentScan
-@SpringBootApplication
-public class ReqBot {
-    public static void main(String[] args) {
-        SpringApplication.run(ReqBot.class, args);
+@Configuration
+public class JedisConfiguration {
+    @Bean
+    Jedis jedis() {
+        return new Jedis("localhost");
     }
 }

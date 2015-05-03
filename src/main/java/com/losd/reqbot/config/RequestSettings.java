@@ -1,9 +1,8 @@
-package com.losd.reqbot;
+package com.losd.reqbot.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +27,17 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
-@ComponentScan
-@SpringBootApplication
-public class ReqBot {
-    public static void main(String[] args) {
-        SpringApplication.run(ReqBot.class, args);
+@Configuration
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix="request")
+public class RequestSettings {
+    private int queueSize = 3;
+
+    public int getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(int queueSize) {
+        this.queueSize = queueSize;
     }
 }

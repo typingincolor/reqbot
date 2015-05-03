@@ -1,9 +1,10 @@
-package com.losd.reqbot;
+package com.losd.reqbot.repository;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
+
+import java.util.Set;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +29,20 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
-@ComponentScan
-@SpringBootApplication
-public class ReqBot {
-    public static void main(String[] args) {
-        SpringApplication.run(ReqBot.class, args);
+@Component
+public class BucketRedisRepo {
+    @Autowired
+    Jedis jedis = null;
+
+    public void save(String bucket) {
+        jedis.sadd("buckets", bucket);
+    }
+
+    public boolean contains(String bucket) {
+        return jedis.sismember("buckets", bucket);
+    }
+
+    public Set<String> getAll() {
+        return jedis.smembers("buckets");
     }
 }

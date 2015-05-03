@@ -1,9 +1,13 @@
-package com.losd.reqbot;
+package com.losd.reqbot.controller;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.losd.reqbot.repository.BucketRedisRepo;
+import com.losd.reqbot.repository.RequestRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +32,24 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
-@ComponentScan
-@SpringBootApplication
-public class ReqBot {
-    public static void main(String[] args) {
-        SpringApplication.run(ReqBot.class, args);
+@Controller
+public class WebController {
+    @Autowired
+    private RequestRepo requestRepo = null;
+
+    @Autowired
+    private BucketRedisRepo buckets = null;
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(Model model) {
+        model.addAttribute("buckets", buckets.getAll());
+        return "index";
+    }
+
+    @RequestMapping(value = "/{bucket}/view", method = RequestMethod.GET)
+    public String view(@PathVariable String bucket, Model model) {
+        model.addAttribute("bucket", bucket);
+        model.addAttribute("requests", requestRepo.getBucket(bucket));
+        return "view";
     }
 }

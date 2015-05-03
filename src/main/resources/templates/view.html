@@ -1,39 +1,42 @@
 <!DOCTYPE html>
-    <head></head>
-        <h1>Request List for {{bucket}} bucket</h1>
-        {{#requests}}
-            <ul>
-                <li>{{uuid}}</li>
-            </ul>
-        {{/requests}}
-        <hr/>
-        <h1>Request Detail</h1>
-        {{#requests}}
-            <h2>Request {{uuid}}</h2>
-            <h3>headers</h3>
-            {{#headers}}
-            <ul>
-                <li>{{key}} : {{value}}</li>
-            </ul>
-            {{/headers}}
-            <h3>query parameters</h3>
-            {{#queryParameters}}
-            <ul>
-                <li>{{key}} : {{value}}</li>
-            </ul>
-            {{/queryParameters}}
-            <h3>other stuff</h3>
-            <ul>
-                <li>timestamp : {{timestamp}}</li>
-                <li>method : {{method}}</li>
-            </ul>
-            {{#body}}
-            <h3>body</h3>
-            <pre>
-            {{body}}
-            </pre>
-            {{/body}}
-            <hr/>
-        {{/requests}}
-    </body>
+<html>
+<head></head>
+<body>
+<h1>Request List for {{bucket}} bucket</h1>
+{{#requests}}
+<ul>
+    <li>{{uuid}}</li>
+</ul>
+{{/requests}}
+<hr/>
+<h1>Request Detail</h1>
+{{#requests}}
+<h2>Request {{uuid}}</h2>
+
+<h3>headers</h3>
+{{#headers}}
+<ul>
+    <li>{{key}} : {{value}}</li>
+</ul>
+{{/headers}}
+<h3>query parameters</h3>
+{{#queryParameters}}
+<ul>
+    <li>{{key}} : {{value}}</li>
+</ul>
+{{/queryParameters}}
+<h3>other stuff</h3>
+<ul>
+    <li>timestamp : {{timestamp}}</li>
+    <li>method : {{method}}</li>
+</ul>
+{{#body}}
+<h3>body</h3>
+<pre>
+{{body}}
+</pre>
+{{/body}}
+<hr/>
+{{/requests}}
+</body>
 </html>

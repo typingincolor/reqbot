@@ -2,7 +2,9 @@ package com.losd.reqbot.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
@@ -36,18 +38,23 @@ import java.util.List;
  */
 @Component
 public class RequestRedisRepo implements RequestRepo {
-    private int REDIS_QUEUE_SIZE = 3;
+    @Autowired
+    RequestSettings settings;
+
+    @Autowired
+    Jedis jedis = null;
 
     @Override
     public void save(Request request) {
+        int queueSize = settings.getQueueSize();
+
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Jedis jedis = new Jedis("localhost");
 
         Transaction t = jedis.multi();
-        Response<String> key = t.lindex(request.getBucket(), REDIS_QUEUE_SIZE - 1);
+        Response<String> key = t.lindex(request.getBucket(), queueSize - 1);
         t.lpush(request.getBucket(), request.getUuid().toString());
         t.set(request.getUuid().toString(), gson.toJson(request));
-        t.ltrim(request.getBucket(), 0, REDIS_QUEUE_SIZE - 1);
+        t.ltrim(request.getBucket(), 0, queueSize - 1);
         t.exec();
 
         if (key.get() != null)
@@ -58,15 +65,17 @@ public class RequestRedisRepo implements RequestRepo {
 
     @Override
     public List<Request> getBucket(String bucket) {
+        int queueSize = settings.getQueueSize();
+
         List<Request> result = new ArrayList<>();
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Jedis jedis = new Jedis("localhost");
-        List<String> requests = jedis.lrange(bucket, 0, REDIS_QUEUE_SIZE - 1);
+        List<String> requests = jedis.lrange(bucket, 0, queueSize - 1);
 
         requests.forEach(request -> {
             String body = jedis.get(request);
             result.add(gson.fromJson(body, Request.class));
         });
+
         return result;
     }
 }

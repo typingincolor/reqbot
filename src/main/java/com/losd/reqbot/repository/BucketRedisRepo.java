@@ -1,9 +1,4 @@
-package com.losd.reqbot;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+package com.losd.reqbot.repository;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +23,5 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
-@ComponentScan
-@SpringBootApplication
-public class ReqBot {
-    public static void main(String[] args) {
-        SpringApplication.run(ReqBot.class, args);
-    }
+public class BucketRedisRepo {
 }

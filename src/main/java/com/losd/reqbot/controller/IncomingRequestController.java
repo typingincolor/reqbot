@@ -2,8 +2,11 @@ package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.KeyValuePair;
 import com.losd.reqbot.model.Request;
+import com.losd.reqbot.repository.BucketRedisRepo;
 import com.losd.reqbot.repository.RequestRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,22 +40,40 @@ import java.util.Map;
 @Controller
 public class IncomingRequestController {
     @Autowired
-    private RequestRepo repo = null;
+    private RequestRepo requestRepo = null;
+
+    @Autowired
+    private BucketRedisRepo buckets = null;
 
     @RequestMapping(value = "/{bucket}", method = RequestMethod.POST)
     @ResponseBody
-    String savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        return handle(RequestMethod.POST, bucket, queryParams, headers, body);
+    ResponseEntity<String> savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+        try {
+            handle(RequestMethod.POST, bucket, queryParams, headers, body);
+        } catch (RuntimeException exp) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{bucket}", method = RequestMethod.GET)
     @ResponseBody
-    String saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+    ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+        try {
+            handle(RequestMethod.GET, bucket, queryParams, headers, null);
+        } catch (RuntimeException exp) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        return handle(RequestMethod.GET, bucket, queryParams, headers, null);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    private String handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+    private void handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+        if (!buckets.contains(bucket)) {
+            throw new RuntimeException("unauthorised");
+        }
+
         List<KeyValuePair> headerList = new ArrayList<>();
         List<KeyValuePair> queryParmList = new ArrayList<>();
 
@@ -61,11 +82,9 @@ public class IncomingRequestController {
 
         Request request = new Request(bucket, headerList, body, queryParmList, method.name());
         save(request);
-
-        return "OK";
     }
 
     private void save(Request request) {
-        repo.save(request);
+        requestRepo.save(request);
     }
 }
