@@ -64,7 +64,12 @@ public class WebController {
     }
 
     @RequestMapping(value = "/secure", method = RequestMethod.GET)
-    public String secure(Model model) {
-        return "secure";
+    public String secure(Model mode, HttpServletRequest request) {
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+
+        if (account != null)
+            return "secure";
+        else
+            return "redirect:/login?next=secure";
     }
 }
