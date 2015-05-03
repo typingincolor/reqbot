@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix="redis")
+@ConfigurationProperties(prefix="reqbot.redis")
 public class RedisSettings {
     private String host;
     private String username;

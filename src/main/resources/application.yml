@@ -1,10 +1,11 @@
-request:
-    queueSize: 10
+reqbot:
+    request:
+        queueSize: 10
 
-redis:
-    host: localhost
+    redis:
+        host: localhost
 
 stormpath:
-    web:
-        stormpathFilter:
-            order: 1
+    application:
+        href: https://api.stormpath.com/v1/applications/4GAu2E1Aa9Zlwn2XMt9rnw
+

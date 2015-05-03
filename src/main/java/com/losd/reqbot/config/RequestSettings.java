@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix="request")
+@ConfigurationProperties(prefix="reqbot.request")
 public class RequestSettings {
     private int queueSize = 3;
 
