@@ -1,2 +1,5 @@
 request:
     queueSize: 10
+
+redis:
+    host: localhost

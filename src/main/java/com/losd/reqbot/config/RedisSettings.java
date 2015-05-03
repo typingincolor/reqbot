@@ -1,9 +1,8 @@
 package com.losd.reqbot.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -29,12 +28,25 @@ import redis.clients.jedis.Jedis;
  * THE SOFTWARE.
  */
 @Configuration
-public class JedisConfiguration {
-    @Autowired
-    RedisSettings settings;
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix="redis")
+public class RedisSettings {
+    private String host;
+    private String username;
 
-    @Bean
-    Jedis jedis() {
-        return new Jedis(settings.getHost());
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String hostname) {
+        this.host = hostname;
     }
 }
