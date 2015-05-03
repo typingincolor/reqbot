@@ -1,5 +1,11 @@
 package com.losd.reqbot.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
+
+import java.util.Set;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -23,5 +29,20 @@ package com.losd.reqbot.repository;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@Component
 public class BucketRedisRepo {
+    @Autowired
+    Jedis jedis = null;
+
+    public void save(String bucket) {
+        jedis.sadd("buckets", bucket);
+    }
+
+    public boolean contains(String bucket) {
+        return jedis.sismember("buckets", bucket);
+    }
+
+    public Set<String> getAll() {
+        return jedis.smembers("buckets");
+    }
 }
