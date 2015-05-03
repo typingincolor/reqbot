@@ -42,7 +42,7 @@ public class IncomingRequestController {
     @RequestMapping(value = "/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     String savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        return handle(RequestMethod.GET, bucket, queryParams, headers, body);
+        return handle(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
     @RequestMapping(value = "/{bucket}", method = RequestMethod.GET)

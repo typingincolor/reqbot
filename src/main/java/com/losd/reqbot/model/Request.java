@@ -2,6 +2,7 @@ package com.losd.reqbot.model;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The MIT License (MIT)
@@ -34,6 +35,7 @@ public class Request {
     private List<KeyValuePair> queryParameters;
     private String method;
     private String timestamp;
+    private UUID uuid;
 
 
     public Request(String bucket, List<KeyValuePair> headers, String body, List<KeyValuePair> queryParameters, String method) {
@@ -43,9 +45,34 @@ public class Request {
         this.queryParameters = queryParameters;
         this.method = method;
         this.timestamp = Instant.now().toString();
+        this.uuid = UUID.randomUUID();
     }
 
     public String getBucket() {
         return bucket;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public List<KeyValuePair> getHeaders() {
+        return headers;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public List<KeyValuePair> getQueryParameters() {
+        return queryParameters;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 }

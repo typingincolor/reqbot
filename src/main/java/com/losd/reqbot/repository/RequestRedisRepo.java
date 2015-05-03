@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Request;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,22 +36,37 @@ import java.util.List;
  */
 @Component
 public class RequestRedisRepo implements RequestRepo {
+    private int REDIS_QUEUE_SIZE = 3;
+
     @Override
     public void save(Request request) {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().serializeNulls().create();
         Jedis jedis = new Jedis("localhost");
-        jedis.lpush(request.getBucket(), gson.toJson(request));
-        jedis.ltrim(request.getBucket(), 0, 5);
+
+        Transaction t = jedis.multi();
+        Response<String> key = t.lindex(request.getBucket(), REDIS_QUEUE_SIZE - 1);
+        t.lpush(request.getBucket(), request.getUuid().toString());
+        t.set(request.getUuid().toString(), gson.toJson(request));
+        t.ltrim(request.getBucket(), 0, REDIS_QUEUE_SIZE - 1);
+        t.exec();
+
+        if (key.get() != null)
+        {
+            jedis.del(key.get());
+        }
     }
 
     @Override
     public List<Request> getBucket(String bucket) {
         List<Request> result = new ArrayList<>();
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().serializeNulls().create();
         Jedis jedis = new Jedis("localhost");
-        List<String> requests = jedis.lrange(bucket, 0, 5);
+        List<String> requests = jedis.lrange(bucket, 0, REDIS_QUEUE_SIZE - 1);
 
-        requests.forEach(request -> result.add(gson.fromJson(request, Request.class)));
+        requests.forEach(request -> {
+            String body = jedis.get(request);
+            result.add(gson.fromJson(body, Request.class));
+        });
         return result;
     }
 }
