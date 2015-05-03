@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css" />
 </head>
 <body>
+<h1 th:if="${fullname != null}">Hello <span th:text="${fullname}">Bruce</span></h1>
 <h1>Request List for <span th:text="${bucket}">bucket</span> bucket</h1>
 
 <ul th:each="request : ${requests}">

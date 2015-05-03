@@ -2,12 +2,16 @@ package com.losd.reqbot.controller;
 
 import com.losd.reqbot.repository.BucketRedisRepo;
 import com.losd.reqbot.repository.RequestRepo;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * The MIT License (MIT)
@@ -46,10 +50,21 @@ public class WebController {
         return "index";
     }
 
-    @RequestMapping(value = "/{bucket}/view", method = RequestMethod.GET)
-    public String view(@PathVariable String bucket, Model model) {
+    @RequestMapping(value = "/bucket/{bucket}/view", method = RequestMethod.GET)
+    public String view(@PathVariable String bucket, Model model, HttpServletRequest request) {
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+
+        if (account != null) {
+            model.addAttribute("fullname", account.getFullName());
+        }
+
         model.addAttribute("bucket", bucket);
         model.addAttribute("requests", requestRepo.getBucket(bucket));
         return "view";
+    }
+
+    @RequestMapping(value = "/secure", method = RequestMethod.GET)
+    public String secure(Model model) {
+        return "secure";
     }
 }
