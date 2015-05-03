@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head></head>
 <body>
 <h1>Buckets</h1>
 <ul>
-    {{#buckets}}
-    <li><a href="/{{.}}/view">{{.}}</a></li>
-    {{/buckets}}
+    <li th:each="bucket : ${buckets}"><a th:href="@{/{bucket}/view(bucket = ${bucket})}" th:text="${bucket}">bucket</a></li>
 </ul>
 </body>
 </html>

@@ -1,6 +1,5 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.model.KeyValuePair;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.repository.BucketRedisRepo;
 import com.losd.reqbot.repository.RequestRepo;
@@ -10,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,25 +42,25 @@ public class IncomingRequestController {
     @Autowired
     private BucketRedisRepo buckets = null;
 
-    @RequestMapping(value = "/{bucket}", method = RequestMethod.POST)
+    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     ResponseEntity<String> savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
         try {
             handle(RequestMethod.POST, bucket, queryParams, headers, body);
         } catch (RuntimeException exp) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
         }
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{bucket}", method = RequestMethod.GET)
+    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
         try {
             handle(RequestMethod.GET, bucket, queryParams, headers, null);
         } catch (RuntimeException exp) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
         }
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -74,13 +71,7 @@ public class IncomingRequestController {
             throw new RuntimeException("unauthorised");
         }
 
-        List<KeyValuePair> headerList = new ArrayList<>();
-        List<KeyValuePair> queryParmList = new ArrayList<>();
-
-        headers.forEach((key, value) -> headerList.add(new KeyValuePair(key, value)));
-        queryParams.forEach((key, value) -> queryParmList.add(new KeyValuePair(key, value)));
-
-        Request request = new Request(bucket, headerList, body, queryParmList, method.name());
+        Request request = new Request(bucket, headers, body, queryParams, method.name());
         save(request);
     }
 

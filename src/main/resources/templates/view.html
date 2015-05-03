@@ -1,42 +1,41 @@
 <!DOCTYPE html>
-<html>
-<head></head>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css" />
+</head>
 <body>
-<h1>Request List for {{bucket}} bucket</h1>
-{{#requests}}
-<ul>
-    <li>{{uuid}}</li>
-</ul>
-{{/requests}}
-<hr/>
-<h1>Request Detail</h1>
-{{#requests}}
-<h2>Request {{uuid}}</h2>
+<h1>Request List for <span th:text="${bucket}">bucket</span> bucket</h1>
 
-<h3>headers</h3>
-{{#headers}}
-<ul>
-    <li>{{key}} : {{value}}</li>
+<ul th:each="request : ${requests}">
+    <li th:text="${request.uuid}">uuid</li>
 </ul>
-{{/headers}}
-<h3>query parameters</h3>
-{{#queryParameters}}
-<ul>
-    <li>{{key}} : {{value}}</li>
-</ul>
-{{/queryParameters}}
-<h3>other stuff</h3>
-<ul>
-    <li>timestamp : {{timestamp}}</li>
-    <li>method : {{method}}</li>
-</ul>
-{{#body}}
-<h3>body</h3>
-<pre>
-{{body}}
-</pre>
-{{/body}}
+
 <hr/>
-{{/requests}}
+
+<div th:class="'method-' + ${request.method}" th:each="request : ${requests}">
+    <h1>Request detail</h1>
+    <h2>Request <span th:text="${request.uuid}">uuid</span></h2>
+
+    <h3>headers</h3>
+    <ul th:each="header : ${request.headers}">
+        <li><span th:text="${header.key}">key</span> -> <span th:text="${header.value}">value</span></li>
+    </ul>
+
+    <h3>query parameters</h3>
+    <ul th:each="queryParam : ${request.queryParameters}">
+        <li><span th:text="${queryParam.key}">key</span> -> <span th:text="${queryParam.value}">value</span></li>
+    </ul>
+
+    <h3>other stuff</h3>
+    <ul>
+        <li>timestamp : <span th:text="${request.timestamp}">timestamp</span></li>
+        <li>method : <span th:text="${request.method}">method</span></li>
+    </ul>
+
+    <div th:if="${request.body != null}">
+        <h4>body</h4>
+        <pre th:text="${request.body}" />
+    </div>
+</div>
 </body>
 </html>

@@ -3,3 +3,8 @@ request:
 
 redis:
     host: localhost
+
+stormpath:
+    web:
+        stormpathFilter:
+            order: 1

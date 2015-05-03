@@ -1,7 +1,7 @@
 package com.losd.reqbot.model;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -30,15 +30,15 @@ import java.util.UUID;
 @SuppressWarnings("all")
 public class Request {
     private String bucket;
-    private List<KeyValuePair> headers;
+    private Map<String, String> headers;
     private String body;
-    private List<KeyValuePair> queryParameters;
+    private Map<String, String> queryParameters;
     private String method;
     private String timestamp;
     private UUID uuid;
 
 
-    public Request(String bucket, List<KeyValuePair> headers, String body, List<KeyValuePair> queryParameters, String method) {
+    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String method) {
         this.bucket = bucket;
         this.headers = headers;
         this.body = body;
@@ -56,7 +56,7 @@ public class Request {
         return uuid;
     }
 
-    public List<KeyValuePair> getHeaders() {
+    public Map<String, String> getHeaders() {
         return headers;
     }
 
@@ -64,7 +64,7 @@ public class Request {
         return body;
     }
 
-    public List<KeyValuePair> getQueryParameters() {
+    public Map<String, String> getQueryParameters() {
         return queryParameters;
     }
 
