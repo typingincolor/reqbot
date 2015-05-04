@@ -1,8 +1,8 @@
-package com.losd.reqbot;
+package com.losd.reqbot.config;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * The MIT License (MIT)
@@ -27,9 +27,10 @@ import static org.junit.Assert.assertEquals;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class MostSimpleTest {
-    @Test
-    public void simpleTest() {
-        assertEquals(2, 1+1);
+@Configuration
+public class StormpathConfiguration {
+    @Bean
+    AccountResolver accountResolver() {
+        return AccountResolver.INSTANCE;
     }
 }

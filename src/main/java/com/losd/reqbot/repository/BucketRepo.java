@@ -1,8 +1,5 @@
 package com.losd.reqbot.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
-
 import java.util.Set;
 
 /**
@@ -28,11 +25,6 @@ import java.util.Set;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class BucketRedisRepo implements BucketRepo {
-    @Autowired
-    Jedis jedis = null;
-
-    public Set<String> getBucketsForUser(String username) {
-        return jedis.smembers(username);
-    }
+public interface BucketRepo {
+    Set<String> getBucketsForUser(String username);
 }

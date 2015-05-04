@@ -1,6 +1,6 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.repository.BucketRedisRepo;
+import com.losd.reqbot.repository.BucketRepo;
 import com.losd.reqbot.repository.RequestRepo;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
@@ -42,34 +42,50 @@ public class WebController {
     private RequestRepo requestRepo = null;
 
     @Autowired
-    private BucketRedisRepo buckets = null;
+    private BucketRepo buckets = null;
+
+    @Autowired
+    AccountResolver accountResolver = null;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Model model) {
-        model.addAttribute("buckets", buckets.getAll());
+    public String index(Model model, HttpServletRequest request) {
+        Account account = accountResolver.getAccount(request);
+
+        if (account != null) {
+            model.addAttribute("buckets", buckets.getBucketsForUser(account.getUsername()));
+        }
+
         return "index";
     }
 
     @RequestMapping(value = "/bucket/{bucket}/view", method = RequestMethod.GET)
     public String view(@PathVariable String bucket, Model model, HttpServletRequest request) {
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Account account = accountResolver.getAccount(request);
 
         if (account != null) {
-            model.addAttribute("fullname", account.getFullName());
+            if (buckets.getBucketsForUser(account.getUsername())
+                       .contains(bucket)) {
+                model.addAttribute("fullname", account.getFullName());
+                model.addAttribute("bucket", bucket);
+                model.addAttribute("requests", requestRepo.getBucket(bucket));
+                return "view";
+            }
+            else {
+                return "redirect:/";
+            }
         }
+        return "redirect:/login";
 
-        model.addAttribute("bucket", bucket);
-        model.addAttribute("requests", requestRepo.getBucket(bucket));
-        return "view";
     }
 
     @RequestMapping(value = "/secure", method = RequestMethod.GET)
-    public String secure(Model mode, HttpServletRequest request) {
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+    public String secure(Model model, HttpServletRequest request) {
+        Account account = accountResolver.getAccount(request);
 
-        if (account != null)
+        if (account != null) {
+            model.addAttribute("username", account.getUsername());
             return "secure";
-        else
+        } else
             return "redirect:/login?next=secure";
     }
 }

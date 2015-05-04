@@ -1,7 +1,6 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.Request;
-import com.losd.reqbot.repository.BucketRedisRepo;
 import com.losd.reqbot.repository.RequestRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,17 +38,10 @@ public class IncomingRequestController {
     @Autowired
     private RequestRepo requestRepo = null;
 
-    @Autowired
-    private BucketRedisRepo buckets = null;
-
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     ResponseEntity<String> savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        try {
-            handle(RequestMethod.POST, bucket, queryParams, headers, body);
-        } catch (RuntimeException exp) {
-            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
-        }
+        handle(RequestMethod.POST, bucket, queryParams, headers, body);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -57,20 +49,12 @@ public class IncomingRequestController {
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        try {
-            handle(RequestMethod.GET, bucket, queryParams, headers, null);
-        } catch (RuntimeException exp) {
-            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
-        }
+        handle(RequestMethod.GET, bucket, queryParams, headers, null);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     private void handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
-        if (!buckets.contains(bucket)) {
-            throw new RuntimeException("unauthorised");
-        }
-
         Request request = new Request(bucket, headers, body, queryParams, method.name());
         save(request);
     }

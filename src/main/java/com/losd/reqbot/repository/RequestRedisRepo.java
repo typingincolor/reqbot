@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
@@ -36,7 +35,6 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@Component
 public class RequestRedisRepo implements RequestRepo {
     @Autowired
     RequestSettings settings;

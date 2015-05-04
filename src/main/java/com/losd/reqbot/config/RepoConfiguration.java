@@ -1,9 +1,11 @@
-package com.losd.reqbot.repository;
+package com.losd.reqbot.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
-
-import java.util.Set;
+import com.losd.reqbot.repository.BucketRedisRepo;
+import com.losd.reqbot.repository.BucketRepo;
+import com.losd.reqbot.repository.RequestRedisRepo;
+import com.losd.reqbot.repository.RequestRepo;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * The MIT License (MIT)
@@ -28,11 +30,15 @@ import java.util.Set;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class BucketRedisRepo implements BucketRepo {
-    @Autowired
-    Jedis jedis = null;
+@Configuration
+public class RepoConfiguration {
+    @Bean
+    public BucketRepo bucketRepo() {
+        return new BucketRedisRepo();
+    }
 
-    public Set<String> getBucketsForUser(String username) {
-        return jedis.smembers(username);
+    @Bean
+    public RequestRepo requestRepo() {
+        return new RequestRedisRepo();
     }
 }
