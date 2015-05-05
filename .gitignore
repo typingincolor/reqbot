@@ -13,3 +13,4 @@ out
 .settings
 bin
 build
+.env

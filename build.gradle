@@ -1,14 +1,17 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+        classpath("com.monochromeroad.gradle-plugins:gradle-aws-s3-sync:0.8")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'spring-boot'
+apply plugin: 'jacoco'
 
 
 sourceCompatibility = 1.8
@@ -34,4 +37,23 @@ dependencies {
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
+}
+
+task copyS3Resources(type: Copy) {
+    from 's3'
+    into 'build/s3'
+}
+
+task copyReports(type: Copy) {
+    from 'build/reports'
+    into 'build/s3'
+}
+
+task uploadToS3(type: com.monochromeroad.gradle.plugin.aws.s3.S3Sync, dependsOn: [copyS3Resources, copyReports]) {
+    accessKey System.getenv('AWS_ACCESS_KEY')
+    secretKey System.getenv('AWS_SECRET_ACCESS_KEY')
+    quiet true
+    configFile "synchronizer.properties"
+    from "build/s3"
+    into "reqbot.build.reports"
 }
