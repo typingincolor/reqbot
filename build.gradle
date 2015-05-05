@@ -55,5 +55,5 @@ task uploadToS3(type: com.monochromeroad.gradle.plugin.aws.s3.S3Sync, dependsOn:
     quiet true
     configFile "synchronizer.properties"
     from "build/s3"
-    into "reqbot.build.reports"
+    into System.getenv('AWS_BUCKET_NAME')
 }
