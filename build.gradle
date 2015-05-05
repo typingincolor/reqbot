@@ -1,3 +1,5 @@
+import com.monochromeroad.gradle.plugin.aws.s3.S3Sync
+
 buildscript {
     repositories {
         mavenCentral()
@@ -13,6 +15,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
 apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 
 sourceCompatibility = 1.8
@@ -50,7 +53,7 @@ task copyReports(type: Copy) {
     into 'build/s3'
 }
 
-task uploadToS3(type: com.monochromeroad.gradle.plugin.aws.s3.S3Sync, dependsOn: [copyS3Resources, copyReports]) {
+task uploadToS3(type: S3Sync, dependsOn: [copyS3Resources, copyReports]) {
     accessKey System.getenv('AWS_ACCESS_KEY')
     secretKey System.getenv('AWS_SECRET_ACCESS_KEY')
     quiet true
@@ -60,6 +63,13 @@ task uploadToS3(type: com.monochromeroad.gradle.plugin.aws.s3.S3Sync, dependsOn:
 }
 
 tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+tasks.withType(Pmd) {
     reports {
         xml.enabled = false
         html.enabled = true
