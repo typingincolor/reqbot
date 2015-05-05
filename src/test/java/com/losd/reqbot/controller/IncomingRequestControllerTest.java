@@ -16,6 +16,8 @@ import uk.co.it.modular.hamcrest.date.Moments;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static uk.co.it.modular.hamcrest.date.IsWithin.within;
@@ -69,15 +72,43 @@ public class IncomingRequestControllerTest {
     public void handleGetTestWithoutQueryParameters() throws Exception {
         mockMvc.perform(get("/bucket/x")).andExpect(status().isOk()).andExpect(content().string("OK"));
 
+        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+    }
+
+    @Test
+    public void handlePostTestWithoutQueryParameters() throws Exception {
+        mockMvc.perform(post("/bucket/x").content("hello")).andExpect(status().isOk()).andExpect(content().string("OK"));
+
+        validate("x", Collections.EMPTY_MAP, RequestMethod.POST, "hello");
+    }
+
+    @Test
+    public void handleGetTestWithQueryParameters() throws Exception {
+        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("a", "1");
+
+        validate("x", queryParams, RequestMethod.GET, null);
+    }
+
+    @Test
+    public void handlePostTestWithQueryParameters() throws Exception {
+        mockMvc.perform(post("/bucket/x?a=1").content("hello")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("a", "1");
+
+        validate("x", queryParams, RequestMethod.POST, "hello");
+    }
+
+    private void validate(String bucket, Map queryParameters, RequestMethod method, String body) {
         ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
         verify(requestRepo, times(1)).save(requestCaptor.capture());
 
         Request request = requestCaptor.getValue();
-
-        assertThat(request.getBody(), is(nullValue()));
-        assertThat(request.getQueryParameters(), is(equalTo(Collections.EMPTY_MAP)));
-        assertThat(request.getBucket(), is(equalTo("x")));
-        assertThat(request.getMethod(), is(equalTo(RequestMethod.GET.name())));
+        assertThat(request.getBody(), is(equalTo(body)));
+        assertThat(request.getQueryParameters(), is(equalTo(queryParameters)));
+        assertThat(request.getBucket(), is(equalTo(bucket)));
+        assertThat(request.getMethod(), is(equalTo(method.name())));
         assertThat(request.getUuid(), is(not(nullValue())));
 
         Date timestamp = Date.from(Instant.parse(request.getTimestamp()));
