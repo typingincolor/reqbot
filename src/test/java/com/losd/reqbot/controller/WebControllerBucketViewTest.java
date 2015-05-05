@@ -65,7 +65,7 @@ public class WebControllerBucketViewTest {
     @InjectMocks
     private WebController webController;
 
-    final Set<String> bucketList = new HashSet<String>(Arrays.asList("a", "b"));
+    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
 
     @Before
     public void setup() {

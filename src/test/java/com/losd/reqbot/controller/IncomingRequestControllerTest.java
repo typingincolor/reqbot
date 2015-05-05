@@ -80,7 +80,7 @@ public class IncomingRequestControllerTest {
         assertThat(request.getMethod(), is(equalTo(RequestMethod.GET.name())));
         assertThat(request.getUuid(), is(not(nullValue())));
 
-        Date timestamp = new Date().from(Instant.parse(request.getTimestamp()));
+        Date timestamp = Date.from(Instant.parse(request.getTimestamp()));
         assertThat(timestamp, within(2, TimeUnit.SECONDS, Moments.now()));
     }
 }
