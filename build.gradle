@@ -33,4 +33,5 @@ dependencies {
     compile('com.stormpath.spring:spring-boot-starter-stormpath-thymeleaf:1.0.RC4.2')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
 }
