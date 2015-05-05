@@ -75,17 +75,5 @@ public class WebController {
             }
         }
         return "redirect:/login";
-
-    }
-
-    @RequestMapping(value = "/secure", method = RequestMethod.GET)
-    public String secure(Model model, HttpServletRequest request) {
-        Account account = accountResolver.getAccount(request);
-
-        if (account != null) {
-            model.addAttribute("username", account.getUsername());
-            return "secure";
-        } else
-            return "redirect:/login?next=secure";
     }
 }
