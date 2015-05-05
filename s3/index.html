@@ -1,12 +1,18 @@
 <!doctype html>
 <html>
-  <head>
-  </head>
-  <body>
-    <h1>reqbot reports</h1>
-    <ul>
-      <li><a href="tests/">Unit Test Report</a></li>
-      <li><a href="jacoco/test/html">Jacoco Coverage Report</a></li>
-    </ul>
-  </body>
+<head>
+</head>
+<body>
+<h1>reqbot reports</h1>
+<ul>
+    <li><a href="tests/" target="report">Unit Test Report</a></li>
+    <li><a href="jacoco/test/html" target="report">Jacoco Coverage Report</a></li>
+</ul>
+<div>
+    <iframe frameborder="0" scrolling="yes" name="report" id="report"
+            style="width:100%; padding:0; border:0; height:900px;">
+        <p>reports will appear here</p>
+    </iframe>
+</div>
+</body>
 </html>
