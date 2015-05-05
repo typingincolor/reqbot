@@ -1,7 +1,7 @@
 language: java
 jdk:
     - oraclejdk8
-before_script: ./gradlew -q assemble
+install: ./gradlew -q assemble
 script: ./gradlew -q check
 after_success: ./gradlew -q jacocoTestReport uploadToS3
 
