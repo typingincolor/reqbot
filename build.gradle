@@ -12,6 +12,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
+apply plugin: 'findbugs'
 
 
 sourceCompatibility = 1.8
@@ -56,4 +57,11 @@ task uploadToS3(type: com.monochromeroad.gradle.plugin.aws.s3.S3Sync, dependsOn:
     configFile "synchronizer.properties"
     from "build/s3"
     into System.getenv('AWS_BUCKET_NAME')
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
