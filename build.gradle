@@ -41,6 +41,7 @@ dependencies {
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
+    testCompile('commons-lang:commons-lang:2.6')
 }
 
 task copyS3Resources(type: Copy) {

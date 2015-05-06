@@ -1,7 +1,11 @@
 package com.losd.reqbot.repository;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.JedisConfiguration;
 import com.losd.reqbot.config.RepoConfiguration;
+import com.losd.reqbot.model.Request;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,10 +14,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
  * The MIT License (MIT)
@@ -40,23 +45,56 @@ import static org.hamcrest.Matchers.hasItems;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class})
-public class BucketRedisRepoTest {
+public class RequestRedisRepoTest {
     @Autowired
-    BucketRepo repo;
+    RequestRepo repo;
 
     @Autowired
     Jedis jedis;
 
+    private Gson gson = new GsonBuilder().serializeNulls().create();
+
     @Before
     public void setup() {
-        jedis.flushDB();
+        jedis.flushAll();
     }
 
     @Test
-    public void getBucketForUsers() {
-        jedis.sadd("homer", "a");
+    public void testGetBucket() throws Exception {
+        String bucket = RandomStringUtils.randomAlphabetic(10);
 
-        Set<String> buckets = repo.getBucketsForUser("homer");
-        assertThat(buckets, hasItems("a"));
+        Request request1 = buildRequest(bucket);
+        Request request2 = buildRequest(bucket);
+        Request request3 = buildRequest(bucket);
+
+        putRequestInRedis(bucket, request1);
+        putRequestInRedis(bucket, request2);
+        putRequestInRedis(bucket, request3);
+
+        List<UUID> testUuids = new ArrayList<>(Arrays.asList(request1.getUuid(), request2.getUuid(), request3.getUuid()));
+
+        List<Request> result = repo.getBucket(bucket);
+
+        assertThat(result, hasSize(3));
+
+        List<UUID> resultUuids = new ArrayList<>();
+        result.forEach((res) -> resultUuids.add(res.getUuid()));
+
+        assertThat(resultUuids, hasItems(testUuids.toArray(new UUID[testUuids.size()])));
+    }
+
+    private void putRequestInRedis(String bucket, Request request) {
+        jedis.lpush(bucket, request.getUuid().toString());
+        jedis.set(request.getUuid().toString(), gson.toJson(request));
+    }
+
+    private Request buildRequest(String bucket) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RandomStringUtils.randomAlphabetic(10), RandomStringUtils.randomAlphabetic(10));
+
+        Map<String, String> queryParameters = new HashMap<>();
+        queryParameters.put(RandomStringUtils.randomAlphabetic(10), RandomStringUtils.randomAlphabetic(10));
+
+        return new Request(bucket, headers, "body/n", queryParameters, "POST");
     }
 }
