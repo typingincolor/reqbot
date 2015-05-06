@@ -2,6 +2,6 @@ language: java
 jdk:
     - oraclejdk8
 install: ./gradlew -q assemble
-script: ./gradlew -q check
+script: ./gradlew -q check --tests com.losd.reqbot.controller
 after_success: ./gradlew -q jacocoTestReport uploadToS3
 
