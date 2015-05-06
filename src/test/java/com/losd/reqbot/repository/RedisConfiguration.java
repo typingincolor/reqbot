@@ -1,6 +1,7 @@
 package com.losd.reqbot.repository;
 
 import com.losd.reqbot.config.RedisSettings;
+import com.losd.reqbot.config.RequestSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,11 +31,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedisConfiguration {
     @Bean
-    BucketRepo getBucketRepo() {
-        return new BucketRedisRepo();
-    }
-
-    @Bean
     RedisSettings redisSettings() {
         String host = System.getenv("REDIS_HOST");
         String password = System.getenv("REDIS_PASSWORD");
@@ -46,6 +42,14 @@ public class RedisConfiguration {
         settings.setHost(host == null ? "localhost" : host);
         settings.setPort(portInt == 0 ? 6379 : portInt );
         settings.setPassword(password == null ? null : password);
+
+        return settings;
+    }
+
+    @Bean
+    RequestSettings requestSettings() {
+        RequestSettings settings = new RequestSettings();
+        settings.setQueueSize(3);
 
         return settings;
     }

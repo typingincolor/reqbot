@@ -1,6 +1,7 @@
 package com.losd.reqbot.repository;
 
 import com.losd.reqbot.config.JedisConfiguration;
+import com.losd.reqbot.config.RepoConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import static org.hamcrest.Matchers.hasItems;
  * THE SOFTWARE.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={RedisConfiguration.class, JedisConfiguration.class, })
+@ContextConfiguration(classes={RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class})
 public class BucketRedisRepoTest {
     @Autowired
     BucketRepo repo;
