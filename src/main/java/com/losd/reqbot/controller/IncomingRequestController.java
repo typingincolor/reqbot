@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The MIT License (MIT)
@@ -39,23 +40,46 @@ public class IncomingRequestController {
 
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
+    @SuppressWarnings("unused")
     ResponseEntity<String> savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        handle(RequestMethod.POST, bucket, queryParams, headers, body);
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return handle(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     @ResponseBody
+    @SuppressWarnings("unused")
     ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        handle(RequestMethod.GET, bucket, queryParams, headers, null);
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return handle(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
-    private void handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+    private ResponseEntity<String> handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+        TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        caseInsensitiveHeaders.putAll(headers);
+        processGoSlowHeader(caseInsensitiveHeaders.get("X_REQBOT_GO_SLOW"));
+        HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get("X_REQBOT_HTTP_CODE"));
         Request request = new Request(bucket, headers, body, queryParams, method.name());
         save(request);
+        return new ResponseEntity<>(status.getReasonPhrase(), status);
+    }
+
+    private HttpStatus processHttpCodeHeader(String x_reqbot_http_code) {
+        if (x_reqbot_http_code == null || x_reqbot_http_code.isEmpty()) {
+            return HttpStatus.OK;
+        }
+
+        return HttpStatus.valueOf(Integer.parseInt(x_reqbot_http_code));
+    }
+
+    private void processGoSlowHeader(String x_reqbot_go_slow) {
+        if (x_reqbot_go_slow == null || x_reqbot_go_slow.isEmpty()) {
+            return;
+        }
+
+        try {
+            Thread.sleep(Integer.parseInt(x_reqbot_go_slow));
+        } catch (InterruptedException e) {
+            throw new RuntimeException("InterruptedException", e);
+        }
     }
 
     private void save(Request request) {

@@ -8,11 +8,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMethod;
 import uk.co.it.modular.hamcrest.date.Moments;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
@@ -70,21 +72,21 @@ public class IncomingRequestControllerTest {
 
     @Test
     public void handleGetTestWithoutQueryParameters() throws Exception {
-        mockMvc.perform(get("/bucket/x")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        mockMvc.perform(get("/bucket/x")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
     }
 
     @Test
     public void handlePostTestWithoutQueryParameters() throws Exception {
-        mockMvc.perform(post("/bucket/x").content("hello")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        mockMvc.perform(post("/bucket/x").content("hello")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.EMPTY_MAP, RequestMethod.POST, "hello");
     }
 
     @Test
     public void handleGetTestWithQueryParameters() throws Exception {
-        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
@@ -93,11 +95,31 @@ public class IncomingRequestControllerTest {
 
     @Test
     public void handlePostTestWithQueryParameters() throws Exception {
-        mockMvc.perform(post("/bucket/x?a=1").content("hello")).andExpect(status().isOk()).andExpect(content().string("OK"));
+        mockMvc.perform(post("/bucket/x?a=1").content("hello")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
         validate("x", queryParams, RequestMethod.POST, "hello");
+    }
+
+    @Test
+    public void testGoSlowHeader() throws Exception {
+        Instant start = Instant.now();
+        mockMvc.perform(get("/bucket/x").header("X_REQBOT_GO_SLOW", 5000)).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+
+        Instant end = Instant.now();
+
+        assertThat(Duration.between(start, end).toMillis(), is(greaterThan(5000L)));
+    }
+
+    @Test
+    public void testHttpStatusCodeHeader() throws Exception {
+        mockMvc.perform(get("/bucket/x").header("X_REQBOT_HTTP_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
+    }
+
+    @Test
+    public void testMixedCaseHttpStatusCodeHeader() throws Exception {
+        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
 
     private void validate(String bucket, Map queryParameters, RequestMethod method, String body) {
