@@ -4,6 +4,8 @@ reqbot:
 
     redis:
         host: localhost
+        port: 6379
+        password:
 
 stormpath:
     application:

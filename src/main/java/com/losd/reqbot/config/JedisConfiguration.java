@@ -35,6 +35,10 @@ public class JedisConfiguration {
 
     @Bean
     Jedis jedis() {
-        return new Jedis(settings.getHost());
+        Jedis jedis= new Jedis(settings.getHost(), settings.getPort());
+        if (settings.isPasswordSet()) {
+            jedis.auth(settings.getPassword());
+        }
+        return jedis;
     }
 }

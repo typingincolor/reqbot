@@ -32,18 +32,31 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix="reqbot.redis")
 public class RedisSettings {
     private String host;
-    private String username;
+    private String password;
+    private Integer port;
 
-    public String getUsername() {
-        return username;
+    public Integer getPort() {
+        return port;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getHost() {
         return host;
+    }
+
+    public boolean isPasswordSet() {
+        return null != this.password && !password.isEmpty();
     }
 
     public void setHost(String hostname) {

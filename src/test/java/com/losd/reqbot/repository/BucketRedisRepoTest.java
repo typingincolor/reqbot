@@ -1,29 +1,17 @@
 package com.losd.reqbot.repository;
 
-import org.junit.Before;
+import com.losd.reqbot.config.JedisConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
 
 /**
  * The MIT License (MIT)
@@ -49,13 +37,19 @@ import static org.mockito.Mockito.*;
  * THE SOFTWARE.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=RedisConfiguration.class)
+@ContextConfiguration(classes={RedisConfiguration.class, JedisConfiguration.class, })
 public class BucketRedisRepoTest {
     @Autowired
     BucketRepo repo;
 
+    @Autowired
+    Jedis jedis;
+
     @Test
     public void getBucketForUsers() {
+        jedis.flushDB();
+        jedis.sadd("homer", "a");
+
         Set<String> buckets = repo.getBucketsForUser("homer");
         assertThat(buckets, hasItems("a"));
     }

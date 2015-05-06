@@ -1,8 +1,8 @@
 package com.losd.reqbot.repository;
 
+import com.losd.reqbot.config.RedisSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
 
 /**
  * The MIT License (MIT)
@@ -30,12 +30,23 @@ import redis.clients.jedis.Jedis;
 @Configuration
 public class RedisConfiguration {
     @Bean
-    Jedis getJedis() {
-        return new Jedis("localhost");
+    BucketRepo getBucketRepo() {
+        return new BucketRedisRepo();
     }
 
     @Bean
-    BucketRepo getBucketRepo() {
-        return new BucketRedisRepo();
+    RedisSettings redisSettings() {
+        String host = System.getenv("REDIS_HOST");
+        String password = System.getenv("REDIS_PASSWORD");
+        String port = System.getenv("REDIS_PORT");
+
+        int portInt = (port == null ? 0 : Integer.parseInt(port));
+
+        RedisSettings settings = new RedisSettings();
+        settings.setHost(host == null ? "localhost" : host);
+        settings.setPort(portInt == 0 ? 6379 : portInt );
+        settings.setPassword(password == null ? null : password);
+
+        return settings;
     }
 }
