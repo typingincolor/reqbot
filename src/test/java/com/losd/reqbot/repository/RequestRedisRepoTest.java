@@ -61,20 +61,26 @@ public class RequestRedisRepoTest {
 
     @Test
     public void testGetBucket() throws Exception {
+        // generate a bucket to put requests in
         String bucket = RandomStringUtils.randomAlphabetic(10);
 
+        // generate some requests
         Request request1 = buildRequest(bucket);
         Request request2 = buildRequest(bucket);
         Request request3 = buildRequest(bucket);
 
+        // store the requests in the bucket
         putRequestInRedis(bucket, request1);
         putRequestInRedis(bucket, request2);
         putRequestInRedis(bucket, request3);
 
+        // get a list of the uuids of the test requests
         List<UUID> testUuids = new ArrayList<>(Arrays.asList(request1.getUuid(), request2.getUuid(), request3.getUuid()));
 
+        // run the test
         List<Request> result = repo.getBucket(bucket);
 
+        // check the results
         assertThat(result, hasSize(3));
 
         List<UUID> resultUuids = new ArrayList<>();
@@ -84,7 +90,10 @@ public class RequestRedisRepoTest {
     }
 
     private void putRequestInRedis(String bucket, Request request) {
+        // a bucket is a list to which the uuid of the request is added
         jedis.lpush(bucket, request.getUuid().toString());
+
+        // the request is store in redis against its uuid
         jedis.set(request.getUuid().toString(), gson.toJson(request));
     }
 
