@@ -17,7 +17,9 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
@@ -54,16 +56,54 @@ public class RequestRedisRepoTest {
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
+    private String bucket;
+
     @Before
     public void setup() {
         jedis.flushAll();
+
+        // generate a bucket to put requests in
+        bucket = RandomStringUtils.randomAlphabetic(10);
+    }
+
+    @Test
+    public void testSave() throws Exception {
+        Request request = buildRequest(bucket);
+        repo.save(request);
+
+        // check it worked
+        String storedRequest = jedis.get(request.getUuid().toString());
+        Request result = gson.fromJson(storedRequest, Request.class);
+
+        assertThat(result.getBody(), is(equalTo(request.getBody())));
+        assertThat(result.getUuid(), is(equalTo(request.getUuid())));
+        assertThat(result.getBucket(), is(equalTo(request.getBucket())));
+
+        assertThat(jedis.llen(bucket), is(equalTo(1L)));
+    }
+
+    @Test
+    public void testSaveStopsBucketGettingTooBig() {
+        for (long i=1; i < 10; i++) {
+            Request request = buildRequest(bucket);
+            repo.save(request);
+
+            if (i < 3)
+                assertThat(jedis.llen(bucket), is(equalTo(i)));
+            else
+                assertThat(jedis.llen(bucket), is(equalTo(3L)));
+
+            Request savedRequest = gson.fromJson(jedis.get(request.getUuid().toString()), Request.class);
+
+            assertThat(savedRequest.getUuid(), is(equalTo(request.getUuid())));
+        }
+
+        // expecting 4 keys, 3 for the request and 1 for the bucket
+        assertThat(jedis.dbSize(), is(equalTo(4L)));
     }
 
     @Test
     public void testGetBucket() throws Exception {
-        // generate a bucket to put requests in
-        String bucket = RandomStringUtils.randomAlphabetic(10);
-
         // generate some requests
         Request request1 = buildRequest(bucket);
         Request request2 = buildRequest(bucket);
