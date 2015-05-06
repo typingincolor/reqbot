@@ -103,7 +103,7 @@ public class IncomingRequestControllerTest {
     }
 
     @Test
-    public void testGoSlowHeader() throws Exception {
+    public void testGoSlowHeaderCausesDelay() throws Exception {
         Instant start = Instant.now();
         mockMvc.perform(get("/bucket/x").header("X_REQBOT_GO_SLOW", 5000)).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
@@ -113,13 +113,18 @@ public class IncomingRequestControllerTest {
     }
 
     @Test
-    public void testHttpStatusCodeHeader() throws Exception {
+    public void testHttpStatusCodeHeaderReturnsNotFound() throws Exception {
         mockMvc.perform(get("/bucket/x").header("X_REQBOT_HTTP_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
 
     @Test
-    public void testMixedCaseHttpStatusCodeHeader() throws Exception {
+    public void testMixedCaseHttpStatusCodeHeaderReturnsNotFound() throws Exception {
         mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
+    }
+
+    @Test
+    public void testEmptyHttpStatusCodeHeaderReturnsOK() throws Exception {
+        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", "")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
     }
 
     private void validate(String bucket, Map queryParameters, RequestMethod method, String body) {
