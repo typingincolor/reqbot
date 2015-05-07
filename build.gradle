@@ -15,8 +15,6 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
 apply plugin: 'findbugs'
-apply plugin: 'pmd'
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -42,25 +40,6 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
     testCompile('commons-lang:commons-lang:2.6')
-}
-
-task copyS3Resources(type: Copy) {
-    from 's3'
-    into 'build/s3'
-}
-
-task copyReports(type: Copy) {
-    from 'build/reports'
-    into 'build/s3'
-}
-
-task uploadToS3(type: S3Sync, dependsOn: [copyS3Resources, copyReports]) {
-    accessKey System.getenv('AWS_ACCESS_KEY')
-    secretKey System.getenv('AWS_SECRET_ACCESS_KEY')
-    quiet true
-    configFile "synchronizer.properties"
-    from "build/s3"
-    into System.getenv('AWS_BUCKET_NAME')
 }
 
 tasks.withType(FindBugs) {

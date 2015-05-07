@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.constant.ReqbotHttpHeaders;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
@@ -37,6 +38,7 @@ import java.util.TreeMap;
  */
 @RestController
 public class IncomingRequestController {
+
     @Autowired
     private RequestRepo requestRepo = null;
 
@@ -61,31 +63,35 @@ public class IncomingRequestController {
     @ResponseBody
     @SuppressWarnings("unused")
     ResponseEntity<String> programmedGetResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        ResponseEntity<String> result = handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
-
-        Response response = responseRepo.get(responseKey);
-
-        return new ResponseEntity<>(response.getBody(), result.getStatusCode());
+        headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
+        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
     @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
     ResponseEntity<String> programmedPostResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        ResponseEntity<String> result = handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
-
-        Response response = responseRepo.get(responseKey);
-
-        return new ResponseEntity<>(response.getBody(), result.getStatusCode());
+        headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
+        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
     }
 
     private ResponseEntity<String> handleRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+        saveRequest(method, bucket, queryParams, headers, body);
+
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         caseInsensitiveHeaders.putAll(headers);
-        processGoSlowHeader(caseInsensitiveHeaders.get("X_REQBOT_GO_SLOW"));
-        HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get("X_REQBOT_HTTP_CODE"));
-        saveRequest(method, bucket, queryParams, headers, body);
-        return new ResponseEntity<>(status.getReasonPhrase(), status);
+        processGoSlowHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.GO_SLOW));
+        HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.HTTP_CODE));
+
+        Response response;
+
+        if (caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE) == null) {
+            response = null;
+        } else {
+            response = responseRepo.get(caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE));
+        }
+
+        return new ResponseEntity<>(response == null ? status.getReasonPhrase() : response.getBody(), status);
     }
 
     private void saveRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {

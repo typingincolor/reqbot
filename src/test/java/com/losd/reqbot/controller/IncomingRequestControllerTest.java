@@ -1,9 +1,11 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.constant.ReqbotHttpHeaders;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -111,7 +113,7 @@ public class IncomingRequestControllerTest {
     @Test
     public void it_goes_slow_when_asked() throws Exception {
         Instant start = Instant.now();
-        mockMvc.perform(get("/bucket/x").header("X_REQBOT_GO_SLOW", 5000)).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.GO_SLOW, 5000)).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         Instant end = Instant.now();
 
@@ -120,7 +122,7 @@ public class IncomingRequestControllerTest {
 
     @Test
     public void it_returns_the_requested_http_status_code() throws Exception {
-        mockMvc.perform(get("/bucket/x").header("X_REQBOT_HTTP_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
 
     @Test
@@ -138,7 +140,7 @@ public class IncomingRequestControllerTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("test-header", "testvalue");
 
-        Response response = new Response(headers, "hello");
+        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         mockMvc.perform(get("/bucket/x/"+response.getUuid())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
@@ -151,12 +153,38 @@ public class IncomingRequestControllerTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("test-header", "testvalue");
 
-        Response response = new Response(headers, "hello");
+        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         mockMvc.perform(post("/bucket/x/"+response.getUuid()).content("hello")).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
 
         validate("x", Collections.EMPTY_MAP, RequestMethod.GET, "hello");
+    }
+
+    @Test
+    public void it_returns_the_requested_body_for_a_get_using_header() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("test-header", "testvalue");
+
+        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
+        when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
+
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+
+        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+    }
+
+    @Test
+    public void it_returns_the_requested_body_for_a_post_using_header() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("test-header", "testvalue");
+
+        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
+        when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
+
+        mockMvc.perform(post("/bucket/x").content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+
+        validate("x", Collections.EMPTY_MAP, RequestMethod.POST, "hello");
     }
 
     @Test
@@ -167,7 +195,7 @@ public class IncomingRequestControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x/"+response.getUuid()).header("X_REQBOT_HTTP_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(get("/bucket/x/"+response.getUuid()).header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
 
         validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
     }
@@ -180,7 +208,7 @@ public class IncomingRequestControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header("X_REQBOT_HTTP_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
 
         validate("x", Collections.EMPTY_MAP, RequestMethod.GET, "hello");
     }
