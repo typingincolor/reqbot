@@ -46,22 +46,22 @@ public class IncomingRequestController {
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
-    ResponseEntity<String> savePost(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        return handle(RequestMethod.POST, bucket, queryParams, headers, body);
+    ResponseEntity<String> standardPostResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+        return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     @ResponseBody
     @SuppressWarnings("unused")
-    ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        return handle(RequestMethod.GET, bucket, queryParams, headers, null);
+    ResponseEntity<String> standardGetResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
     @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.GET)
     @ResponseBody
     @SuppressWarnings("unused")
-    ResponseEntity<String> getProgrammedResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
-        ResponseEntity<String> result = handle(RequestMethod.GET, bucket, queryParams, headers, null);
+    ResponseEntity<String> programmedGetResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+        ResponseEntity<String> result = handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
 
         Response response = responseRepo.get(responseKey);
 
@@ -71,22 +71,25 @@ public class IncomingRequestController {
     @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
-    ResponseEntity<String> postProgrammedResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
-        ResponseEntity<String> result = handle(RequestMethod.GET, bucket, queryParams, headers, body);
+    ResponseEntity<String> programmedPostResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+        ResponseEntity<String> result = handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
 
         Response response = responseRepo.get(responseKey);
 
         return new ResponseEntity<>(response.getBody(), result.getStatusCode());
     }
 
-    private ResponseEntity<String> handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+    private ResponseEntity<String> handleRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         caseInsensitiveHeaders.putAll(headers);
         processGoSlowHeader(caseInsensitiveHeaders.get("X_REQBOT_GO_SLOW"));
         HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get("X_REQBOT_HTTP_CODE"));
-        Request request = new Request(bucket, headers, body, queryParams, method.name());
-        save(request);
+        saveRequest(method, bucket, queryParams, headers, body);
         return new ResponseEntity<>(status.getReasonPhrase(), status);
+    }
+
+    private void saveRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+        save(new Request(bucket, headers, body, queryParams, method.name()));
     }
 
     private HttpStatus processHttpCodeHeader(String x_reqbot_http_code) {
