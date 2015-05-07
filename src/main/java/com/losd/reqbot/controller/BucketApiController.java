@@ -37,7 +37,7 @@ import java.util.TreeMap;
  * THE SOFTWARE.
  */
 @RestController
-public class IncomingRequestController {
+public class BucketApiController {
 
     @Autowired
     private RequestRepo requestRepo = null;

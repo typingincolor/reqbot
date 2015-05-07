@@ -60,7 +60,7 @@ import static uk.co.it.modular.hamcrest.date.IsWithin.within;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class IncomingRequestControllerTest {
+public class BucketApiControllerTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -70,12 +70,12 @@ public class IncomingRequestControllerTest {
     private ResponseRepo responseRepo;
 
     @InjectMocks
-    private IncomingRequestController incomingRequestController;
+    private BucketApiController bucketApiController;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(incomingRequestController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(bucketApiController).build();
     }
 
     @Test
