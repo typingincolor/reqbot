@@ -1,5 +1,10 @@
 package com.losd.reqbot.config;
 
+import com.losd.reqbot.filters.ExampleFilter;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -23,5 +28,16 @@ package com.losd.reqbot.config;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class FIlterConfiguration {
+@Configuration
+public class FilterConfiguration {
+    @Bean
+    public FilterRegistrationBean goSlowFilterRegistrationBean() {
+        ExampleFilter exampleFilter = new ExampleFilter();
+
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        registrationBean.setFilter(exampleFilter);
+        registrationBean.addUrlPatterns("/bucket/*");
+
+        return registrationBean;
+    }
 }

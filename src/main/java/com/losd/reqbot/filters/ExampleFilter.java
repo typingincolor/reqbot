@@ -1,5 +1,8 @@
 package com.losd.reqbot.filters;
 
+import javax.servlet.*;
+import java.io.IOException;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -23,5 +26,20 @@ package com.losd.reqbot.filters;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class GoSlowFilter {
+
+public class ExampleFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
 }
