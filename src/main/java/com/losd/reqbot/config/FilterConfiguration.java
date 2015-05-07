@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * THE SOFTWARE.
  */
 @Configuration
-public class FilterConfigurationXXXXXX {
+public class FilterConfiguration {
     @Bean
     public FilterRegistrationBean goSlowFilterRegistrationBean() {
         ExampleFilter exampleFilter = new ExampleFilter();
