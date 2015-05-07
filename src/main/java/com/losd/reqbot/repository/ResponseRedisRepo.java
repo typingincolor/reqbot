@@ -2,15 +2,9 @@ package com.losd.reqbot.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.losd.reqbot.config.RequestSettings;
-import com.losd.reqbot.model.Request;
+import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The MIT License (MIT)
@@ -35,45 +29,16 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class RequestRedisRepo implements RequestRepo {
-    @Autowired
-    RequestSettings settings;
-
+public class ResponseRedisRepo implements ResponseRepo {
     @Autowired
     Jedis jedis = null;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
-    public void save(Request request) {
-        int queueSize = settings.getQueueSize();
+    public Response get(String uuid) {
+        String response = jedis.get("response:" + uuid);
 
-        Transaction t = jedis.multi();
-        Response<String> key = t.lindex(request.getBucket(), queueSize - 1);
-        t.lpush(request.getBucket(), request.getUuid().toString());
-        t.set(request.getUuid().toString(), gson.toJson(request));
-        t.ltrim(request.getBucket(), 0, queueSize - 1);
-        t.exec();
-
-        if (key.get() != null)
-        {
-            jedis.del(key.get());
-        }
-    }
-
-    @Override
-    public List<Request> getBucket(String bucket) {
-        int queueSize = settings.getQueueSize();
-
-        List<Request> result = new ArrayList<>();
-
-        List<String> requests = jedis.lrange(bucket, 0, queueSize - 1);
-
-        requests.forEach(request -> {
-            String body = jedis.get(request);
-            result.add(gson.fromJson(body, Request.class));
-        });
-
-        return result;
+        return gson.fromJson(response, Response.class);
     }
 }

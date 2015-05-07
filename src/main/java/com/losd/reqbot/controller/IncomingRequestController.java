@@ -1,7 +1,9 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.Request;
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
+import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,9 @@ public class IncomingRequestController {
     @Autowired
     private RequestRepo requestRepo = null;
 
+    @Autowired
+    private ResponseRepo responseRepo = null;
+
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
@@ -50,6 +55,28 @@ public class IncomingRequestController {
     @SuppressWarnings("unused")
     ResponseEntity<String> saveGet(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
         return handle(RequestMethod.GET, bucket, queryParams, headers, null);
+    }
+
+    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.GET)
+    @ResponseBody
+    @SuppressWarnings("unused")
+    ResponseEntity<String> getProgrammedResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+        ResponseEntity<String> result = handle(RequestMethod.GET, bucket, queryParams, headers, null);
+
+        Response response = responseRepo.get(responseKey);
+
+        return new ResponseEntity<>(response.getBody(), result.getStatusCode());
+    }
+
+    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
+    @ResponseBody
+    @SuppressWarnings("unused")
+    ResponseEntity<String> postProgrammedResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+        ResponseEntity<String> result = handle(RequestMethod.GET, bucket, queryParams, headers, body);
+
+        Response response = responseRepo.get(responseKey);
+
+        return new ResponseEntity<>(response.getBody(), result.getStatusCode());
     }
 
     private ResponseEntity<String> handle(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {

@@ -1,8 +1,7 @@
-package com.losd.reqbot.config;
+package com.losd.reqbot.model;
 
-import com.losd.reqbot.repository.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * The MIT License (MIT)
@@ -27,18 +26,26 @@ import org.springframework.context.annotation.Configuration;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@Configuration
-public class RepoConfiguration {
-    @Bean
-    public BucketRepo bucketRepo() {
-        return new BucketRedisRepo();
+public class Response {
+    Map<String, String> headers;
+    String body;
+    UUID uuid;
+
+    public Response(Map<String, String> headers, String body) {
+        this.headers = headers;
+        this.body = body;
+        this.uuid = UUID.randomUUID();
     }
 
-    @Bean
-    public RequestRepo requestRepo() {
-        return new RequestRedisRepo();
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
-    @Bean
-    public ResponseRepo responseRepo() {return new ResponseRedisRepo();}
+    public String getBody() {
+        return body;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 }
