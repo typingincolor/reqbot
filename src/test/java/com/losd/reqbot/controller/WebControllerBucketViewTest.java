@@ -92,7 +92,7 @@ public class WebControllerBucketViewTest {
         when(bucketRepo.getBucketsForUser("testuser@example.com")).thenReturn(bucketList);
         when(requestRepo.getBucket("a")).thenReturn(requestList);
 
-        mockMvc.perform(get("/bucket/a/view"))
+        mockMvc.perform(get("/web/bucket/a/view"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(is("view")))
                 .andExpect(model().attribute("fullname", is("Homer Simpson")))
@@ -106,7 +106,7 @@ public class WebControllerBucketViewTest {
         when(account.getUsername()).thenReturn("testuser@example.com");
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
 
-        mockMvc.perform(get("/bucket/x/view"))
+        mockMvc.perform(get("/web/bucket/x/view"))
                 .andExpect(status().isFound())
                 .andExpect(model().size(0))
                 .andExpect(redirectedUrl("/"));
@@ -116,7 +116,7 @@ public class WebControllerBucketViewTest {
     public void notLoggedIn() throws Exception {
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(null);
 
-        mockMvc.perform(get("/bucket/x/view"))
+        mockMvc.perform(get("/web/bucket/x/view"))
                 .andExpect(status().isFound())
                 .andExpect(model().size(0))
                 .andExpect(redirectedUrl("/login"));

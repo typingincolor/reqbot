@@ -58,7 +58,7 @@ public class WebController {
         return "index";
     }
 
-    @RequestMapping(value = "/bucket/{bucket}/view", method = RequestMethod.GET)
+    @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
     public String view(@PathVariable String bucket, Model model, HttpServletRequest request) {
         Account account = accountResolver.getAccount(request);
 
