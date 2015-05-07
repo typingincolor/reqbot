@@ -82,14 +82,14 @@ public class BucketApiControllerTest {
     public void it_handles_a_get() throws Exception {
         mockMvc.perform(get("/bucket/x")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
 
     @Test
     public void it_handles_a_post() throws Exception {
         mockMvc.perform(post("/bucket/x").content("hello")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.POST, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(get("/bucket/x/"+response.getUuid())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(post("/bucket/x/"+response.getUuid()).content("hello")).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
     }
 
     @Test
@@ -171,7 +171,7 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(post("/bucket/x").content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.POST, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
     }
 
     @Test
@@ -197,7 +197,7 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(get("/bucket/x/"+response.getUuid()).header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
 
     @Test
@@ -210,10 +210,10 @@ public class BucketApiControllerTest {
 
         mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
 
-        validate("x", Collections.EMPTY_MAP, RequestMethod.GET, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
     }
 
-    private void validate(String bucket, Map queryParameters, RequestMethod method, String body) {
+    private void validate(String bucket, Map<String, String> queryParameters, RequestMethod method, String body) {
         ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
         verify(requestRepo, times(1)).save(requestCaptor.capture());
 
