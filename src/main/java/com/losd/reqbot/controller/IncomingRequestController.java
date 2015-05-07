@@ -45,31 +45,31 @@ public class IncomingRequestController {
     @Autowired
     private ResponseRepo responseRepo = null;
 
-    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
+    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
     ResponseEntity<String> standardPostResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
         return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
-    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     @ResponseBody
     @SuppressWarnings("unused")
+    @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     ResponseEntity<String> standardGetResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
-    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.GET)
     @ResponseBody
     @SuppressWarnings("unused")
+    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.GET)
     ResponseEntity<String> programmedGetResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
-    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
     @ResponseBody
     @SuppressWarnings("unused")
+    @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
     ResponseEntity<String> programmedPostResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);

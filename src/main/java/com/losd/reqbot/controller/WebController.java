@@ -47,6 +47,7 @@ public class WebController {
     @Autowired
     AccountResolver accountResolver = null;
 
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model, HttpServletRequest request) {
         Account account = accountResolver.getAccount(request);
@@ -58,6 +59,7 @@ public class WebController {
         return "index";
     }
 
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
     public String view(@PathVariable String bucket, Model model, HttpServletRequest request) {
         Account account = accountResolver.getAccount(request);
