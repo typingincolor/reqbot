@@ -15,6 +15,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 
 /**
  * The MIT License (MIT)
@@ -53,12 +54,15 @@ public class BucketRedisRepoTest {
         jedis.flushDB();
     }
 
-    @Ignore
     @Test
-    public void getBuckets() {
-        jedis.sadd("homer", "a");
+    public void it_can_get_a_set_containing_all_of_the_buckets() {
+        jedis.lpush(BucketRedisRepo.getBucketKey("a"), "element");
+        jedis.lpush(BucketRedisRepo.getBucketKey("b"), "element");
+        jedis.lpush(BucketRedisRepo.getBucketKey("c"), "element");
+        jedis.lpush(BucketRedisRepo.getBucketKey("d"), "element");
 
         Set<String> buckets = repo.getBuckets();
-        assertThat(buckets, hasItems("a"));
+        assertThat(buckets, hasSize(4));
+        assertThat(buckets, hasItems("a", "b", "c", "d"));
     }
 }

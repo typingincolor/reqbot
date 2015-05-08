@@ -3,6 +3,7 @@ package com.losd.reqbot.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -29,15 +30,21 @@ import java.util.Set;
  * THE SOFTWARE.
  */
 public class BucketRedisRepo implements BucketRepo {
+    private final static String BUCKET_KEY_PREFIX = "bucket:";
+
     @Autowired
     Jedis jedis = null;
 
     static String getBucketKey(String bucket) {
-        return "bucket:" + bucket;
+        return BUCKET_KEY_PREFIX + bucket;
     }
 
     @Override
     public Set<String> getBuckets() {
-        return null;
+        Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
+        Set<String> result = new LinkedHashSet<>(keys.size());
+
+        keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
+        return result;
     }
 }
