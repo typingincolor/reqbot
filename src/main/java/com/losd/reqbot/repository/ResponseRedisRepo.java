@@ -31,6 +31,8 @@ import redis.clients.jedis.Jedis;
  * THE SOFTWARE.
  */
 public class ResponseRedisRepo implements ResponseRepo {
+    public static final String RESPONSE_KEY_PREFIX = "response:";
+
     @Autowired
     Jedis jedis = null;
 
@@ -41,14 +43,14 @@ public class ResponseRedisRepo implements ResponseRepo {
 
     @Override
     public Response get(String uuid) {
-        String response = jedis.get("response:" + uuid);
+        String response = jedis.get(RESPONSE_KEY_PREFIX + uuid);
 
         return gson.fromJson(response, Response.class);
     }
 
     @Override
     public void save(Response response) {
-        String key = "response:" + response.getUuid().toString();
+        String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
         jedis.set(key, gson.toJson(response, Response.class));
         jedis.expire(key, settings.getResponseTtl());
     }
