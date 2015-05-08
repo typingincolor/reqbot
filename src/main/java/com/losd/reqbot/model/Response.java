@@ -49,6 +49,12 @@ public class Response {
         this.uuid = UUID.randomUUID();
     }
 
+    public Response(IncomingResponse incoming) {
+        this.uuid = UUID.randomUUID();
+        this.body = incoming.getBody();
+        this.headers = incoming.getHeaders();
+    }
+
     public Map<String, String> getHeaders() {
         return headers;
     }

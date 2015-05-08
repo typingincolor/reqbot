@@ -13,8 +13,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -61,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
 public class ResponseApiControllerTest {
-    Logger logger = LoggerFactory.getLogger(ResponseApiControllerTest.class);
+    public static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
     private MockMvc mockMvc;
 
@@ -93,8 +91,6 @@ public class ResponseApiControllerTest {
 
         String json = gson.toJson(incoming, IncomingResponse.class);
 
-        logger.info("Sending json {}", json);
-
         MvcResult mvcResult = mockMvc.perform(post("/response").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -111,5 +107,12 @@ public class ResponseApiControllerTest {
 
         assertThat(argumentCaptor.getValue().getBody(), is(equalTo("response_body")));
         assertThat(argumentCaptor.getValue().getHeaders(), hasEntry("test_header", "test_header_value"));
+        assertThat(argumentCaptor.getValue().getUuid().toString().matches(UUID_REGEX), is(true));
+    }
+
+    @Test
+    public void it_gets_an_error_400_if_the_response_to_be_saved_has_no_body() throws Exception {
+        mockMvc.perform(post("/response").contentType(MediaType.APPLICATION_JSON).content("{\"stuff\": \"random\"}"))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,5 +1,7 @@
 package com.losd.reqbot.model;
 
+import java.util.Map;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -24,4 +26,19 @@ package com.losd.reqbot.model;
  * THE SOFTWARE.
  */
 public class IncomingResponse {
+    Map<String, String> headers;
+    String body;
+
+    public IncomingResponse(Map<String, String> headers, String body) {
+        this.headers = headers;
+        this.body = body;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public String getBody() {
+        return body;
+    }
 }

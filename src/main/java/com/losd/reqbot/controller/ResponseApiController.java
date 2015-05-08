@@ -6,11 +6,9 @@ import com.losd.reqbot.repository.ResponseRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * The MIT License (MIT)
@@ -43,16 +41,24 @@ public class ResponseApiController {
     Logger logger = LoggerFactory.getLogger(ResponseApiController.class);
 
     @RequestMapping(value = "/response", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Response save(@RequestBody IncomingResponse incoming) {
+    public Response save(@RequestBody IncomingResponse incoming) throws IncomingEmptyBodyException {
         if (incoming.getBody() == null || incoming.getBody().isEmpty()) {
-
+            throw new IncomingEmptyBodyException();
         }
 
-        incoming.getHeaders().forEach((header, value) -> logger.info("Header: {}:{}", header, value));
-        logger.info("Body: {}", incoming.getBody());
-        Response response = new Response(incoming.getHeaders(), incoming.getBody());
+        Response response = new Response(incoming);
         repo.save(response);
 
         return response;
+    }
+
+    @ExceptionHandler(IncomingEmptyBodyException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public @ResponseBody String handleEmptyBody(IncomingEmptyBodyException e) {
+        return "Empty Body";
+    }
+
+    class IncomingEmptyBodyException extends Exception {
+
     }
 }
