@@ -24,7 +24,7 @@ package com.losd.reqbot.constant;
  * THE SOFTWARE.
  */
 public class ReqbotHttpHeaders {
-    public static final String HTTP_CODE = "X_REQBOT_HTTP_CODE";
-    public static final String RESPONSE = "X_REQBOT_RESPONSE";
-    public static final String GO_SLOW = "X_REQBOT_GO_SLOW";
+    public static final String HTTP_CODE = "X-REQBOT-HTTP-CODE";
+    public static final String RESPONSE = "X-REQBOT-RESPONSE";
+    public static final String GO_SLOW = "X-REQBOT-GO-SLOW";
 }

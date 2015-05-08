@@ -2,6 +2,7 @@ package com.losd.reqbot.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.losd.reqbot.config.RedisSettings;
 import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
@@ -33,6 +34,9 @@ public class ResponseRedisRepo implements ResponseRepo {
     @Autowired
     Jedis jedis = null;
 
+    @Autowired
+    RedisSettings settings;
+
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
@@ -44,6 +48,8 @@ public class ResponseRedisRepo implements ResponseRepo {
 
     @Override
     public void save(Response response) {
-        jedis.set("response:" + response.getUuid().toString(), gson.toJson(response, Response.class));
+        String key = "response:" + response.getUuid().toString();
+        jedis.set(key, gson.toJson(response, Response.class));
+        jedis.expire(key, settings.getResponseTtl());
     }
 }

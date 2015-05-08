@@ -149,7 +149,7 @@ public class BucketApiControllerTest {
     public void it_returns_the_correct_http_status_code_when_the_header_is_mixed_case() throws
             Exception
     {
-        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", 404))
+        mockMvc.perform(get("/bucket/x").header("X-ReQbOt-http-CODE", 404))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
@@ -158,7 +158,7 @@ public class BucketApiControllerTest {
     public void it_returns_a_http_ok_response_code_when_http_code_header_is_empty() throws
             Exception
     {
-        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", ""))
+        mockMvc.perform(get("/bucket/x").header("X-ReQbOt-http-CODE", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
     }

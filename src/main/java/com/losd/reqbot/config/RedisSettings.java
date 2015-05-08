@@ -34,6 +34,15 @@ public class RedisSettings {
     private String host;
     private String password;
     private Integer port;
+    private Integer responseTtl = 60;
+
+    public Integer getResponseTtl() {
+        return responseTtl;
+    }
+
+    public void setResponseTtl(Integer responseTtl) {
+        this.responseTtl = responseTtl;
+    }
 
     public Integer getPort() {
         return port;

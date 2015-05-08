@@ -3,6 +3,7 @@ reqbot:
         queueSize: 10
 
     redis:
+        responseTtl: 600
         host: localhost
         port: 6379
         password:
