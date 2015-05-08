@@ -52,3 +52,12 @@ There are three magic headers that reqbot uses when calling a bucket:
 
 ## Web App
 Reqbot has a web application at `/` which allows you to see the requests that reqbot has received.
+
+
+## Running reqbot
+
+You will need to install redis and gradle...
+
+Then `gradle run`
+
+This will start everything at `http://localhost:8080/`
