@@ -53,3 +53,7 @@ tasks.withType(Pmd) {
         html.enabled = true
     }
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
