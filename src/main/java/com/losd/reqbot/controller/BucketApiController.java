@@ -5,6 +5,8 @@ import com.losd.reqbot.model.Request;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,7 @@ import java.util.TreeMap;
  */
 @RestController
 public class BucketApiController {
+    Logger logger = LoggerFactory.getLogger(BucketApiController.class);
 
     @Autowired
     private RequestRepo requestRepo = null;
@@ -53,6 +56,7 @@ public class BucketApiController {
                                                 @RequestHeader Map<String, String> headers,
                                                 @RequestBody String body)
     {
+        logger.info("POST /bucket/{}", bucket);
         return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
@@ -62,6 +66,7 @@ public class BucketApiController {
                                                @RequestParam Map<String, String> queryParams,
                                                @RequestHeader Map<String, String> headers)
     {
+        logger.info("GET /bucket/{}", bucket);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
@@ -72,6 +77,7 @@ public class BucketApiController {
                                                  @RequestParam Map<String, String> queryParams,
                                                  @RequestHeader Map<String, String> headers)
     {
+        logger.info("GET /bucket/{}/{}", bucket, responseKey);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
@@ -84,6 +90,7 @@ public class BucketApiController {
                                                   @RequestHeader Map<String, String> headers,
                                                   @RequestBody String body)
     {
+        logger.info("POST /bucket/{}/{}", bucket, responseKey);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
     }

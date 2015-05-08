@@ -42,6 +42,7 @@ public class ResponseApiController {
 
     @RequestMapping(value = "/response", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Response save(@RequestBody IncomingResponse incoming) throws IncomingEmptyBodyException {
+        logger.info("POST /response");
         if (incoming.getBody() == null || incoming.getBody().isEmpty()) {
             throw new IncomingEmptyBodyException();
         }
