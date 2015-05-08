@@ -1,10 +1,16 @@
-package com.losd.reqbot.repository;
+package com.losd.reqbot.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.losd.reqbot.model.IncomingResponse;
 import com.losd.reqbot.model.Response;
+import com.losd.reqbot.repository.ResponseRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The MIT License (MIT)
@@ -29,21 +35,24 @@ import redis.clients.jedis.Jedis;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class ResponseRedisRepo implements ResponseRepo {
+@RestController
+public class ResponseApiController {
     @Autowired
-    Jedis jedis = null;
+    ResponseRepo repo;
 
-    Gson gson = new GsonBuilder().serializeNulls().create();
+    Logger logger = LoggerFactory.getLogger(ResponseApiController.class);
 
-    @Override
-    public Response get(String uuid) {
-        String response = jedis.get("response:" + uuid);
+    @RequestMapping(value = "/response", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Response save(@RequestBody IncomingResponse incoming) {
+        if (incoming.getBody() == null || incoming.getBody().isEmpty()) {
 
-        return gson.fromJson(response, Response.class);
-    }
+        }
 
-    @Override
-    public boolean save(Response response) {
-        return false;
+        incoming.getHeaders().forEach((header, value) -> logger.info("Header: {}:{}", header, value));
+        logger.info("Body: {}", incoming.getBody());
+        Response response = new Response(incoming.getHeaders(), incoming.getBody());
+        repo.save(response);
+
+        return response;
     }
 }

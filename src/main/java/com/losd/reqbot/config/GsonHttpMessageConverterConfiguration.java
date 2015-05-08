@@ -1,10 +1,10 @@
-package com.losd.reqbot.repository;
+package com.losd.reqbot.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.losd.reqbot.model.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 
 /**
  * The MIT License (MIT)
@@ -29,21 +29,13 @@ import redis.clients.jedis.Jedis;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class ResponseRedisRepo implements ResponseRepo {
-    @Autowired
-    Jedis jedis = null;
-
-    Gson gson = new GsonBuilder().serializeNulls().create();
-
-    @Override
-    public Response get(String uuid) {
-        String response = jedis.get("response:" + uuid);
-
-        return gson.fromJson(response, Response.class);
-    }
-
-    @Override
-    public boolean save(Response response) {
-        return false;
+@Configuration
+public class GsonHttpMessageConverterConfiguration {
+    @Bean
+    public GsonHttpMessageConverter gsonHttpMessageConverter() {
+        Gson gson = new GsonBuilder().create();
+        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+        converter.setGson(gson);
+        return converter;
     }
 }

@@ -27,4 +27,5 @@ import com.losd.reqbot.model.Response;
  */
 public interface ResponseRepo {
     Response get(String uuid);
+    boolean save(Response response);
 }

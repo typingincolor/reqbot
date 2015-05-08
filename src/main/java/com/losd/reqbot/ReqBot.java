@@ -3,6 +3,7 @@ package com.losd.reqbot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -28,7 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 @ComponentScan
 @SpringBootApplication
 public class ReqBot {
