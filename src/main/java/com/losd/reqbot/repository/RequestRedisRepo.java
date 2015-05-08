@@ -49,27 +49,19 @@ public class RequestRedisRepo implements RequestRepo {
 
     @Override
     public void save(Request request) {
-        logger.debug("Saving {} into bucket {}", request.getBody(), getBucketKey(request));
+        logger.debug("Saving {} into bucket {}", request.getBody(), BucketRedisRepo.getBucketKey(request.getBucket()));
         int queueSize = settings.getQueueSize();
 
         Transaction t = jedis.multi();
-        Response<String> key = t.lindex(getBucketKey(request), queueSize - 1);
-        t.lpush(getBucketKey(request), getRequestKey(request));
+        Response<String> key = t.lindex(BucketRedisRepo.getBucketKey(request.getBucket()), queueSize - 1);
+        t.lpush(BucketRedisRepo.getBucketKey(request.getBucket()), getRequestKey(request));
         t.set(getRequestKey(request), gson.toJson(request));
-        t.ltrim(getBucketKey(request), 0, queueSize - 1);
+        t.ltrim(BucketRedisRepo.getBucketKey(request.getBucket()), 0, queueSize - 1);
         t.exec();
 
         if (key.get() != null) {
             jedis.del(key.get());
         }
-    }
-
-    private String getRequestKey(Request request) {
-        return "request:" + request.getUuid();
-    }
-
-    private String getBucketKey(Request request) {
-        return "bucket:" + request.getBucket();
     }
 
     @Override
@@ -79,7 +71,7 @@ public class RequestRedisRepo implements RequestRepo {
 
         List<Request> result = new ArrayList<>();
 
-        List<String> requests = jedis.lrange("bucket:" + bucket, 0, queueSize - 1);
+        List<String> requests = jedis.lrange(BucketRedisRepo.getBucketKey(bucket), 0, queueSize - 1);
 
         requests.forEach(request -> {
             String body = jedis.get(request);
@@ -88,4 +80,9 @@ public class RequestRedisRepo implements RequestRepo {
 
         return result;
     }
+
+    static String getRequestKey(Request request) {
+        return "request:" + request.getUuid();
+    }
+
 }

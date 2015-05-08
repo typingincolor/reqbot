@@ -32,6 +32,10 @@ public class BucketRedisRepo implements BucketRepo {
     @Autowired
     Jedis jedis = null;
 
+    static String getBucketKey(String bucket) {
+        return "bucket:" + bucket;
+    }
+
     @Override
     public Set<String> getBuckets() {
         return null;

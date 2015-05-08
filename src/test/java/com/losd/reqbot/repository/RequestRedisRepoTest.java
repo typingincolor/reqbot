@@ -83,15 +83,7 @@ public class RequestRedisRepoTest {
     }
 
     private Long getBucketLength(String bucket) {
-        return jedis.llen(getBucketKey(bucket));
-    }
-
-    private String getRequestKey(Request request) {
-        return "request:" + request.getUuid();
-    }
-
-    private String getBucketKey(String bucket) {
-        return "bucket:" + bucket;
+        return jedis.llen(BucketRedisRepo.getBucketKey(bucket));
     }
 
     @Test
@@ -115,7 +107,7 @@ public class RequestRedisRepoTest {
     }
 
     private String getRequest(Request request) {
-        return jedis.get(getRequestKey(request));
+        return jedis.get(RequestRedisRepo.getRequestKey(request));
     }
 
     @Test
@@ -152,10 +144,10 @@ public class RequestRedisRepoTest {
     )
     {
         // a bucket is a list to which the uuid of the request is added
-        jedis.lpush(getBucketKey(bucket), getRequestKey(request));
+        jedis.lpush(BucketRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
 
         // the request is store in redis against its uuid
-        jedis.set(getRequestKey(request), gson.toJson(request));
+        jedis.set(RequestRedisRepo.getRequestKey(request), gson.toJson(request));
     }
 
     private Request buildRequest(String bucket) {
