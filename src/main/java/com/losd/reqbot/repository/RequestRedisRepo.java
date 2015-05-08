@@ -12,7 +12,9 @@ import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The MIT License (MIT)
@@ -38,7 +40,8 @@ import java.util.List;
  * THE SOFTWARE.
  */
 public class RequestRedisRepo implements RequestRepo {
-    Logger logger = LoggerFactory.getLogger(RequestRedisRepo.class);
+    private final static String BUCKET_KEY_PREFIX = "bucket:";
+
     @Autowired
     RequestSettings settings;
 
@@ -49,14 +52,13 @@ public class RequestRedisRepo implements RequestRepo {
 
     @Override
     public void save(Request request) {
-        logger.debug("Saving {} into bucket {}", request.getBody(), BucketRedisRepo.getBucketKey(request.getBucket()));
         int queueSize = settings.getQueueSize();
 
         Transaction t = jedis.multi();
-        Response<String> key = t.lindex(BucketRedisRepo.getBucketKey(request.getBucket()), queueSize - 1);
-        t.lpush(BucketRedisRepo.getBucketKey(request.getBucket()), getRequestKey(request));
+        Response<String> key = t.lindex(getBucketKey(request.getBucket()), queueSize - 1);
+        t.lpush(getBucketKey(request.getBucket()), getRequestKey(request));
         t.set(getRequestKey(request), gson.toJson(request));
-        t.ltrim(BucketRedisRepo.getBucketKey(request.getBucket()), 0, queueSize - 1);
+        t.ltrim(getBucketKey(request.getBucket()), 0, queueSize - 1);
         t.exec();
 
         if (key.get() != null) {
@@ -65,13 +67,12 @@ public class RequestRedisRepo implements RequestRepo {
     }
 
     @Override
-    public List<Request> getBucket(String bucket) {
-        logger.debug("Get bucket {}", bucket);
+    public List<Request> getRequestsForBucket(String bucket) {
         int queueSize = settings.getQueueSize();
 
         List<Request> result = new ArrayList<>();
 
-        List<String> requests = jedis.lrange(BucketRedisRepo.getBucketKey(bucket), 0, queueSize - 1);
+        List<String> requests = jedis.lrange(getBucketKey(bucket), 0, queueSize - 1);
 
         requests.forEach(request -> {
             String body = jedis.get(request);
@@ -81,8 +82,20 @@ public class RequestRedisRepo implements RequestRepo {
         return result;
     }
 
+    @Override
+    public Set<String> getBuckets() {
+        Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
+        Set<String> result = new LinkedHashSet<>(keys.size());
+
+        keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
+        return result;
+    }
+
     static String getRequestKey(Request request) {
         return "request:" + request.getUuid();
     }
 
+    static String getBucketKey(String bucket) {
+        return BUCKET_KEY_PREFIX + bucket;
+    }
 }

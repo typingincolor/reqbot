@@ -1,6 +1,5 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.repository.BucketRepo;
 import com.losd.reqbot.repository.RequestRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,14 +34,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class WebController {
     @Autowired
-    private RequestRepo requestRepo = null;
-    @Autowired
-    private BucketRepo buckets = null;
+    private RequestRepo requests = null;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model)
     {
-        model.addAttribute("buckets", buckets.getBuckets());
+        model.addAttribute("buckets", requests.getBuckets());
 
         return "index";
     }
@@ -51,7 +48,7 @@ public class WebController {
     public String view(@PathVariable String bucket, Model model)
     {
         model.addAttribute("bucket", bucket);
-        model.addAttribute("requests", requestRepo.getBucket(bucket));
+        model.addAttribute("requests", requests.getRequestsForBucket(bucket));
         return "view";
     }
 }

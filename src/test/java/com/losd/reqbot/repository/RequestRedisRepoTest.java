@@ -6,6 +6,7 @@ import com.losd.reqbot.config.JedisConfiguration;
 import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Request;
 import org.apache.commons.lang.RandomStringUtils;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,7 +84,7 @@ public class RequestRedisRepoTest {
     }
 
     private Long getBucketLength(String bucket) {
-        return jedis.llen(BucketRedisRepo.getBucketKey(bucket));
+        return jedis.llen(RequestRedisRepo.getBucketKey(bucket));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class RequestRedisRepoTest {
         List<UUID> testUuids = new ArrayList<>(Arrays.asList(request1.getUuid(), request2.getUuid(), request3.getUuid()));
 
         // run the test
-        List<Request> result = repo.getBucket(bucket);
+        List<Request> result = repo.getRequestsForBucket(bucket);
 
         // check the results
         assertThat(result, hasSize(3));
@@ -139,12 +140,24 @@ public class RequestRedisRepoTest {
         assertThat(resultUuids, hasItems(testUuids.toArray(new UUID[testUuids.size()])));
     }
 
+    @Test
+    public void it_can_get_a_set_containing_all_of_the_buckets() {
+        jedis.lpush(RequestRedisRepo.getBucketKey("a"), "element");
+        jedis.lpush(RequestRedisRepo.getBucketKey("b"), "element");
+        jedis.lpush(RequestRedisRepo.getBucketKey("c"), "element");
+        jedis.lpush(RequestRedisRepo.getBucketKey("d"), "element");
+
+        Set<String> buckets = repo.getBuckets();
+        assertThat(buckets, Matchers.hasSize(4));
+        assertThat(buckets, hasItems("a", "b", "c", "d"));
+    }
+
     private void putRequestInRedis(String bucket,
                                    Request request
     )
     {
         // a bucket is a list to which the uuid of the request is added
-        jedis.lpush(BucketRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
+        jedis.lpush(RequestRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
 
         // the request is store in redis against its uuid
         jedis.set(RequestRedisRepo.getRequestKey(request), gson.toJson(request));

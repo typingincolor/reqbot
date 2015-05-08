@@ -1,7 +1,6 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.Request;
-import com.losd.reqbot.repository.BucketRepo;
 import com.losd.reqbot.repository.RequestRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,10 +48,7 @@ public class WebControllerBucketViewTest {
     private MockMvc mockMvc;
 
     @Mock
-    private BucketRepo bucketRepo;
-
-    @Mock
-    private RequestRepo requestRepo;
+    private RequestRepo requests;
 
     @InjectMocks
     private WebController webController;
@@ -78,8 +74,8 @@ public class WebControllerBucketViewTest {
 
         requestList.add(new Request("a", headers, "body", queryParams, "GET"));
 
-        when(bucketRepo.getBuckets()).thenReturn(bucketList);
-        when(requestRepo.getBucket("a")).thenReturn(requestList);
+        when(requests.getBuckets()).thenReturn(bucketList);
+        when(requests.getRequestsForBucket("a")).thenReturn(requestList);
 
         mockMvc.perform(get("/web/bucket/a/view"))
                 .andExpect(status().isOk())

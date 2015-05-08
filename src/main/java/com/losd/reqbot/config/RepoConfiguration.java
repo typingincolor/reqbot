@@ -30,11 +30,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RepoConfiguration {
     @Bean
-    public BucketRepo bucketRepo() {
-        return new BucketRedisRepo();
-    }
-
-    @Bean
     public RequestRepo requestRepo() {
         return new RequestRedisRepo();
     }

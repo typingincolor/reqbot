@@ -1,6 +1,6 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.repository.BucketRepo;
+import com.losd.reqbot.repository.RequestRepo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -49,7 +49,7 @@ public class WebControllerIndexTest {
     private MockMvc mockMvc;
 
     @Mock
-    private BucketRepo bucketRepo;
+    private RequestRepo requests;
 
     @InjectMocks
     private WebController webController;
@@ -64,7 +64,7 @@ public class WebControllerIndexTest {
     public void index() throws
             Exception
     {
-        when(bucketRepo.getBuckets()).thenReturn(bucketList);
+        when(requests.getBuckets()).thenReturn(bucketList);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
