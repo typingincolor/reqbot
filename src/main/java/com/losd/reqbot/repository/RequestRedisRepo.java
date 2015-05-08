@@ -40,7 +40,8 @@ import java.util.Set;
  * THE SOFTWARE.
  */
 public class RequestRedisRepo implements RequestRepo {
-    private final static String BUCKET_KEY_PREFIX = "bucket:";
+    private static final String BUCKET_KEY_PREFIX = "bucket:";
+    public static final String REQUEST_KEY_PREFIX = "request:";
 
     @Autowired
     RequestSettings settings;
@@ -92,7 +93,7 @@ public class RequestRedisRepo implements RequestRepo {
     }
 
     static String getRequestKey(Request request) {
-        return "request:" + request.getUuid();
+        return REQUEST_KEY_PREFIX + request.getUuid();
     }
 
     static String getBucketKey(String bucket) {
