@@ -26,5 +26,5 @@ import java.util.Set;
  * THE SOFTWARE.
  */
 public interface BucketRepo {
-    Set<String> getBucketsForUser(String username);
+    Set<String> getBuckets();
 }

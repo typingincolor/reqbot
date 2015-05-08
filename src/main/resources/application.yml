@@ -7,8 +7,3 @@ reqbot:
         host: localhost
         port: 6379
         password:
-
-stormpath:
-    application:
-        href: https://api.stormpath.com/v1/applications/4GAu2E1Aa9Zlwn2XMt9rnw
-

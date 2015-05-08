@@ -60,17 +60,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
 public class ResponseApiControllerTest {
     public static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
-
-    private MockMvc mockMvc;
-
-    private Gson gson = new GsonBuilder().serializeNulls().create();
-
-    @Mock
-    private ResponseRepo repo;
-
     @Autowired
     GsonHttpMessageConverter gsonHttpMessageConverter;
-
+    private MockMvc mockMvc;
+    private Gson gson = new GsonBuilder().serializeNulls().create();
+    @Mock
+    private ResponseRepo repo;
     @InjectMocks
     private ResponseApiController responseApiController;
 
@@ -81,7 +76,9 @@ public class ResponseApiControllerTest {
     }
 
     @Test
-    public void it_saves_a_response() throws Exception {
+    public void it_saves_a_response() throws
+            Exception
+    {
         Map<String, String> headers = new HashMap<>();
         headers.put("test_header", "test_header_value");
 
@@ -109,7 +106,9 @@ public class ResponseApiControllerTest {
     }
 
     @Test
-    public void it_gets_an_error_400_if_the_response_to_be_saved_has_no_body() throws Exception {
+    public void it_gets_an_error_400_if_the_response_to_be_saved_has_no_body() throws
+            Exception
+    {
         mockMvc.perform(post("/response").contentType(MediaType.APPLICATION_JSON).content("{\"stuff\": \"random\"}"))
                 .andExpect(status().isBadRequest());
     }

@@ -3,8 +3,6 @@ package com.losd.reqbot.controller;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.repository.BucketRepo;
 import com.losd.reqbot.repository.RequestRepo;
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -14,12 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,15 +45,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class WebControllerBucketViewTest {
     final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
+
     private MockMvc mockMvc;
-    @Mock
-    private AccountResolver accountResolver;
-    @Mock
-    private Account account;
+
     @Mock
     private BucketRepo bucketRepo;
+
     @Mock
     private RequestRepo requestRepo;
+
     @InjectMocks
     private WebController webController;
 
@@ -70,7 +66,7 @@ public class WebControllerBucketViewTest {
     }
 
     @Test
-    public void loggedInAndUserCanSeeBucket() throws
+    public void it_populates_the_bucket_list_correctly() throws
             Exception
     {
         List<Request> requestList = new ArrayList<>();
@@ -82,43 +78,14 @@ public class WebControllerBucketViewTest {
 
         requestList.add(new Request("a", headers, "body", queryParams, "GET"));
 
-        when(account.getUsername()).thenReturn("testuser@example.com");
-        when(account.getFullName()).thenReturn("Homer Simpson");
-        when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
-        when(bucketRepo.getBucketsForUser("testuser@example.com")).thenReturn(bucketList);
+        when(bucketRepo.getBuckets()).thenReturn(bucketList);
         when(requestRepo.getBucket("a")).thenReturn(requestList);
 
         mockMvc.perform(get("/web/bucket/a/view"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(is("view")))
-                .andExpect(model().attribute("fullname", is("Homer Simpson")))
                 .andExpect(model().attribute("bucket", is("a")))
                 .andExpect(model().attribute("requests", hasSize(1)))
                 .andExpect(model().attribute("requests", is(requestList)));
-    }
-
-    @Test
-    public void loggedInAndUserCannotSeeBucket() throws
-            Exception
-    {
-        when(account.getUsername()).thenReturn("testuser@example.com");
-        when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
-
-        mockMvc.perform(get("/web/bucket/x/view"))
-                .andExpect(status().isFound())
-                .andExpect(model().size(0))
-                .andExpect(redirectedUrl("/"));
-    }
-
-    @Test
-    public void notLoggedIn() throws
-            Exception
-    {
-        when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(null);
-
-        mockMvc.perform(get("/web/bucket/x/view"))
-                .andExpect(status().isFound())
-                .andExpect(model().size(0))
-                .andExpect(redirectedUrl("/login"));
     }
 }

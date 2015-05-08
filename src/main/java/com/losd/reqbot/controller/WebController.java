@@ -2,16 +2,12 @@ package com.losd.reqbot.controller;
 
 import com.losd.reqbot.repository.BucketRepo;
 import com.losd.reqbot.repository.RequestRepo;
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * The MIT License (MIT)
@@ -39,45 +35,23 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class WebController {
     @Autowired
-    AccountResolver accountResolver = null;
-    @Autowired
     private RequestRepo requestRepo = null;
     @Autowired
     private BucketRepo buckets = null;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Model model,
-                        HttpServletRequest request
-    )
+    public String index(Model model)
     {
-        Account account = accountResolver.getAccount(request);
-
-        if (account != null) {
-            model.addAttribute("buckets", buckets.getBucketsForUser(account.getUsername()));
-        }
+        model.addAttribute("buckets", buckets.getBuckets());
 
         return "index";
     }
 
     @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
-    public String view(@PathVariable String bucket,
-                       Model model,
-                       HttpServletRequest request
-    )
+    public String view(@PathVariable String bucket, Model model)
     {
-        Account account = accountResolver.getAccount(request);
-
-        if (account != null) {
-            if (buckets.getBucketsForUser(account.getUsername())
-                    .contains(bucket)) {
-                model.addAttribute("fullname", account.getFullName());
-                model.addAttribute("bucket", bucket);
-                model.addAttribute("requests", requestRepo.getBucket(bucket));
-                return "view";
-            } else {
-                return "redirect:/";
-            }
-        }
-        return "redirect:/login";
+        model.addAttribute("bucket", bucket);
+        model.addAttribute("requests", requestRepo.getBucket(bucket));
+        return "view";
     }
 }

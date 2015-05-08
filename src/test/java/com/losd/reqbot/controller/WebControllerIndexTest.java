@@ -1,8 +1,6 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.repository.BucketRepo;
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -11,7 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +16,6 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,13 +45,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class WebControllerIndexTest {
     final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
+
     private MockMvc mockMvc;
-    @Mock
-    private AccountResolver accountResolver;
-    @Mock
-    private Account account;
+
     @Mock
     private BucketRepo bucketRepo;
+
     @InjectMocks
     private WebController webController;
 
@@ -66,30 +61,16 @@ public class WebControllerIndexTest {
     }
 
     @Test
-    public void loggedIn() throws
+    public void index() throws
             Exception
     {
-        when(account.getUsername()).thenReturn("testuser@example.com");
-        when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
-        when(bucketRepo.getBucketsForUser("testuser@example.com")).thenReturn(bucketList);
+        when(bucketRepo.getBuckets()).thenReturn(bucketList);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(is("index")))
                 .andExpect(model().attribute("buckets", hasSize(2)))
                 .andExpect(model().attribute("buckets", hasItems("a", "b")));
-    }
-
-    @Test
-    public void notLoggedIn() throws
-            Exception
-    {
-        when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(null);
-
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name(is("index")))
-                .andExpect(model().attributeDoesNotExist("buckets"));
     }
 }
 
