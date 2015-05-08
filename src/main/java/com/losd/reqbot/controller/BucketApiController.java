@@ -6,6 +6,7 @@ import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,31 +48,47 @@ public class BucketApiController {
 
     @ResponseBody
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.POST)
-    ResponseEntity<String> standardPostResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+    ResponseEntity<String> standardPostResponse(@PathVariable String bucket,
+                                                @RequestParam Map<String, String> queryParams,
+                                                @RequestHeader Map<String, String> headers,
+                                                @RequestBody String body) {
         return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
     @ResponseBody
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
-    ResponseEntity<String> standardGetResponse(@PathVariable String bucket, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+    ResponseEntity<String> standardGetResponse(@PathVariable String bucket,
+                                               @RequestParam Map<String, String> queryParams,
+                                               @RequestHeader Map<String, String> headers) {
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
     @ResponseBody
     @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.GET)
-    ResponseEntity<String> programmedGetResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers) {
+    ResponseEntity<String> programmedGetResponse(@PathVariable String bucket,
+                                                 @PathVariable String responseKey,
+                                                 @RequestParam Map<String, String> queryParams,
+                                                 @RequestHeader Map<String, String> headers) {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
     @ResponseBody
     @RequestMapping(value = "/bucket/{bucket}/{responseKey}", method = RequestMethod.POST)
-    ResponseEntity<String> programmedPostResponse(@PathVariable String bucket, @PathVariable String responseKey, @RequestParam Map<String, String> queryParams, @RequestHeader Map<String, String> headers, @RequestBody String body) {
+    ResponseEntity<String> programmedPostResponse(@PathVariable String bucket,
+                                                  @PathVariable String responseKey,
+                                                  @RequestParam Map<String, String> queryParams,
+                                                  @RequestHeader Map<String, String> headers,
+                                                  @RequestBody String body) {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
     }
 
-    private ResponseEntity<String> handleRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+    private ResponseEntity<String> handleRequest(RequestMethod method,
+                                                 String bucket,
+                                                 Map<String, String> queryParams,
+                                                 Map<String, String> headers,
+                                                 String body) {
         saveRequest(method, bucket, queryParams, headers, body);
 
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -79,18 +96,27 @@ public class BucketApiController {
         processGoSlowHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.GO_SLOW));
         HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.HTTP_CODE));
 
-        Response response;
+        Response response = new Response(status);
 
-        if (caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE) == null) {
-            response = null;
-        } else {
+        HttpHeaders resultHeaders = new HttpHeaders();
+
+        if (!isResponseHeaderSet(caseInsensitiveHeaders)) {
             response = responseRepo.get(caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE));
+            response.getHeaders().forEach(resultHeaders::add);
         }
 
-        return new ResponseEntity<>(response == null ? status.getReasonPhrase() : response.getBody(), status);
+        return new ResponseEntity<>(response.getBody(), resultHeaders, status);
     }
 
-    private void saveRequest(RequestMethod method, String bucket, Map<String, String> queryParams, Map<String, String> headers, String body) {
+    private boolean isResponseHeaderSet(TreeMap<String, String> caseInsensitiveHeaders) {
+        return caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE) == null;
+    }
+
+    private void saveRequest(RequestMethod method,
+                             String bucket,
+                             Map<String, String> queryParams,
+                             Map<String, String> headers,
+                             String body) {
         save(new Request(bucket, headers, body, queryParams, method.name()));
     }
 

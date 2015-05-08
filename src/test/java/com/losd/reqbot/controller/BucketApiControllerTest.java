@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.co.it.modular.hamcrest.date.IsWithin.within;
 
@@ -80,21 +81,25 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_get() throws Exception {
-        mockMvc.perform(get("/bucket/x")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x")).andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
 
     @Test
     public void it_handles_a_post() throws Exception {
-        mockMvc.perform(post("/bucket/x").content("hello")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(post("/bucket/x").content("hello"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
     }
 
     @Test
     public void it_handles_a_get_with_query_parameters() throws Exception {
-        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
@@ -103,7 +108,10 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_post_with_query_parameters() throws Exception {
-        mockMvc.perform(post("/bucket/x?a=1").content("hello")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(post("/bucket/x?a=1").content("hello"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
@@ -113,7 +121,9 @@ public class BucketApiControllerTest {
     @Test
     public void it_goes_slow_when_asked() throws Exception {
         Instant start = Instant.now();
-        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.GO_SLOW, 5000)).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.GO_SLOW, 5000))
+                .andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         Instant end = Instant.now();
 
@@ -122,17 +132,23 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_http_status_code() throws Exception {
-        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.HTTP_CODE, 404))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
 
     @Test
     public void it_returns_the_correct_http_status_code_when_the_header_is_mixed_case() throws Exception {
-        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", 404)).andExpect(status().isNotFound()).andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", 404))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
     }
 
     @Test
     public void it_returns_a_http_ok_response_code_when_http_code_header_is_empty() throws Exception {
-        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", "")).andExpect(status().isOk()).andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        mockMvc.perform(get("/bucket/x").header("X_ReQbOt_http_CODE", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
     }
 
     @Test
@@ -143,7 +159,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x/"+response.getUuid())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(get("/bucket/x/"+response.getUuid()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
@@ -156,7 +175,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x/"+response.getUuid()).content("hello")).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(post("/bucket/x/"+response.getUuid()).content("hello"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
     }
@@ -169,7 +191,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
@@ -182,7 +207,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x").content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString())).andExpect(status().isOk()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(post("/bucket/x").content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
     }
@@ -195,7 +223,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x/"+response.getUuid()).header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(get("/bucket/x/"+response.getUuid()).header(ReqbotHttpHeaders.HTTP_CODE, 404))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null);
     }
@@ -208,7 +239,10 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404)).andExpect(status().isNotFound()).andExpect(content().string(response.getBody()));
+        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(response.getBody()))
+                .andExpect(header().string("test-header", "testvalue"));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
     }

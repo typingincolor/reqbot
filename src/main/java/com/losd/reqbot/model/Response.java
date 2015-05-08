@@ -1,5 +1,8 @@
 package com.losd.reqbot.model;
 
+import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +37,12 @@ public class Response {
     public Response(Map<String, String> headers, String body) {
         this.headers = headers;
         this.body = body;
+        this.uuid = UUID.randomUUID();
+    }
+
+    public Response(HttpStatus status) {
+        this.body = status.getReasonPhrase();
+        this.headers = new HashMap<>();
         this.uuid = UUID.randomUUID();
     }
 
