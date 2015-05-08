@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
@@ -36,6 +38,7 @@ import java.util.List;
  * THE SOFTWARE.
  */
 public class RequestRedisRepo implements RequestRepo {
+    Logger logger = LoggerFactory.getLogger(RequestRedisRepo.class);
     @Autowired
     RequestSettings settings;
 
@@ -46,6 +49,7 @@ public class RequestRedisRepo implements RequestRepo {
 
     @Override
     public void save(Request request) {
+        logger.debug("Saving {} into bucket {}", request.getBody(), request.getBucket());
         int queueSize = settings.getQueueSize();
 
         Transaction t = jedis.multi();
@@ -62,6 +66,7 @@ public class RequestRedisRepo implements RequestRepo {
 
     @Override
     public List<Request> getBucket(String bucket) {
+        logger.debug("Get bucket {}", bucket);
         int queueSize = settings.getQueueSize();
 
         List<Request> result = new ArrayList<>();
