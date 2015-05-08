@@ -59,7 +59,7 @@ public class ResponseApiController {
         return "Empty Body";
     }
 
-    class IncomingEmptyBodyException extends Exception {
+    static class IncomingEmptyBodyException extends Exception {
 
     }
 }
