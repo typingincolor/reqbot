@@ -153,8 +153,7 @@ public class RequestRedisRepoTest {
     }
 
     private void putRequestInRedis(String bucket,
-                                   Request request
-    )
+                                   Request request)
     {
         // a bucket is a list to which the uuid of the request is added
         jedis.lpush(RequestRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
