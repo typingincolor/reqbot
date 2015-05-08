@@ -72,14 +72,26 @@ public class RequestRedisRepoTest {
         repo.save(request);
 
         // check it worked
-        String storedRequest = jedis.get(request.getUuid().toString());
+        String storedRequest = getRequest(request);
         Request result = gson.fromJson(storedRequest, Request.class);
 
         assertThat(result.getBody(), is(equalTo(request.getBody())));
         assertThat(result.getUuid(), is(equalTo(request.getUuid())));
         assertThat(result.getBucket(), is(equalTo(request.getBucket())));
 
-        assertThat(jedis.llen(bucket), is(equalTo(1L)));
+        assertThat(getBucketLength(bucket), is(equalTo(1L)));
+    }
+
+    private Long getBucketLength(String bucket) {
+        return jedis.llen(getBucketKey(bucket));
+    }
+
+    private String getRequestKey(Request request) {
+        return "request:" + request.getUuid();
+    }
+
+    private String getBucketKey(String bucket) {
+        return "bucket:" + bucket;
     }
 
     @Test
@@ -89,17 +101,21 @@ public class RequestRedisRepoTest {
             repo.save(request);
 
             if (i < 3)
-                assertThat(jedis.llen(bucket), is(equalTo(i)));
+                assertThat(getBucketLength(bucket), is(equalTo(i)));
             else
-                assertThat(jedis.llen(bucket), is(equalTo(3L)));
+                assertThat(getBucketLength(bucket), is(equalTo(3L)));
 
-            Request savedRequest = gson.fromJson(jedis.get(request.getUuid().toString()), Request.class);
+            Request savedRequest = gson.fromJson(getRequest(request), Request.class);
 
             assertThat(savedRequest.getUuid(), is(equalTo(request.getUuid())));
         }
 
         // expecting 4 keys, 3 for the request and 1 for the bucket
         assertThat(jedis.dbSize(), is(equalTo(4L)));
+    }
+
+    private String getRequest(Request request) {
+        return jedis.get(getRequestKey(request));
     }
 
     @Test
@@ -136,10 +152,10 @@ public class RequestRedisRepoTest {
     )
     {
         // a bucket is a list to which the uuid of the request is added
-        jedis.lpush(bucket, request.getUuid().toString());
+        jedis.lpush(getBucketKey(bucket), getRequestKey(request));
 
         // the request is store in redis against its uuid
-        jedis.set(request.getUuid().toString(), gson.toJson(request));
+        jedis.set(getRequestKey(request), gson.toJson(request));
     }
 
     private Request buildRequest(String bucket) {
