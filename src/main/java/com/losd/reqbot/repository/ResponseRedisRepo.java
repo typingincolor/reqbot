@@ -43,7 +43,7 @@ public class ResponseRedisRepo implements ResponseRepo {
     }
 
     @Override
-    public boolean save(Response response) {
-        return false;
+    public void save(Response response) {
+        jedis.set("response:" + response.getUuid().toString(), gson.toJson(response, Response.class));
     }
 }

@@ -60,8 +60,7 @@ public class ResponseRedisRepoTest {
     }
 
     @Test
-    public void testGet() throws
-            Exception
+    public void it_gets() throws Exception
     {
         Map<String, String> headers = new HashMap<>();
         String headerKey = RandomStringUtils.randomAlphabetic(10);
@@ -81,5 +80,19 @@ public class ResponseRedisRepoTest {
         assertThat(result.getHeaders(), hasEntry(headerKey, headerValue));
     }
 
+    @Test
+    public void it_saves() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("test-header", "test-header-text");
+        Response response = new Response(headers, "testresponsebody");
 
+        repo.save(response);
+
+        Response result = gson.fromJson(jedis.get("response:" + response.getUuid().toString()), Response.class);
+
+        assertThat(result.getBody(), is(equalTo("testresponsebody")));
+        assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
+        assertThat(result.getHeaders().size(), is(equalTo(1)));
+        assertThat(result.getUuid(), is(equalTo(response.getUuid())));
+    }
 }

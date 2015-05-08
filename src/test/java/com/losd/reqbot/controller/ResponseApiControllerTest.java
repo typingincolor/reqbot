@@ -27,8 +27,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,8 +86,6 @@ public class ResponseApiControllerTest {
         headers.put("test_header", "test_header_value");
 
         IncomingResponse incoming = new IncomingResponse(headers, "response_body");
-
-        when(repo.save(any(Response.class))).thenReturn(true);
 
         String json = gson.toJson(incoming, IncomingResponse.class);
 
