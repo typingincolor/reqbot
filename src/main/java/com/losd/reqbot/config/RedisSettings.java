@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix="reqbot.redis")
+@ConfigurationProperties(prefix = "reqbot.redis")
 public class RedisSettings {
     private String host;
     private String password;
@@ -55,11 +55,11 @@ public class RedisSettings {
         return host;
     }
 
-    public boolean isPasswordSet() {
-        return null != this.password && !password.isEmpty();
-    }
-
     public void setHost(String hostname) {
         this.host = hostname;
+    }
+
+    public boolean isPasswordSet() {
+        return null != this.password && !password.isEmpty();
     }
 }

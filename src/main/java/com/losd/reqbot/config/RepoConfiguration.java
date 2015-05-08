@@ -40,5 +40,7 @@ public class RepoConfiguration {
     }
 
     @Bean
-    public ResponseRepo responseRepo() {return new ResponseRedisRepo();}
+    public ResponseRepo responseRepo() {
+        return new ResponseRedisRepo();
+    }
 }

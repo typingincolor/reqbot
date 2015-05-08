@@ -55,8 +55,7 @@ public class RequestRedisRepo implements RequestRepo {
         t.ltrim(request.getBucket(), 0, queueSize - 1);
         t.exec();
 
-        if (key.get() != null)
-        {
+        if (key.get() != null) {
             jedis.del(key.get());
         }
     }

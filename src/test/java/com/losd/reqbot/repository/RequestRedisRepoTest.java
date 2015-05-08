@@ -17,9 +17,7 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
@@ -67,7 +65,9 @@ public class RequestRedisRepoTest {
     }
 
     @Test
-    public void testSave() throws Exception {
+    public void testSave() throws
+            Exception
+    {
         Request request = buildRequest(bucket);
         repo.save(request);
 
@@ -84,7 +84,7 @@ public class RequestRedisRepoTest {
 
     @Test
     public void testSaveStopsBucketGettingTooBig() {
-        for (long i=1; i < 10; i++) {
+        for (long i = 1; i < 10; i++) {
             Request request = buildRequest(bucket);
             repo.save(request);
 
@@ -103,7 +103,9 @@ public class RequestRedisRepoTest {
     }
 
     @Test
-    public void testGetBucket() throws Exception {
+    public void testGetBucket() throws
+            Exception
+    {
         // generate some requests
         Request request1 = buildRequest(bucket);
         Request request2 = buildRequest(bucket);
@@ -129,7 +131,10 @@ public class RequestRedisRepoTest {
         assertThat(resultUuids, hasItems(testUuids.toArray(new UUID[testUuids.size()])));
     }
 
-    private void putRequestInRedis(String bucket, Request request) {
+    private void putRequestInRedis(String bucket,
+                                   Request request
+    )
+    {
         // a bucket is a list to which the uuid of the request is added
         jedis.lpush(bucket, request.getUuid().toString());
 

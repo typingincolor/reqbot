@@ -38,7 +38,13 @@ public class Request {
     private UUID uuid;
 
 
-    public Request(String bucket, Map<String, String> headers, String body, Map<String, String> queryParameters, String method) {
+    public Request(String bucket,
+                   Map<String, String> headers,
+                   String body,
+                   Map<String, String> queryParameters,
+                   String method
+    )
+    {
         this.bucket = bucket;
         this.headers = headers;
         this.body = body;

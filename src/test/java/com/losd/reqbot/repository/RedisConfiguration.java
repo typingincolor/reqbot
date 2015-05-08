@@ -40,7 +40,7 @@ public class RedisConfiguration {
 
         RedisSettings settings = new RedisSettings();
         settings.setHost(host == null ? "localhost" : host);
-        settings.setPort(portInt == 0 ? 6379 : portInt );
+        settings.setPort(portInt == 0 ? 6379 : portInt);
         settings.setPassword(password == null ? null : password);
 
         return settings;

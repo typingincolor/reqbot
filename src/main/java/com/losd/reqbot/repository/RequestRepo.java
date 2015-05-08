@@ -29,5 +29,6 @@ import java.util.List;
  */
 public interface RequestRepo {
     void save(Request request);
+
     List<Request> getBucket(String bucket);
 }

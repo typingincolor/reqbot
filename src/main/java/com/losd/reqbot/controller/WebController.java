@@ -39,16 +39,17 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class WebController {
     @Autowired
+    AccountResolver accountResolver = null;
+    @Autowired
     private RequestRepo requestRepo = null;
-
     @Autowired
     private BucketRepo buckets = null;
 
-    @Autowired
-    AccountResolver accountResolver = null;
-
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Model model, HttpServletRequest request) {
+    public String index(Model model,
+                        HttpServletRequest request
+    )
+    {
         Account account = accountResolver.getAccount(request);
 
         if (account != null) {
@@ -59,18 +60,21 @@ public class WebController {
     }
 
     @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
-    public String view(@PathVariable String bucket, Model model, HttpServletRequest request) {
+    public String view(@PathVariable String bucket,
+                       Model model,
+                       HttpServletRequest request
+    )
+    {
         Account account = accountResolver.getAccount(request);
 
         if (account != null) {
             if (buckets.getBucketsForUser(account.getUsername())
-                       .contains(bucket)) {
+                    .contains(bucket)) {
                 model.addAttribute("fullname", account.getFullName());
                 model.addAttribute("bucket", bucket);
                 model.addAttribute("requests", requestRepo.getBucket(bucket));
                 return "view";
-            }
-            else {
+            } else {
                 return "redirect:/";
             }
         }

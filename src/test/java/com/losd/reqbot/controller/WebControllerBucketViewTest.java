@@ -17,8 +17,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,24 +48,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * THE SOFTWARE.
  */
 public class WebControllerBucketViewTest {
+    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
     private MockMvc mockMvc;
-
     @Mock
     private AccountResolver accountResolver;
-
     @Mock
     private Account account;
-
     @Mock
     private BucketRepo bucketRepo;
-
     @Mock
     private RequestRepo requestRepo;
-
     @InjectMocks
     private WebController webController;
-
-    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
 
     @Before
     public void setup() {
@@ -76,7 +70,9 @@ public class WebControllerBucketViewTest {
     }
 
     @Test
-    public void loggedInAndUserCanSeeBucket() throws Exception {
+    public void loggedInAndUserCanSeeBucket() throws
+            Exception
+    {
         List<Request> requestList = new ArrayList<>();
         Map<String, String> headers = new HashMap<>();
         headers.put("header1", "value1");
@@ -102,7 +98,9 @@ public class WebControllerBucketViewTest {
     }
 
     @Test
-    public void loggedInAndUserCannotSeeBucket() throws Exception {
+    public void loggedInAndUserCannotSeeBucket() throws
+            Exception
+    {
         when(account.getUsername()).thenReturn("testuser@example.com");
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
 
@@ -113,7 +111,9 @@ public class WebControllerBucketViewTest {
     }
 
     @Test
-    public void notLoggedIn() throws Exception {
+    public void notLoggedIn() throws
+            Exception
+    {
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(null);
 
         mockMvc.perform(get("/web/bucket/x/view"))

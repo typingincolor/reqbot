@@ -51,7 +51,8 @@ public class BucketApiController {
     ResponseEntity<String> standardPostResponse(@PathVariable String bucket,
                                                 @RequestParam Map<String, String> queryParams,
                                                 @RequestHeader Map<String, String> headers,
-                                                @RequestBody String body) {
+                                                @RequestBody String body)
+    {
         return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body);
     }
 
@@ -59,7 +60,8 @@ public class BucketApiController {
     @RequestMapping(value = "/bucket/{bucket}", method = RequestMethod.GET)
     ResponseEntity<String> standardGetResponse(@PathVariable String bucket,
                                                @RequestParam Map<String, String> queryParams,
-                                               @RequestHeader Map<String, String> headers) {
+                                               @RequestHeader Map<String, String> headers)
+    {
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
 
@@ -68,7 +70,8 @@ public class BucketApiController {
     ResponseEntity<String> programmedGetResponse(@PathVariable String bucket,
                                                  @PathVariable String responseKey,
                                                  @RequestParam Map<String, String> queryParams,
-                                                 @RequestHeader Map<String, String> headers) {
+                                                 @RequestHeader Map<String, String> headers)
+    {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null);
     }
@@ -79,7 +82,8 @@ public class BucketApiController {
                                                   @PathVariable String responseKey,
                                                   @RequestParam Map<String, String> queryParams,
                                                   @RequestHeader Map<String, String> headers,
-                                                  @RequestBody String body) {
+                                                  @RequestBody String body)
+    {
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
         return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body);
     }
@@ -88,7 +92,8 @@ public class BucketApiController {
                                                  String bucket,
                                                  Map<String, String> queryParams,
                                                  Map<String, String> headers,
-                                                 String body) {
+                                                 String body)
+    {
         saveRequest(method, bucket, queryParams, headers, body);
 
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -116,7 +121,8 @@ public class BucketApiController {
                              String bucket,
                              Map<String, String> queryParams,
                              Map<String, String> headers,
-                             String body) {
+                             String body)
+    {
         save(new Request(bucket, headers, body, queryParams, method.name()));
     }
 
@@ -135,7 +141,8 @@ public class BucketApiController {
 
         try {
             Thread.sleep(Integer.parseInt(x_reqbot_go_slow));
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             throw new RuntimeException("InterruptedException", e);
         }
     }

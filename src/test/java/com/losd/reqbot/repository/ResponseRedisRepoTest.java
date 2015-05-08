@@ -60,7 +60,9 @@ public class ResponseRedisRepoTest {
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() throws
+            Exception
+    {
         Map<String, String> headers = new HashMap<>();
         String headerKey = RandomStringUtils.randomAlphabetic(10);
         String headerValue = RandomStringUtils.randomAlphabetic(10);

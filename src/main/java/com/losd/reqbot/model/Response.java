@@ -34,7 +34,10 @@ public class Response {
     String body;
     UUID uuid;
 
-    public Response(Map<String, String> headers, String body) {
+    public Response(Map<String, String> headers,
+                    String body
+    )
+    {
         this.headers = headers;
         this.body = body;
         this.uuid = UUID.randomUUID();

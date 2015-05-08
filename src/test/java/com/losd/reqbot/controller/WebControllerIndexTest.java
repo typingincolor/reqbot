@@ -48,21 +48,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * THE SOFTWARE.
  */
 public class WebControllerIndexTest {
+    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
     private MockMvc mockMvc;
-
     @Mock
     private AccountResolver accountResolver;
-
     @Mock
     private Account account;
-
     @Mock
     private BucketRepo bucketRepo;
-
     @InjectMocks
     private WebController webController;
-
-    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
 
     @Before
     public void setup() {
@@ -71,7 +66,9 @@ public class WebControllerIndexTest {
     }
 
     @Test
-    public void loggedIn() throws Exception {
+    public void loggedIn() throws
+            Exception
+    {
         when(account.getUsername()).thenReturn("testuser@example.com");
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(account);
         when(bucketRepo.getBucketsForUser("testuser@example.com")).thenReturn(bucketList);
@@ -84,7 +81,9 @@ public class WebControllerIndexTest {
     }
 
     @Test
-    public void notLoggedIn() throws Exception {
+    public void notLoggedIn() throws
+            Exception
+    {
         when(accountResolver.getAccount(any(HttpServletRequest.class))).thenReturn(null);
 
         mockMvc.perform(get("/"))
