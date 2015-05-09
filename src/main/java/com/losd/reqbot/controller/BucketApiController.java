@@ -63,7 +63,7 @@ public class BucketApiController {
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
-        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null, path);
+        return handleRequest(request.getMethod(), bucket, queryParams, headers, null, path);
     }
 
     @ResponseBody
@@ -79,7 +79,7 @@ public class BucketApiController {
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
-        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, body, path);
+        return handleRequest(request.getMethod(), bucket, queryParams, headers, body, path);
     }
 
     @ResponseBody
@@ -94,7 +94,7 @@ public class BucketApiController {
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-        return handleRequest(RequestMethod.POST, bucket, queryParams, headers, body, path);
+        return handleRequest(request.getMethod(), bucket, queryParams, headers, body, path);
     }
 
     @ResponseBody
@@ -108,10 +108,10 @@ public class BucketApiController {
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-        return handleRequest(RequestMethod.GET, bucket, queryParams, headers, null, path);
+        return handleRequest(request.getMethod(), bucket, queryParams, headers, null, path);
     }
 
-    private ResponseEntity<String> handleRequest(RequestMethod method,
+    private ResponseEntity<String> handleRequest(String method,
                                                  String bucket,
                                                  Map<String, String> queryParams,
                                                  Map<String, String> headers,
@@ -141,14 +141,14 @@ public class BucketApiController {
         return caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE) == null;
     }
 
-    private void saveRequest(RequestMethod method,
+    private void saveRequest(String method,
                              String bucket,
                              Map<String, String> queryParams,
                              Map<String, String> headers,
                              String body,
                              String path)
     {
-        save(new Request(bucket, headers, body, queryParams, method.name(), path));
+        save(new Request(bucket, headers, body, queryParams, method, path));
     }
 
     private HttpStatus processHttpCodeHeader(String x_reqbot_http_code) {

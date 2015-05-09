@@ -24,37 +24,44 @@
         </nav>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="sidebar-nav">
-                <nav class="navbar navbar-default" role="navigation">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                                data-target=".sidebar-navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <span class="visible-xs navbar-brand">Buckets</span>
-                    </div>
-                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                        <ul class="nav navbar-nav">
-                            <li th:each="b : ${buckets}" th:class="${b == bucket}? active">
-                                <a th:href="@{/web/bucket/{bucket}/view(bucket = ${b})}"
-                                   th:text="${b}">bucket</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <h4>Buckets</h4>
+
+                <div class="btn-group-vertical">
+                    <a th:each="b : ${buckets}"
+                       class="btn btn-lg btn-default"
+                       th:classappend="${b == bucket}? btn-primary"
+                       th:href="@{/web/bucket/{bucket}/view(bucket = ${b})}"
+                       th:text="${b}">bucket</a>
+                </div>
+                <div>
+                    <a href="#">
+                        <small>Create new...</small>
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="col-md-9">
-            <h2>Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
+        <div class="col-md-10">
+            <h2 id="top">Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
+
+            <nav>
+                <ul class="pagination">
+                    <li th:each="request, status : ${requests}">
+                        <a th:href="'#request-' + ${request.uuid}" th:text="${status.count}" href="#">1</a>
+                    </li>
+                </ul>
+            </nav>
 
             <div class="requests">
-                <div id="request-1" th:id="'request-' + ${request.uuid}" class="request" th:each="request : ${requests}">
+                <div id="request-1" th:id="'request-' + ${request.uuid}" class="request"
+                     th:each="request : ${requests}">
                     <h3>
-                        <span class="label label-default" th:classappend="'label-' + ${request.method}" th:text="${request.method}">method</span> @
+                        <a href="#top">
+                            <small>[top]</small>
+                        </a>
+                        <span class="label label-default" th:classappend="'label-' + ${request.method}"
+                              th:text="${request.method}">method</span> @
                         <span th:text="${request.timestamp}">timestamp</span>
                     </h3>
 
@@ -71,13 +78,14 @@
                             <a href="#1-queryparameters" th:href="'#tab-' + ${request.uuid} + '-queryparameters'"
                                data-toggle="tab">query parameters</a>
                         </li>
-                        <li>
+                        <li th:if="${!#strings.isEmpty(request.body)}">
                             <a href="#1-body" th:href="'#tab-' + ${request.uuid} + '-body'" data-toggle="tab">body</a>
                         </li>
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane fade in active" id="1-headers" th:id="'tab-' + ${request.uuid} + '-headers'">
+                        <div class="tab-pane fade in active" id="1-headers"
+                             th:id="'tab-' + ${request.uuid} + '-headers'">
                             <div class="request-headers">
                                 <table class="table table-striped table-condensed">
                                     <thead>
@@ -120,7 +128,7 @@
                             <code th:text="${request.body}">request body</code>
                         </div>
                     </div>
-                    <hr />
+                    <hr/>
                 </div>
             </div>
         </div>

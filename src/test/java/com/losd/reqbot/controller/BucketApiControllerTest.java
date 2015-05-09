@@ -225,7 +225,7 @@ public class BucketApiControllerTest {
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello", path);
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class BucketApiControllerTest {
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello", path);
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
     }
 
     private void validate(String bucket,
