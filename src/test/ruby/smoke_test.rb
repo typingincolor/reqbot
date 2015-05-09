@@ -17,6 +17,13 @@ response_received.push RestClient.get "http://localhost:8080/bucket/#{bucket}/re
 response_received.push RestClient.get "http://localhost:8080/bucket/#{bucket}/path/to/something", 'X-REQBOT-RESPONSE' => r['uuid']
 response_received.push RestClient.post "http://localhost:8080/bucket/#{bucket}/response/#{r['uuid']}", "stuff", :content_type => 'text/plain'
 response_received.push RestClient.post "http://localhost:8080/bucket/#{bucket}/path/to/somethingelse", "stuff",:content_type => 'text/plain', 'X-REQBOT-RESPONSE' => r['uuid']
+response_received.push RestClient.get "http://localhost:8080/bucket/#{bucket}/response/#{r['uuid']}?a=1&b=2"
+response_received.push RestClient.get "http://localhost:8080/bucket/#{bucket}/path/to/something?c=1&d=4", 'X-REQBOT-RESPONSE' => r['uuid']
+response_received.push RestClient.post "http://localhost:8080/bucket/#{bucket}/response/#{r['uuid']}?foo=bar", "stuff", :content_type => 'text/plain'
+response_received.push RestClient.post "http://localhost:8080/bucket/#{bucket}/path/to/somethingelse?twee=lalala", "stuff",:content_type => 'text/plain', 'X-REQBOT-RESPONSE' => r['uuid']
+
+
+
 
 response_received.each_with_index do |result, i|
   puts "#{i} worked: #{random_body.eql? result}     #{random_body} #{result}"

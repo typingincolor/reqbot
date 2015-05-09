@@ -1,9 +1,14 @@
-.method-GET {
-    background-color: green;
+.tab-pane {
+    height: 300px;
+    overflow-y: scroll;
 }
 
-.method-POST {
+.label-POST {
     background-color: red;
+}
+
+.label-GET {
+    background-color: green;
 }
 
 /* make sidebar nav vertical */
