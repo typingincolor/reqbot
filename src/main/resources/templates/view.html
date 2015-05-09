@@ -1,41 +1,86 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <!-- reqbot stylesheet -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css"/>
 </head>
 <body>
-<h1 th:if="${fullname != null}">Hello <span th:text="${fullname}">Bruce</span></h1>
-<h1>Request List for <span th:text="${bucket}">bucket</span> bucket</h1>
+<div class="container-fluid">
+    <div>
+        <nav class="navbar navbar-default navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">reqbot</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="sidebar-nav">
+                <nav class="navbar navbar-default" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target=".sidebar-navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <span class="visible-xs navbar-brand">Buckets</span>
+                    </div>
+                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li th:each="b : ${buckets}" th:class="${b == bucket}? active">
+                                <a th:href="@{/web/bucket/{bucket}/view(bucket = ${b})}"
+                                   th:text="${b}">bucket</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h2>Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
 
-<ul th:each="request : ${requests}">
-    <li th:text="${request.uuid}">uuid</li>
-</ul>
+            <div class="requests">
+                <div class="request" th:classappend="'method-' + ${request.method}" th:each="request : ${requests}">
+                    <h2>Request <span th:text="${request.uuid}">uuid</span></h2>
 
-<hr/>
+                    <h3>headers</h3>
+                    <ul th:each="header : ${request.headers}">
+                        <li><span th:text="${header.key}">key</span> -> <span th:text="${header.value}">value</span>
+                        </li>
+                    </ul>
 
-<div th:class="'method-' + ${request.method}" th:each="request : ${requests}">
-    <h1>Request detail</h1>
-    <h2>Request <span th:text="${request.uuid}">uuid</span></h2>
+                    <h3>query parameters</h3>
+                    <ul th:each="queryParam : ${request.queryParameters}">
+                        <li><span th:text="${queryParam.key}">key</span> -> <span
+                                th:text="${queryParam.value}">value</span>
+                        </li>
+                    </ul>
 
-    <h3>headers</h3>
-    <ul th:each="header : ${request.headers}">
-        <li><span th:text="${header.key}">key</span> -> <span th:text="${header.value}">value</span></li>
-    </ul>
+                    <h3>other stuff</h3>
+                    <ul>
+                        <li>timestamp : <span th:text="${request.timestamp}">timestamp</span></li>
+                        <li>method : <span th:text="${request.method}">method</span></li>
+                    </ul>
 
-    <h3>query parameters</h3>
-    <ul th:each="queryParam : ${request.queryParameters}">
-        <li><span th:text="${queryParam.key}">key</span> -> <span th:text="${queryParam.value}">value</span></li>
-    </ul>
-
-    <h3>other stuff</h3>
-    <ul>
-        <li>timestamp : <span th:text="${request.timestamp}">timestamp</span></li>
-        <li>method : <span th:text="${request.method}">method</span></li>
-    </ul>
-
-    <div th:if="${request.body != null}">
-        <h4>body</h4>
-        <pre th:text="${request.body}" />
+                    <div th:if="${request.body != null}">
+                        <h4>body</h4>
+                        <pre th:text="${request.body}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
