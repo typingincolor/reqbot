@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * THE SOFTWARE.
  */
 public class WebControllerBucketViewTest {
-    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
+    final List<String> bucketList = new LinkedList<>(Arrays.asList("a", "b"));
 
     private MockMvc mockMvc;
 

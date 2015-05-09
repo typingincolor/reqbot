@@ -11,10 +11,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The MIT License (MIT)
@@ -84,9 +81,9 @@ public class RequestRedisRepo implements RequestRepo {
     }
 
     @Override
-    public Set<String> getBuckets() {
+    public List<String> getBuckets() {
         Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
-        Set<String> result = new LinkedHashSet<>(keys.size());
+        List<String> result = new LinkedList<String>();
 
         keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
         return result;

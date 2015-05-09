@@ -31,5 +31,5 @@ import java.util.Set;
 public interface RequestRepo {
     void save(Request request);
     List<Request> getRequestsForBucket(String bucket);
-    Set<String> getBuckets();
+    List<String> getBuckets();
 }

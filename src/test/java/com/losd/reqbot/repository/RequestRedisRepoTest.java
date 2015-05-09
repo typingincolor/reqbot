@@ -147,7 +147,7 @@ public class RequestRedisRepoTest {
         jedis.lpush(RequestRedisRepo.getBucketKey("c"), "element");
         jedis.lpush(RequestRedisRepo.getBucketKey("d"), "element");
 
-        Set<String> buckets = repo.getBuckets();
+        List<String> buckets = repo.getBuckets();
         assertThat(buckets, Matchers.hasSize(4));
         assertThat(buckets, hasItems("a", "b", "c", "d"));
     }

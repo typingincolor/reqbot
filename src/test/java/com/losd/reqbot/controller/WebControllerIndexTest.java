@@ -9,9 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * THE SOFTWARE.
  */
 public class WebControllerIndexTest {
-    final Set<String> bucketList = new HashSet<>(Arrays.asList("a", "b"));
+    final List<String> bucketList = new LinkedList<>(Arrays.asList("a", "b"));
 
     private MockMvc mockMvc;
 
@@ -67,8 +65,8 @@ public class WebControllerIndexTest {
         when(requests.getBuckets()).thenReturn(bucketList);
 
         mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name(is("index")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name(is("redirect:/web/bucket/a/view")))
                 .andExpect(model().attribute("buckets", hasSize(2)))
                 .andExpect(model().attribute("buckets", hasItems("a", "b")));
     }

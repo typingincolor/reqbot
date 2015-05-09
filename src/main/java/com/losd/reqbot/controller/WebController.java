@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -39,7 +42,13 @@ public class WebController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model)
     {
-        model.addAttribute("buckets", requests.getBuckets());
+        List<String> buckets = requests.getBuckets();
+        model.addAttribute("buckets", buckets);
+
+        if (buckets.size() > 0)
+        {
+            return "redirect:/web/bucket/" + buckets.get(0) + "/view";
+        }
 
         return "index";
     }
@@ -48,6 +57,7 @@ public class WebController {
     public String view(@PathVariable String bucket, Model model)
     {
         model.addAttribute("bucket", bucket);
+        model.addAttribute("buckets", requests.getBuckets());
         model.addAttribute("requests", requests.getRequestsForBucket(bucket));
         return "view";
     }
