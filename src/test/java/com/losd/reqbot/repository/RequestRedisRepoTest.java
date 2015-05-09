@@ -59,7 +59,7 @@ public class RequestRedisRepoTest {
 
     @Before
     public void setup() {
-        jedis.flushAll();
+        jedis.flushDB();
 
         // generate a bucket to put requests in
         bucket = RandomStringUtils.randomAlphabetic(10);
@@ -169,6 +169,6 @@ public class RequestRedisRepoTest {
         Map<String, String> queryParameters = new HashMap<>();
         queryParameters.put(RandomStringUtils.randomAlphabetic(10), RandomStringUtils.randomAlphabetic(10));
 
-        return new Request(bucket, headers, "body/n", queryParameters, "POST");
+        return new Request(bucket, headers, "body/n", queryParameters, "POST", "/blah");
     }
 }

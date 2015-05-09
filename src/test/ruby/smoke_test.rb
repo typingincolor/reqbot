@@ -11,10 +11,10 @@ r = JSON.parse(saved_response_result)
 
 response_received = []
 
-response_received.push RestClient.get 'http://localhost:8080/bucket/andrew/' + r['uuid']
-response_received.push RestClient.get 'http://localhost:8080/bucket/andrew', 'X-REQBOT-RESPONSE' => r['uuid']
-response_received.push RestClient.post 'http://localhost:8080/bucket/andrew/' + r['uuid'], "stuff", :content_type => 'text/plain'
-response_received.push RestClient.post 'http://localhost:8080/bucket/andrew', "stuff",:content_type => 'text/plain', 'X-REQBOT-RESPONSE' => r['uuid']
+response_received.push RestClient.get 'http://localhost:8080/bucket/andrew/response/' + r['uuid']
+response_received.push RestClient.get 'http://localhost:8080/bucket/andrew/path/to/something', 'X-REQBOT-RESPONSE' => r['uuid']
+response_received.push RestClient.post 'http://localhost:8080/bucket/andrew/response/' + r['uuid'], "stuff", :content_type => 'text/plain'
+response_received.push RestClient.post 'http://localhost:8080/bucket/andrew/path/to/somethingelse', "stuff",:content_type => 'text/plain', 'X-REQBOT-RESPONSE' => r['uuid']
 
 response_received.each_with_index do |result, i|
   puts "#{i} worked: #{random_body.eql? result}     #{random_body} #{result}"

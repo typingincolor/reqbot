@@ -36,13 +36,14 @@ public class Request {
     private String method;
     private String timestamp;
     private UUID uuid;
-
+    private String path;
 
     public Request(String bucket,
                    Map<String, String> headers,
                    String body,
                    Map<String, String> queryParameters,
-                   String method
+                   String method,
+                   String path
     )
     {
         this.bucket = bucket;
@@ -52,6 +53,8 @@ public class Request {
         this.method = method;
         this.timestamp = Instant.now().toString();
         this.uuid = UUID.randomUUID();
+        this.path = path;
+
     }
 
     public String getBucket() {
@@ -80,5 +83,9 @@ public class Request {
 
     public String getTimestamp() {
         return timestamp;
+    }
+
+    public String getPath() {
+        return path;
     }
 }

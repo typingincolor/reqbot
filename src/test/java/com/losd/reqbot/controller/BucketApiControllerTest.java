@@ -79,47 +79,74 @@ public class BucketApiControllerTest {
     public void it_handles_a_get() throws
             Exception
     {
-        mockMvc.perform(get("/bucket/x")).andExpect(status().isOk())
+        String path = "/bucket/x";
+        mockMvc.perform(get(path)).andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
+    }
+
+    @Test
+    public void it_handles_a_get_with_a_path() throws
+            Exception
+    {
+        String path = "/bucket/x/a/path/to/somewhere";
+        mockMvc.perform(get(path)).andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
     }
 
     @Test
     public void it_handles_a_post() throws
             Exception
     {
-        mockMvc.perform(post("/bucket/x").content("hello"))
+        String path = "/bucket/x";
+        mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
-        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
+    }
+
+    @Test
+    public void it_handles_a_post_with_a_path() throws
+            Exception
+    {
+        String path = "/bucket/x/a/path/to/somewhere";
+        mockMvc.perform(post(path).content("hello"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
     }
 
     @Test
     public void it_handles_a_get_with_query_parameters() throws
             Exception
     {
-        mockMvc.perform(get("/bucket/x?a=1")).andExpect(status().isOk())
+        String path = "/bucket/x";
+        mockMvc.perform(get(path + "?a=1")).andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
-        validate("x", queryParams, RequestMethod.GET, null);
+        validate("x", queryParams, RequestMethod.GET, null, path);
     }
 
     @Test
     public void it_handles_a_post_with_query_parameters() throws
             Exception
     {
-        mockMvc.perform(post("/bucket/x?a=1").content("hello"))
+        String path = "/bucket/x";
+        mockMvc.perform(post(path + "?a=1").content("hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
 
-        validate("x", queryParams, RequestMethod.POST, "hello");
+        validate("x", queryParams, RequestMethod.POST, "hello", path);
     }
 
     @Test
@@ -173,12 +200,13 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x/" + response.getUuid()))
+        String path = "/bucket/x/response/" + response.getUuid();
+        mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
     }
 
     @Test
@@ -191,12 +219,13 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello"))
+        String path = "/bucket/x/response/" + response.getUuid();
+        mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello", path);
     }
 
     @Test
@@ -209,12 +238,13 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
+        String path = "/bucket/x/response";
+        mockMvc.perform(get(path).header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
     }
 
     @Test
@@ -227,12 +257,13 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x").content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
+        String path = "/bucket/x";
+        mockMvc.perform(post(path).content("hello").header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
     }
 
     @Test
@@ -245,12 +276,13 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(get("/bucket/x/" + response.getUuid()).header(ReqbotHttpHeaders.HTTP_CODE, 404))
+        String path = "/bucket/x/response/" + response.getUuid();
+        mockMvc.perform(get(path).header(ReqbotHttpHeaders.HTTP_CODE, 404))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, null);
+        validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
     }
 
     @Test
@@ -263,18 +295,21 @@ public class BucketApiControllerTest {
         Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        mockMvc.perform(post("/bucket/x/" + response.getUuid()).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404))
+        String path = "/bucket/x/response/" + response.getUuid();
+
+        mockMvc.perform(post(path).content("hello").header(ReqbotHttpHeaders.HTTP_CODE, 404))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(response.getBody()))
                 .andExpect(header().string("test-header", "testvalue"));
 
-        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello");
+        validate("x", Collections.emptyMap(), RequestMethod.GET, "hello", path);
     }
 
     private void validate(String bucket,
                           Map<String, String> queryParameters,
                           RequestMethod method,
-                          String body
+                          String body,
+                          String path
     )
     {
         ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
@@ -286,6 +321,7 @@ public class BucketApiControllerTest {
         assertThat(request.getBucket(), is(equalTo(bucket)));
         assertThat(request.getMethod(), is(equalTo(method.name())));
         assertThat(request.getUuid(), is(not(nullValue())));
+        assertThat(request.getPath(), is(equalTo(path)));
 
         Date timestamp = Date.from(Instant.parse(request.getTimestamp()));
         assertThat(timestamp, within(2, TimeUnit.SECONDS, Moments.now()));

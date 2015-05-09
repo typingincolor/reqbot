@@ -56,7 +56,7 @@ public class ResponseRedisRepoTest {
 
     @Before
     public void setup() {
-        jedis.flushAll();
+        jedis.flushDB();
     }
 
     @Test

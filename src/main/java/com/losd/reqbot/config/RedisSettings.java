@@ -31,10 +31,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "reqbot.redis")
 public class RedisSettings {
-    private String host;
+    private String host = "localhost";
     private String password;
-    private Integer port;
+    private Integer port = 6379;
     private Integer responseTtl = 60;
+    private Integer index = 0;
 
     public Integer getResponseTtl() {
         return responseTtl;
@@ -70,5 +71,13 @@ public class RedisSettings {
 
     public boolean isPasswordSet() {
         return null != this.password && !password.isEmpty();
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }

@@ -29,7 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = {JacksonAutoConfiguration.class})
 @ComponentScan
 @SpringBootApplication
 public class ReqBot {

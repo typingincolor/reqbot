@@ -1,5 +1,7 @@
 package com.losd.reqbot.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +35,25 @@ public class JedisConfiguration {
     @Autowired
     RedisSettings settings;
 
+    Logger logger = LoggerFactory.getLogger(JedisConfiguration.class);
+
     @Bean
     Jedis jedis() {
+        logger.info("Connecting to database {} on {} port {}",
+                settings.getIndex(),
+                settings.getHost(),
+                settings.getPort());
+
+        logger.info("Default response TTL {}",
+                settings.getResponseTtl());
+
         Jedis jedis = new Jedis(settings.getHost(), settings.getPort());
         if (settings.isPasswordSet()) {
             jedis.auth(settings.getPassword());
+        }
+
+        if (settings.getIndex() > 0) {
+            jedis.select(settings.getIndex());
         }
         return jedis;
     }

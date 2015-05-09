@@ -35,10 +35,10 @@ r = JSON.parse(saved_response_result)
 # this example will store it in the andrew bucket.
 #
 # you can specify the response by putting the it's uuid as a path parameter
-RestClient.get 'http://localhost:8080/bucket/andrew/' + r['uuid']
+RestClient.get 'http://localhost:8080/bucket/andrew/repsonse/' + r['uuid']
 
 # or in the X-REQBOT-RESPONSE header
-RestClient.get 'http://localhost:8080/bucket/andrew', 'X-REQBOT-RESPONSE' => r['uuid']
+RestClient.get 'http://localhost:8080/bucket/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
 ```
 
 ## Magic Headers
@@ -61,3 +61,19 @@ You will need to install redis and gradle...
 Then `gradle run`
 
 This will start everything at `http://localhost:8080/`
+
+## Redis settings
+
+The connect settings are found in the application.yml, but can be override using enviroment variables.
+
+The example below connects to database 1 on localhost port 6379
+
+```bash
+echo ================================
+echo = Setting redis properties
+echo ================================
+export REQBOT_REDIS_HOST=localhost
+export REQBOT_REDIS_PORT=6379
+export REQBOT_REDIS_INDEX=1
+export REQBOT_REDIS_RESPONSETTL=450
+```
