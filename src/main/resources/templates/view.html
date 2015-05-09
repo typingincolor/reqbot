@@ -5,8 +5,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!-- reqbot stylesheet -->
@@ -52,31 +52,72 @@
             <h2>Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
 
             <div class="requests">
-                <div class="request" th:classappend="'method-' + ${request.method}" th:each="request : ${requests}">
-                    <h2>Request <span th:text="${request.uuid}">uuid</span></h2>
+                <div class="request" th:each="request : ${requests}">
+                    <h3>
+                        <span class="label label-default" th:text="${request.method}">method</span> @
+                        <span th:text="${request.timestamp}">timestamp</span>
+                    </h3>
 
-                    <h3>headers</h3>
-                    <ul th:each="header : ${request.headers}">
-                        <li><span th:text="${header.key}">key</span> -> <span th:text="${header.value}">value</span>
+                    <div class="request-path">
+                        <span th:text="${request.path}">path</span>
+                    </div>
+
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#1-headers" th:href="'#' + ${request.uuid} + '-headers'" data-toggle="tab" >headers</a>
+                        </li>
+                        <li>
+                            <a href="#1-queryparameters" th:href="'#' + ${request.uuid} + '-queryparameters'" data-toggle="tab" >query parameters</a>
+                        </li>
+                        <li>
+                            <a href="#1-body" th:href="'#' + ${request.uuid} + '-body'" data-toggle="tab">body</a>
                         </li>
                     </ul>
 
-                    <h3>query parameters</h3>
-                    <ul th:each="queryParam : ${request.queryParameters}">
-                        <li><span th:text="${queryParam.key}">key</span> -> <span
-                                th:text="${queryParam.value}">value</span>
-                        </li>
-                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="1-headers" th:id="${request.uuid} + '-headers'">
+                            <div class="request-headers">
+                                <h4>headers</h4>
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>Header</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="header : ${request.headers}">
+                                        <td th:text="${header.key}">key</td>
+                                        <td th:text="${header.value}">value</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                    <h3>other stuff</h3>
-                    <ul>
-                        <li>timestamp : <span th:text="${request.timestamp}">timestamp</span></li>
-                        <li>method : <span th:text="${request.method}">method</span></li>
-                    </ul>
+                        <div class="tab-pane fade in" id="1-queryparameters" th:id="${request.uuid} + '-queryparameters'">
+                            <div class="request-queryparameters">
+                                <h4>query parameters</h4>
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="param : ${request.queryParameters}">
+                                        <td th:text="${param.key}">key</td>
+                                        <td th:text="${param.value}">value</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                    <div th:if="${request.body != null}">
-                        <h4>body</h4>
-                        <pre th:text="${request.body}"/>
+                        <div class="tab-pane fade in" id="1-body" th:id="${request.uuid} + '-body'">
+                            <code th:text="${request.body">request body</code>
+                        </div>
                     </div>
                 </div>
             </div>
