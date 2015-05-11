@@ -72,5 +72,5 @@ task wrapper(type: Wrapper) {
 }
 
 task unitTest(type: Test) {
-    exclude 'com.losd.reqbot.repository/**'
+    exclude '**/repository/**'
 }
