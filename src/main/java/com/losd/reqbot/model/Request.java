@@ -1,6 +1,9 @@
 package com.losd.reqbot.model;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,7 +41,7 @@ public class Request {
     private UUID uuid;
     private String path;
 
-    public Request(String bucket,
+    private Request(String bucket,
                    Map<String, String> headers,
                    String body,
                    Map<String, String> queryParameters,
@@ -57,6 +60,60 @@ public class Request {
 
     }
 
+    public static class Builder {
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> queryParameters = new HashMap<>();
+        String body;
+        String method;
+        String timestamp;
+        String path;
+        String bucket;
+
+        public Builder bucket(String b) {
+            bucket = b;
+            return this;
+        }
+
+        public Builder path(String p) {
+            path = p;
+            return this;
+        }
+
+        public Builder method(String m) {
+            method = m;
+            return this;
+        }
+
+        public Builder addQueryParameters(String qp, String value) {
+            queryParameters.put(qp, value);
+            return this;
+        }
+
+        public Builder queryParameters(Map<String, String> qp) {
+            queryParameters.putAll(qp);
+            return this;
+        }
+
+        public Builder addHeader(String header, String value) {
+            headers.put(header, value);
+            return this;
+        }
+
+        public Builder headers(Map<String, String> h) {
+            headers.putAll(h);
+            return this;
+        }
+
+        public Builder body(String b) {
+            body = b;
+            return this;
+        }
+
+        public Request build() {
+            return new Request(bucket, headers, body, queryParameters, method, path);
+        }
+    }
+
     public String getBucket() {
         return bucket;
     }
@@ -66,7 +123,7 @@ public class Request {
     }
 
     public Map<String, String> getHeaders() {
-        return headers;
+        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 
     public String getBody() {
@@ -74,7 +131,7 @@ public class Request {
     }
 
     public Map<String, String> getQueryParameters() {
-        return queryParameters;
+        return new ImmutableMap.Builder<String, String>().putAll(this.queryParameters).build();
     }
 
     public String getMethod() {

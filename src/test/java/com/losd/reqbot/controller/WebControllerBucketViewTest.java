@@ -63,8 +63,7 @@ public class WebControllerBucketViewTest {
 
     @Test
     public void it_populates_the_bucket_list_correctly() throws
-            Exception
-    {
+            Exception {
         List<Request> requestList = new ArrayList<>();
         Map<String, String> headers = new HashMap<>();
         headers.put("header1", "value1");
@@ -72,7 +71,14 @@ public class WebControllerBucketViewTest {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("param1", "value1");
 
-        requestList.add(new Request("a", headers, "body", queryParams, "GET", "/a/path/to/somewhere"));
+        requestList.add(new Request.Builder()
+                .bucket("a")
+                .headers(headers)
+                .body("body")
+                .queryParameters(queryParams)
+                .method("GET")
+                .path("/a/path/to/somewhere")
+                .build());
 
         when(requests.getBuckets()).thenReturn(bucketList);
         when(requests.getRequestsForBucket("a")).thenReturn(requestList);

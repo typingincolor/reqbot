@@ -43,7 +43,7 @@ public class Response {
         this.uuid = UUID.randomUUID();
     }
 
-    public ImmutableMap<String, String> getHeaders() {
+    public Map<String, String> getHeaders() {
         return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 

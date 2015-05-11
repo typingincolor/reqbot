@@ -141,8 +141,18 @@ public class BucketApiController {
                              Map<String, String> queryParams,
                              Map<String, String> headers,
                              String body,
-                             String path) {
-        save(new Request(bucket, headers, body, queryParams, method, path));
+                             String path)
+    {
+        Request request = new Request.Builder()
+                .bucket(bucket)
+                .headers(headers)
+                .body(body)
+                .queryParameters(queryParams)
+                .method(method)
+                .path(path)
+                .build();
+
+        save(request);
     }
 
     private HttpStatus processHttpCodeHeader(String x_reqbot_http_code) {

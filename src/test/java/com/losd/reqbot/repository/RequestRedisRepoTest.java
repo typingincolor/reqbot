@@ -70,8 +70,7 @@ public class RequestRedisRepoTest {
 
     @Test
     public void testSave() throws
-            Exception
-    {
+            Exception {
         Request request = buildRequest(bucket);
         repo.save(request);
 
@@ -116,8 +115,7 @@ public class RequestRedisRepoTest {
 
     @Test
     public void testGetBucket() throws
-            Exception
-    {
+            Exception {
         // generate some requests
         Request request1 = buildRequest(bucket);
         Request request2 = buildRequest(bucket);
@@ -156,8 +154,7 @@ public class RequestRedisRepoTest {
     }
 
     private void putRequestInRedis(String bucket,
-                                   Request request)
-    {
+                                   Request request) {
         // a bucket is a list to which the uuid of the request is added
         jedis.lpush(RequestRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
 
@@ -172,6 +169,12 @@ public class RequestRedisRepoTest {
         Map<String, String> queryParameters = new HashMap<>();
         queryParameters.put(RandomStringUtils.randomAlphabetic(10), RandomStringUtils.randomAlphabetic(10));
 
-        return new Request(bucket, headers, "body/n", queryParameters, "POST", "/blah");
+        return new Request.Builder().bucket(bucket)
+                .headers(headers)
+                .body("body/n")
+                .queryParameters(queryParameters)
+                .method("POST")
+                .path("/blah")
+                .build();
     }
 }
