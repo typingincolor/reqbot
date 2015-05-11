@@ -1,6 +1,7 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.repository.RequestRepo;
+import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +39,9 @@ public class WebController {
     @Autowired
     private RequestRepo requests = null;
 
+    @Autowired
+    private ResponseRepo responses = null;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model)
     {
@@ -63,6 +67,7 @@ public class WebController {
 
     @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
     public String responses(Model model) {
+        model.addAttribute("responses", responses.getAll());
         return "responses";
     }
 }

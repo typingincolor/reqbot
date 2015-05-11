@@ -7,6 +7,8 @@ import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import java.util.List;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -52,5 +54,10 @@ public class ResponseRedisRepo implements ResponseRepo {
     public void save(Response response) {
         String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
         jedis.set(key, gson.toJson(response, Response.class));
+    }
+
+    @Override
+    public List<Response> getAll() {
+        return null;
     }
 }

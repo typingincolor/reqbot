@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,10 +11,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import static org.hamcrest.Matchers.is;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * The MIT License (MIT)
@@ -57,8 +61,17 @@ public class WebcontrollerResponsesTest {
 
     @Test
     public void reponses() throws Exception {
-        // when(responseRepo.getAll()).thenReturn(responses);
+        List<Response> responses = new LinkedList<>();
+
+        responses.add(new Response.Builder().addHeader("h1", "v1").body("body1").build());
+        responses.add(new Response.Builder().addHeader("h2", "v2").body("body2").build());
+        responses.add(new Response.Builder().addHeader("h3", "v3").addHeader("h4", "v4").body("body3").build());
+
+        when(responseRepo.getAll()).thenReturn(responses);
+
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
-                .andExpect(view().name(is("responses")));
+                .andExpect(view().name(is("responses")))
+                .andExpect(model().attribute("responses", hasSize(3)))
+                .andExpect(model().attribute("responses", is(responses)));
     }
 }

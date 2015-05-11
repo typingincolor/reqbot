@@ -2,6 +2,8 @@ package com.losd.reqbot.repository;
 
 import com.losd.reqbot.model.Response;
 
+import java.util.List;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -28,4 +30,5 @@ import com.losd.reqbot.model.Response;
 public interface ResponseRepo {
     Response get(String uuid);
     void save(Response response);
+    List<Response> getAll();
 }
