@@ -56,15 +56,27 @@ Reqbot has a web application at `/` which allows you to see the requests that re
 
 ## Running reqbot
 
-You will need to install redis and gradle...
+There are a number of options, but you will need redis running whichever you choose.
 
-Then `gradle run`
+### Gradle
+
+use `gradle run`
 
 This will start everything at `http://localhost:8080/`
 
+### Foreman
+
+Foreman can be install from [here](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html)
+ 
+To use it `gradle stage; foreman start`
+ 
+This will start everything at `http://localhost:5000/` by default.
+
+Foreman is useful as it uses the Procfile which heroku uses if you deploy there.
+
 ## Redis settings
 
-The connect settings are found in the application.yml, but can be override using enviroment variables.
+The connect settings are found in the application.yml, but can be override using environment variables.
 
 The example below connects to database 1 on localhost port 6379
 

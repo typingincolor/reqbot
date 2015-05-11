@@ -16,3 +16,5 @@ build
 .env
 .gradle
 dump.rdb
+
+reqbot.jar
