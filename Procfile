@@ -1,0 +1,1 @@
+web: java -Dserver.port=$PORT -jar target/reqbot-1.0.jar
