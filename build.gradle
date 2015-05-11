@@ -47,6 +47,7 @@ task stage(type: Copy, dependsOn: [clean, installApp]) {
     }
 }
 stage.mustRunAfter(clean)
+uploadArchives.dependsOn bootRepackage
 
 clean << {
     project.file('reqbot.jar').delete()
