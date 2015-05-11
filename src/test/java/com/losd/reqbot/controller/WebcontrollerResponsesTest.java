@@ -1,6 +1,5 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,9 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,11 +57,6 @@ public class WebcontrollerResponsesTest {
 
     @Test
     public void reponses() throws Exception {
-        List<Response> responses = new LinkedList<>();
-        responses.add(new Response.Builder().addHeader("header1", "value1").body("aaaa").build());
-        responses.add(new Response.Builder().addHeader("header2", "value2").body("bbbb").build());
-        responses.add(new Response.Builder().addHeader("header3", "value3").body("cccc").build());
-
         // when(responseRepo.getAll()).thenReturn(responses);
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
                 .andExpect(view().name(is("responses")));

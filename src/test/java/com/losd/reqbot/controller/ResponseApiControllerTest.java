@@ -22,9 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
@@ -77,12 +74,11 @@ public class ResponseApiControllerTest {
 
     @Test
     public void it_saves_a_response() throws
-            Exception
-    {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test_header", "test_header_value");
-
-        IncomingResponse incoming = new IncomingResponse(headers, "response_body");
+            Exception {
+        IncomingResponse incoming = new IncomingResponse.Builder()
+                .addHeader("test_header", "test_header_value")
+                .body("response_body")
+                .build();
 
         String json = gson.toJson(incoming, IncomingResponse.class);
 
@@ -107,8 +103,7 @@ public class ResponseApiControllerTest {
 
     @Test
     public void it_gets_an_error_400_if_the_response_to_be_saved_has_no_body() throws
-            Exception
-    {
+            Exception {
         mockMvc.perform(post("/response").contentType(MediaType.APPLICATION_JSON).content("{\"stuff\": \"random\"}"))
                 .andExpect(status().isBadRequest());
     }

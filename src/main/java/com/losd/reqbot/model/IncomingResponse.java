@@ -1,5 +1,8 @@
 package com.losd.reqbot.model;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -29,16 +32,40 @@ public class IncomingResponse {
     Map<String, String> headers;
     String body;
 
-    public IncomingResponse(Map<String, String> headers, String body) {
+    private IncomingResponse(Map<String, String> headers, String body) {
         this.headers = headers;
         this.body = body;
     }
 
     public Map<String, String> getHeaders() {
-        return headers;
+        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 
     public String getBody() {
         return body;
+    }
+
+    public static class Builder {
+        Map<String, String> headers = new HashMap<>();
+        String body;
+
+        public Builder addHeader(String header, String value) {
+            headers.put(header, value);
+            return this;
+        }
+
+        public Builder headers(Map<String, String> h) {
+            headers.putAll(h);
+            return this;
+        }
+
+        public Builder body(String b) {
+            body = b;
+            return this;
+        }
+
+        public IncomingResponse build() {
+            return new IncomingResponse(headers, body);
+        }
     }
 }

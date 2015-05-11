@@ -65,7 +65,6 @@ public class Request {
         Map<String, String> queryParameters = new HashMap<>();
         String body;
         String method;
-        String timestamp;
         String path;
         String bucket;
 
