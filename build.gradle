@@ -70,3 +70,7 @@ tasks.withType(Pmd) {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
+
+task unitTest(type: Test) {
+    exclude 'com.losd.reqbot.repository/**'
+}
