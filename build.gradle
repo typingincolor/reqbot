@@ -39,7 +39,18 @@ dependencies {
     testCompile('commons-lang:commons-lang:2.6')
 }
 
-task stage(dependsOn: ['clean', 'installApp'])
+task stage(type: Copy, dependsOn: [clean, build]) {
+    from jar.archivePath
+    into project.rootDir
+    rename {
+        'reqbot.jar'
+    }
+}
+stage.mustRunAfter(clean)
+
+clean << {
+    project.file('reqbot.jar').delete()
+}
 
 tasks.withType(FindBugs) {
     reports {
