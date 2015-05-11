@@ -16,9 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -63,15 +60,11 @@ public class ResponseRedisRepoTest {
     }
 
     @Test
-    public void it_gets() throws Exception
-    {
-        Map<String, String> headers = new HashMap<>();
+    public void it_gets() throws Exception {
         String headerKey = RandomStringUtils.randomAlphabetic(10);
         String headerValue = RandomStringUtils.randomAlphabetic(10);
 
-        headers.put(headerKey, headerValue);
-
-        Response response = new Response(headers, "hello");
+        Response response = new Response.Builder().addHeader(headerKey, headerValue).build();
 
         jedis.set("response:" + response.getUuid().toString(), gson.toJson(response, Response.class));
 
@@ -85,9 +78,10 @@ public class ResponseRedisRepoTest {
 
     @Test
     public void it_saves() throws Exception {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "test-header-text");
-        Response response = new Response(headers, "testresponsebody");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "test-header-text")
+                .body("testresponsebody")
+                .build();
 
         repo.save(response);
 

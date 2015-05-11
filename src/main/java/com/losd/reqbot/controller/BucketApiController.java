@@ -57,8 +57,7 @@ public class BucketApiController {
                                                  @PathVariable String responseKey,
                                                  @RequestParam Map<String, String> queryParams,
                                                  @RequestHeader Map<String, String> headers,
-                                                 HttpServletRequest request)
-    {
+                                                 HttpServletRequest request) {
         logger.info("GET /bucket/{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -73,8 +72,7 @@ public class BucketApiController {
                                                   @RequestParam Map<String, String> queryParams,
                                                   @RequestHeader Map<String, String> headers,
                                                   @RequestBody String body,
-                                                  HttpServletRequest request)
-    {
+                                                  HttpServletRequest request) {
         logger.info("POST /bucket/{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -88,8 +86,7 @@ public class BucketApiController {
                                                 @RequestParam Map<String, String> queryParams,
                                                 @RequestHeader Map<String, String> headers,
                                                 @RequestBody String body,
-                                                HttpServletRequest request)
-    {
+                                                HttpServletRequest request) {
         logger.info("POST /bucket/{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -102,8 +99,7 @@ public class BucketApiController {
     ResponseEntity<String> standardGetResponse(@PathVariable String bucket,
                                                @RequestParam Map<String, String> queryParams,
                                                @RequestHeader Map<String, String> headers,
-                                               HttpServletRequest request)
-    {
+                                               HttpServletRequest request) {
         logger.info("GET /bucket/{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -116,8 +112,7 @@ public class BucketApiController {
                                                  Map<String, String> queryParams,
                                                  Map<String, String> headers,
                                                  String body,
-                                                 String path)
-    {
+                                                 String path) {
         saveRequest(method, bucket, queryParams, headers, body, path);
 
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -125,7 +120,7 @@ public class BucketApiController {
         processGoSlowHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.GO_SLOW));
         HttpStatus status = processHttpCodeHeader(caseInsensitiveHeaders.get(ReqbotHttpHeaders.HTTP_CODE));
 
-        Response response = new Response(status);
+        Response response = new Response.Builder().body(status.getReasonPhrase()).build();
 
         HttpHeaders resultHeaders = new HttpHeaders();
 
@@ -146,8 +141,7 @@ public class BucketApiController {
                              Map<String, String> queryParams,
                              Map<String, String> headers,
                              String body,
-                             String path)
-    {
+                             String path) {
         save(new Request(bucket, headers, body, queryParams, method, path));
     }
 
@@ -166,8 +160,7 @@ public class BucketApiController {
 
         try {
             Thread.sleep(Integer.parseInt(x_reqbot_go_slow));
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException("InterruptedException", e);
         }
     }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * The MIT License (MIT)
@@ -60,5 +59,10 @@ public class WebController {
         model.addAttribute("buckets", requests.getBuckets());
         model.addAttribute("requests", requests.getRequestsForBucket(bucket));
         return "view";
+    }
+
+    @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
+    public String responses(Model model) {
+        return "responses";
     }
 }

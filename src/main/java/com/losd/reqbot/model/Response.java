@@ -1,6 +1,6 @@
 package com.losd.reqbot.model;
 
-import org.springframework.http.HttpStatus;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class Response {
     String body;
     UUID uuid;
 
-    public Response(Map<String, String> headers,
+    private Response(Map<String, String> headers,
                     String body
     )
     {
@@ -43,20 +43,12 @@ public class Response {
         this.uuid = UUID.randomUUID();
     }
 
-    public Response(HttpStatus status) {
-        this.body = status.getReasonPhrase();
-        this.headers = new HashMap<>();
-        this.uuid = UUID.randomUUID();
+    public ImmutableMap<String, String> getHeaders() {
+        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 
-    public Response(IncomingResponse incoming) {
-        this.uuid = UUID.randomUUID();
-        this.body = incoming.getBody();
-        this.headers = incoming.getHeaders();
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     public String getBody() {
@@ -65,5 +57,29 @@ public class Response {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public static class Builder {
+        Map<String, String> headers = new HashMap<>();
+        String body;
+
+        public Builder addHeader(String header, String value) {
+            headers.put(header, value);
+            return this;
+        }
+
+        public Builder headers(Map<String, String> h) {
+            headers.putAll(h);
+            return this;
+        }
+
+        public Builder body(String b) {
+            body = b;
+            return this;
+        }
+
+        public Response build() {
+            return new Response(headers, body);
+        }
     }
 }

@@ -194,10 +194,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_response_body_for_a_get() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body(RandomStringUtils.randomAlphanumeric(30))
+                .build();
 
-        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x/response/" + response.getUuid();
@@ -213,10 +214,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_response_body_for_a_post() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body(RandomStringUtils.randomAlphanumeric(30))
+                .build();
 
-        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x/response/" + response.getUuid();
@@ -232,10 +234,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_body_for_a_get_using_header() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body(RandomStringUtils.randomAlphanumeric(30))
+                .build();
 
-        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x/response";
@@ -251,10 +254,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_body_for_a_post_using_header() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body(RandomStringUtils.randomAlphanumeric(30))
+                .build();
 
-        Response response = new Response(headers, RandomStringUtils.randomAlphanumeric(30));
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x";
@@ -270,10 +274,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_response_body_and_http_status_code_for_a_get() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body("hello")
+                .build();
 
-        Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x/response/" + response.getUuid();
@@ -289,10 +294,11 @@ public class BucketApiControllerTest {
     public void it_returns_the_requested_response_body_and_http_status_code_for_a_post() throws
             Exception
     {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("test-header", "testvalue");
+        Response response = new Response.Builder()
+                .addHeader("test-header", "testvalue")
+                .body("hello")
+                .build();
 
-        Response response = new Response(headers, "hello");
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
         String path = "/bucket/x/response/" + response.getUuid();

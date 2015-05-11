@@ -33,6 +33,7 @@ dependencies {
     compile('redis.clients:jedis:2.6.2')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('com.google.guava:guava:18.0')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
