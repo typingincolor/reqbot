@@ -47,10 +47,6 @@ public class Response {
         return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
     public String getBody() {
         return body;
     }
