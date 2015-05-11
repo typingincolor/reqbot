@@ -39,7 +39,7 @@ dependencies {
     testCompile('commons-lang:commons-lang:2.6')
 }
 
-task stage(type: Copy, dependsOn: [clean, installApp]) {
+task stage(type: Copy, dependsOn: [clean, bootRepackage, installDist]) {
     from jar.archivePath
     into project.rootDir
     rename {
