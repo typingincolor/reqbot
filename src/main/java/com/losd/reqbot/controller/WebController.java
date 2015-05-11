@@ -47,6 +47,7 @@ public class WebController {
     {
         List<String> buckets = requests.getBuckets();
         model.addAttribute("buckets", buckets);
+        model.addAttribute("mode", "request");
 
         if (buckets.size() > 0)
         {
@@ -59,6 +60,7 @@ public class WebController {
     @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
     public String view(@PathVariable String bucket, Model model)
     {
+        model.addAttribute("mode", "request");
         model.addAttribute("bucket", bucket);
         model.addAttribute("buckets", requests.getBuckets());
         model.addAttribute("requests", requests.getRequestsForBucket(bucket));
@@ -67,6 +69,7 @@ public class WebController {
 
     @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
     public String responses(Model model) {
+        model.addAttribute("mode", "response");
         model.addAttribute("responses", responses.getAll());
         return "responses";
     }

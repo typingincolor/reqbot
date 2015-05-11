@@ -71,6 +71,7 @@ public class WebcontrollerResponsesTest {
 
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
                 .andExpect(view().name(is("responses")))
+                .andExpect(model().attribute("mode", is(equalTo("response"))))
                 .andExpect(model().attribute("responses", hasSize(3)))
                 .andExpect(model().attribute("responses", is(responses)));
     }

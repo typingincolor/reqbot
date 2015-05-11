@@ -1,6 +1,7 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.repository.RequestRepo;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -13,6 +14,7 @@ import java.util.*;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,6 +69,7 @@ public class WebControllerIndexTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(is("redirect:/web/bucket/a/view")))
+                .andExpect(model().attribute("mode", Matchers.is(equalTo("request"))))
                 .andExpect(model().attribute("buckets", hasSize(2)))
                 .andExpect(model().attribute("buckets", hasItems("a", "b")));
     }
