@@ -39,6 +39,8 @@ dependencies {
     testCompile('commons-lang:commons-lang:2.6')
 }
 
+task stage(dependsOn: ['clean', 'installApp'])
+
 tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
