@@ -44,9 +44,6 @@ public class JedisConfiguration {
                 settings.getHost(),
                 settings.getPort());
 
-        logger.info("Default response TTL {}",
-                settings.getResponseTtl());
-
         Jedis jedis = new Jedis(settings.getHost(), settings.getPort());
         if (settings.isPasswordSet()) {
             jedis.auth(settings.getPassword());

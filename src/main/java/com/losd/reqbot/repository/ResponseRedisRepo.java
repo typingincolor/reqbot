@@ -52,6 +52,5 @@ public class ResponseRedisRepo implements ResponseRepo {
     public void save(Response response) {
         String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
         jedis.set(key, gson.toJson(response, Response.class));
-        jedis.expire(key, settings.getResponseTtl());
     }
 }

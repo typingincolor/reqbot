@@ -87,5 +87,4 @@ echo ================================
 export REQBOT_REDIS_HOST=localhost
 export REQBOT_REDIS_PORT=6379
 export REQBOT_REDIS_INDEX=1
-export REQBOT_REDIS_RESPONSETTL=450
 ```
