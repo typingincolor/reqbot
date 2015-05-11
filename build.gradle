@@ -71,6 +71,18 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 
-task unitTest(type: Test) {
-    exclude '**/repository/**'
+test {
+    useJUnit {
+        excludeCategories 'com.losd.reqbot.test.IntegrationTest'
+    }
+}
+
+task integrationTest(type: Test) {
+
+}
+
+integrationTest {
+    useJUnit {
+        includeCategories 'com.losd.reqbot.test.IntegrationTest'
+    }
 }

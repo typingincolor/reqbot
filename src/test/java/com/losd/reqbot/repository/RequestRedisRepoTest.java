@@ -5,10 +5,12 @@ import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.JedisConfiguration;
 import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Request;
+import com.losd.reqbot.test.IntegrationTest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,6 +48,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class})
+@Category(IntegrationTest.class)
 public class RequestRedisRepoTest {
     @Autowired
     RequestRepo repo;
