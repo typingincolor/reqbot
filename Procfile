@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar reqbot.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -jar reqbot.jar
