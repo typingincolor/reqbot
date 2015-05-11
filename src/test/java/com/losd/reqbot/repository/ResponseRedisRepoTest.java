@@ -16,6 +16,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -92,4 +96,31 @@ public class ResponseRedisRepoTest {
         assertThat(result.getHeaders().size(), is(equalTo(1)));
         assertThat(result.getUuid(), is(equalTo(response.getUuid())));
     }
+
+    @Test
+    public void it_gets_all() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            Response response = new Response.Builder()
+                    .addHeader("header" + i, "value" + i)
+                    .body("body" + i)
+                    .build();
+
+            jedis.set("response:" + response.getUuid(), gson.toJson(response, Response.class));
+        }
+
+        List<Response> result = repo.getAll();
+
+        assertThat(result, hasSize(10));
+
+        Set<String> bodiesSeen = new HashSet<>();
+
+        result.forEach((res) -> {
+            bodiesSeen.add(res.getBody());
+            String index = res.getBody().substring(4);
+            assertThat(res.getHeaders(), hasEntry("header" + index, "value" + index));
+        });
+
+        assertThat(bodiesSeen, hasSize(10));
+    }
 }
+

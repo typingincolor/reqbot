@@ -2,12 +2,13 @@ package com.losd.reqbot.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.losd.reqbot.config.RedisSettings;
 import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The MIT License (MIT)
@@ -38,9 +39,6 @@ public class ResponseRedisRepo implements ResponseRepo {
     @Autowired
     Jedis jedis = null;
 
-    @Autowired
-    RedisSettings settings;
-
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
@@ -58,6 +56,10 @@ public class ResponseRedisRepo implements ResponseRepo {
 
     @Override
     public List<Response> getAll() {
-        return null;
+        Set<String> keys = jedis.keys(RESPONSE_KEY_PREFIX + "*");
+        List<Response> result = new LinkedList<>();
+
+        keys.forEach((key) -> result.add(get(key.substring(RESPONSE_KEY_PREFIX.length()))));
+        return result;
     }
 }
