@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head />
+<body>
+<div th:fragment="side-bar">
+    <h4>Buckets</h4>
+
+    <div class="btn-group-vertical">
+        <a th:each="b : ${buckets}"
+           class="btn btn-lg btn-default"
+           th:classappend="${b == bucket}? btn-primary"
+           th:href="@{/web/bucket/{bucket}/view(bucket = ${b})}"
+           th:text="${b}">bucket</a>
+    </div>
+    <div>
+        <a href="#">
+            <small>Create new...</small>
+        </a>
+    </div>
+</div>
+</body>
+</html>
