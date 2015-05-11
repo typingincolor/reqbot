@@ -2,9 +2,8 @@
 <html>
 <head />
 <body>
-<div th:fragment="requests">
-    <div id="request-1" th:id="'request-' + ${request.uuid}" class="request"
-         th:each="request : ${requests}">
+<div th:fragment="request">
+    <div id="request-1" th:id="'request-' + ${request.uuid}" class="request">
         <h3>
             <a href="#top">
                 <small>[top]</small>

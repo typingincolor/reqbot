@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -10,31 +10,18 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!-- reqbot stylesheet -->
-    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css" />
 </head>
 <body>
 <div class="container-fluid">
-    <div th:replace="fragments/top-nav" ></div>
+    <div th:replace="fragments/top-nav"></div>
 
     <div class="row">
         <div class="col-md-2">
-            <div class="sidebar-nav" th:replace="fragments/side-bar">
-            </div>
+            <div class="sidebar-nav" th:replace="fragments/side-bar(bucket=${bucket},buckets=${buckets})">sidebar</div>
         </div>
         <div class="col-md-10">
-            <h2 id="top">Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
-
-            <nav>
-                <ul class="pagination">
-                    <li th:each="request, status : ${requests}">
-                        <a th:href="'#request-' + ${request.uuid}" th:text="${status.count}" href="#">1</a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="requests">
-                <div th:replace="fragments/requests">requests got here</div>
-            </div>
+            <div th:replace="fragments/request-list(requests=${requests})">request list</div>
         </div>
     </div>
 </div>
