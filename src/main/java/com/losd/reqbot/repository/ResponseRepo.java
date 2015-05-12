@@ -31,4 +31,5 @@ public interface ResponseRepo {
     Response get(String uuid);
     void save(Response response);
     List<Response> getAll();
+    List<Response> getByTag(String tag);
 }

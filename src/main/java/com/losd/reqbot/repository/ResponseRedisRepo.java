@@ -69,4 +69,21 @@ public class ResponseRedisRepo implements ResponseRepo {
         keys.forEach((key) -> result.add(get(key.substring(RESPONSE_KEY_PREFIX.length()))));
         return result;
     }
+
+    @Override
+    public List<Response> getByTag(String tag) {
+        String tagKey = TAG_PREFIX + tag;
+        long length = jedis.llen(tagKey);
+
+        List<String> keys = jedis.lrange(tagKey, 0 , length);
+
+        List<Response> result = new LinkedList<>();
+
+        keys.forEach((key) -> {
+            String response = jedis.get(key);
+            result.add(gson.fromJson(response, Response.class));
+        });
+
+        return result;
+    }
 }

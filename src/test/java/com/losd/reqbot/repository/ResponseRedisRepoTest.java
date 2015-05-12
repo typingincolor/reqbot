@@ -16,10 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -120,7 +117,7 @@ public class ResponseRedisRepoTest {
                     .body("body" + i)
                     .build();
 
-            jedis.set("response:" + response.getUuid(), gson.toJson(response, Response.class));
+            jedis.set(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid(), gson.toJson(response, Response.class));
         }
 
         List<Response> result = repo.getAll();
@@ -136,6 +133,31 @@ public class ResponseRedisRepoTest {
         });
 
         assertThat(bodiesSeen, hasSize(10));
+    }
+
+    @Test
+    public void it_gets_all_by_tag() throws Exception {
+        String[][] uuids = new String[2][5];
+
+        for (int i = 0; i < 10; i++) {
+            Response response = new Response.Builder()
+                    .addHeader("header" + i, "value" + i)
+                    .tags(Arrays.asList("tag" + i % 2))
+                    .body("body" + i)
+                    .build();
+
+            uuids[i%2][i/2] = response.getUuid().toString();
+
+
+            jedis.set("response:" + response.getUuid(), gson.toJson(response, Response.class));
+            jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag" + i % 2, ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString());
+        }
+
+        List<Response> tag1Result = repo.getByTag("tag1");
+        assertThat(tag1Result, hasSize(5));
+        List<String> tag1Uuids = new LinkedList<>();
+        tag1Result.forEach((r) -> tag1Uuids.add(r.getUuid().toString()));
+        assertThat(tag1Uuids, containsInAnyOrder(uuids[1][0], uuids[1][1], uuids[1][2], uuids[1][3], uuids[1][4]));
     }
 }
 
