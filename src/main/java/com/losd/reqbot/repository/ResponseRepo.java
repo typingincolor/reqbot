@@ -32,4 +32,5 @@ public interface ResponseRepo {
     void save(Response response);
     List<Response> getAll();
     List<Response> getByTag(String tag);
+    List<String> getTags();
 }

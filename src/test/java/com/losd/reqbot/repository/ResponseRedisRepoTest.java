@@ -159,5 +159,18 @@ public class ResponseRedisRepoTest {
         tag1Result.forEach((r) -> tag1Uuids.add(r.getUuid().toString()));
         assertThat(tag1Uuids, containsInAnyOrder(uuids[1][0], uuids[1][1], uuids[1][2], uuids[1][3], uuids[1][4]));
     }
+
+    @Test
+    public void it_gets_a_list_of_buckets() throws Exception {
+        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag1", "a");
+        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag2", "b");
+        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag3", "c");
+        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag4", "d");
+
+        List<String> tags = repo.getTags();
+
+        assertThat(tags, hasSize(4));
+        assertThat(tags, containsInAnyOrder("tag1", "tag2", "tag3", "tag4"));
+    }
 }
 

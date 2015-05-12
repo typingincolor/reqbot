@@ -86,4 +86,13 @@ public class ResponseRedisRepo implements ResponseRepo {
 
         return result;
     }
+
+    @Override
+    public List<String> getTags() {
+        Set<String> tags = jedis.keys(TAG_PREFIX + "*");
+        List<String> result = new LinkedList<>();
+
+        tags.forEach((tag) -> result.add(tag.substring(TAG_PREFIX.length())));
+        return result;
+    }
 }
