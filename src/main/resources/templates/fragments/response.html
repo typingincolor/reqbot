@@ -5,9 +5,16 @@
 <div th:fragment="response">
     <div id="response-1" th:id="'response-' + ${response.uuid}" class="response">
         <h3>
-            <a href="#top"><small>[top]</small></a>
+            <a href="#top">
+                <small>[top]</small>
+            </a>
+            <span th:each="tag : ${response.tags}" th:text="${tag}" class="label label-primary">tag</span>
             <span th:text="${response.uuid}">1234567-2323-43343</span>
         </h3>
+
+        <div class="response-tags">
+            
+        </div>
 
         <ul class="nav nav-tabs">
             <li class="active">
