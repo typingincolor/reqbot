@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.Set;
  */
 public class ResponseRedisRepo implements ResponseRepo {
     public static final String RESPONSE_KEY_PREFIX = "response:";
+    public static final String TAG_PREFIX = "tag:";
 
     @Autowired
     Jedis jedis = null;
@@ -51,7 +53,12 @@ public class ResponseRedisRepo implements ResponseRepo {
     @Override
     public void save(Response response) {
         String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
-        jedis.set(key, gson.toJson(response, Response.class));
+        Transaction t = jedis.multi();
+        t.set(key, gson.toJson(response, Response.class));
+
+        response.getTags().forEach((tag) -> t.lpush(TAG_PREFIX + tag, key));
+
+        t.exec();
     }
 
     @Override

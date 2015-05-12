@@ -106,10 +106,10 @@ public class ResponseRedisRepoTest {
         assertThat(result.getUuid(), is(equalTo(response.getUuid())));
 
         assertThat(tag1, hasSize(1));
-        assertThat(tag1, hasItem("tag1"));
+        assertThat(tag1, hasItem("response:" + response.getUuid()));
 
         assertThat(tag2, hasSize(1));
-        assertThat(tag2, hasItem("tag2"));
+        assertThat(tag2, hasItem("response:" + response.getUuid()));
     }
 
     @Test
