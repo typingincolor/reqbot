@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -74,5 +76,7 @@ public class WebcontrollerResponsesTest {
                 .andExpect(model().attribute("mode", is(equalTo("response"))))
                 .andExpect(model().attribute("responses", hasSize(3)))
                 .andExpect(model().attribute("responses", is(responses)));
+
+        verify(responseRepo, times(1)).getAll();
     }
 }

@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -72,6 +74,8 @@ public class WebControllerIndexTest {
                 .andExpect(model().attribute("mode", Matchers.is(equalTo("request"))))
                 .andExpect(model().attribute("buckets", hasSize(2)))
                 .andExpect(model().attribute("buckets", hasItems("a", "b")));
+
+        verify(requests, times(1)).getBuckets();
     }
 }
 
