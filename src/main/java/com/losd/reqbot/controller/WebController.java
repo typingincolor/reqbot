@@ -58,13 +58,13 @@ public class WebController {
     }
 
     @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
-    public String view(@PathVariable String bucket, Model model)
+    public String viewBucket(@PathVariable String bucket, Model model)
     {
         model.addAttribute("mode", "request");
         model.addAttribute("bucket", bucket);
         model.addAttribute("buckets", requests.getBuckets());
         model.addAttribute("requests", requests.getRequestsForBucket(bucket));
-        return "view";
+        return "bucket-view";
     }
 
     @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
@@ -72,11 +72,11 @@ public class WebController {
         List<String> tags = responses.getTags();
 
         if(tags.size() > 0) {
-            return "redirect:/web/responses/tag/" + tags.get(0);
+            return "redirect:/web/tag/" + tags.get(0);
         }
 
         model.addAttribute("mode", "response");
 
-        return "responses";
+        return "index";
     }
 }

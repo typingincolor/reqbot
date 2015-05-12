@@ -67,7 +67,7 @@ public class WebcontrollerResponsesTest {
         when(responseRepo.getTags()).thenReturn(tagList);
 
         mockMvc.perform(get("/web/responses")).andExpect(status().is3xxRedirection())
-                .andExpect(view().name(is("redirect:/web/responses/tag/tag1")));
+                .andExpect(view().name(is("redirect:/web/tag/tag1")));
 
         verify(responseRepo, times(1)).getTags();
     }
@@ -77,7 +77,7 @@ public class WebcontrollerResponsesTest {
         when(responseRepo.getTags()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
-                .andExpect(view().name(is("responses")))
+                .andExpect(view().name(is("index")))
                 .andExpect(model().attribute("mode", is(equalTo("response"))))
                 .andExpect(model().attribute("tags", isNull()));
     }

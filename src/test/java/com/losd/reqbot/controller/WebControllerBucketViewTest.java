@@ -86,7 +86,7 @@ public class WebControllerBucketViewTest {
 
         mockMvc.perform(get("/web/bucket/a/view"))
                 .andExpect(status().isOk())
-                .andExpect(view().name(is("view")))
+                .andExpect(view().name(is("bucket-view")))
                 .andExpect(model().attribute("mode", is(equalTo("request"))))
                 .andExpect(model().attribute("bucket", is("a")))
                 .andExpect(model().attribute("requests", hasSize(1)))
