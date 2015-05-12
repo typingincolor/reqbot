@@ -10,15 +10,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -63,17 +62,24 @@ public class WebControllerIndexTest {
     }
 
     @Test
-    public void index() throws
-            Exception
-    {
+    public void it_redirects_to_the_first_bucket_page_if_there_are_requests() throws Exception {
         when(requests.getBuckets()).thenReturn(bucketList);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name(is("redirect:/web/bucket/a/view")))
-                .andExpect(model().attribute("mode", Matchers.is(equalTo("request"))))
-                .andExpect(model().attribute("buckets", hasSize(2)))
-                .andExpect(model().attribute("buckets", hasItems("a", "b")));
+                .andExpect(view().name(is("redirect:/web/bucket/a/view")));
+
+        verify(requests, times(1)).getBuckets();
+    }
+
+    @Test
+    public void it_renders_the_index_page_if_there_are_no_requests() throws Exception {
+        when(requests.getBuckets()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name(is("index")))
+                .andExpect(model().attribute("mode", Matchers.is(equalTo("request"))));
 
         verify(requests, times(1)).getBuckets();
     }

@@ -1,6 +1,5 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,13 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,21 +61,24 @@ public class WebcontrollerResponsesTest {
     }
 
     @Test
-    public void reponses() throws Exception {
-        List<Response> responses = new LinkedList<>();
+    public void it_redirects_to_the_first_tag_page_if_there_are_tags() throws Exception {
+        List<String> tagList = new LinkedList<>(Arrays.asList("tag1","tag2","tag3"));
 
-        responses.add(new Response.Builder().addHeader("h1", "v1").body("body1").build());
-        responses.add(new Response.Builder().addHeader("h2", "v2").body("body2").build());
-        responses.add(new Response.Builder().addHeader("h3", "v3").addHeader("h4", "v4").body("body3").build());
+        when(responseRepo.getTags()).thenReturn(tagList);
 
-        when(responseRepo.getAll()).thenReturn(responses);
+        mockMvc.perform(get("/web/responses")).andExpect(status().is3xxRedirection())
+                .andExpect(view().name(is("redirect:/web/responses/tag/tag1")));
+
+        verify(responseRepo, times(1)).getTags();
+    }
+
+    @Test
+    public void it_renders_the_reponse_page_if_there_are_no_tags() throws Exception {
+        when(responseRepo.getTags()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
                 .andExpect(view().name(is("responses")))
                 .andExpect(model().attribute("mode", is(equalTo("response"))))
-                .andExpect(model().attribute("responses", hasSize(3)))
-                .andExpect(model().attribute("responses", is(responses)));
-
-        verify(responseRepo, times(1)).getAll();
+                .andExpect(model().attribute("tags", isNull()));
     }
 }

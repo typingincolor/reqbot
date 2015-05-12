@@ -46,13 +46,13 @@ public class WebController {
     public String index(Model model)
     {
         List<String> buckets = requests.getBuckets();
-        model.addAttribute("buckets", buckets);
-        model.addAttribute("mode", "request");
 
         if (buckets.size() > 0)
         {
             return "redirect:/web/bucket/" + buckets.get(0) + "/view";
         }
+
+        model.addAttribute("mode", "request");
 
         return "index";
     }
@@ -69,8 +69,14 @@ public class WebController {
 
     @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
     public String responses(Model model) {
+        List<String> tags = responses.getTags();
+
+        if(tags.size() > 0) {
+            return "redirect:/web/responses/tag/" + tags.get(0);
+        }
+
         model.addAttribute("mode", "response");
-        model.addAttribute("responses", responses.getAll());
+
         return "responses";
     }
 }
