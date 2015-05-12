@@ -95,12 +95,21 @@ public class ResponseRedisRepoTest {
 
         Response result = gson.fromJson(jedis.get("response:" + response.getUuid().toString()), Response.class);
 
+        List<String> tag1 = jedis.lrange("tag:tag1", 0, jedis.llen("tag:tag1"));
+        List<String> tag2 = jedis.lrange("tag:tag2", 0, jedis.llen("tag:tag2"));
+
         assertThat(result.getBody(), is(equalTo("testresponsebody")));
         assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
         assertThat(result.getHeaders().size(), is(equalTo(1)));
         assertThat(result.getTags(), hasSize(2));
         assertThat(result.getTags(), contains("tag1", "tag2"));
         assertThat(result.getUuid(), is(equalTo(response.getUuid())));
+
+        assertThat(tag1, hasSize(1));
+        assertThat(tag1, hasItem("tag1"));
+
+        assertThat(tag2, hasSize(1));
+        assertThat(tag2, hasItem("tag2"));
     }
 
     @Test
