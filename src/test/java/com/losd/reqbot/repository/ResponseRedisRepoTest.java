@@ -16,12 +16,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * The MIT License (MIT)
@@ -84,6 +87,7 @@ public class ResponseRedisRepoTest {
     public void it_saves() throws Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "test-header-text")
+                .tags(Arrays.asList("tag1", "tag2"))
                 .body("testresponsebody")
                 .build();
 
@@ -94,6 +98,8 @@ public class ResponseRedisRepoTest {
         assertThat(result.getBody(), is(equalTo("testresponsebody")));
         assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
         assertThat(result.getHeaders().size(), is(equalTo(1)));
+        assertThat(result.getTags(), hasSize(2));
+        assertThat(result.getTags(), contains("tag1", "tag2"));
         assertThat(result.getUuid(), is(equalTo(response.getUuid())));
     }
 

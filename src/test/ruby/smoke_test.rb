@@ -4,7 +4,7 @@ require 'json'
 bucket = ARGV[0] || "andrew"
 
 random_body = (0...10).map { ('a'..'z').to_a[rand(26)] }.join
-programmed_response = {'headers' => {'header1' => 'value1'}, 'body' => random_body}
+programmed_response = {'headers' => {'header1' => 'value1'}, 'tags' => [:tag1, :tag2], 'body' => random_body}
 saved_response_result = RestClient.post 'http://localhost:8080/response',
                                         programmed_response.to_json,
                                         :content_type => :json

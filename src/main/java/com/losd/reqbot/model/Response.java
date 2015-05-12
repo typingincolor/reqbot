@@ -1,10 +1,9 @@
 package com.losd.reqbot.model;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The MIT License (MIT)
@@ -33,14 +32,16 @@ public class Response {
     Map<String, String> headers;
     String body;
     UUID uuid;
+    List<String> tags;
 
-    private Response(Map<String, String> headers,
+    private Response(Map<String, String> headers, List<String> tags,
                     String body
     )
     {
         this.headers = headers;
         this.body = body;
         this.uuid = UUID.randomUUID();
+        this.tags = tags;
     }
 
     public Map<String, String> getHeaders() {
@@ -55,9 +56,18 @@ public class Response {
         return uuid;
     }
 
+    public List<String> getTags() {
+        return new ImmutableList.Builder<String>().addAll(this.tags).build();
+    }
+
     public static class Builder {
         Map<String, String> headers = new HashMap<>();
         String body;
+        List<String> tags = new LinkedList<>();
+
+        public Response build() {
+            return new Response(headers, tags, body);
+        }
 
         public Builder addHeader(String header, String value) {
             headers.put(header, value);
@@ -74,8 +84,9 @@ public class Response {
             return this;
         }
 
-        public Response build() {
-            return new Response(headers, body);
+        public Builder tags(List<String> t) {
+            tags = t;
+            return this;
         }
     }
 }

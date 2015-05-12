@@ -47,7 +47,7 @@ public class ResponseApiController {
             throw new IncomingEmptyBodyException();
         }
 
-        Response response = new Response.Builder().headers(incoming.getHeaders()).body(incoming.getBody()).build();
+        Response response = new Response.Builder().headers(incoming.getHeaders()).tags(incoming.getTags()).body(incoming.getBody()).build();
         repo.save(response);
 
         return response;

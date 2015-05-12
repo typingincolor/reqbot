@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
  * The MIT License (MIT)
@@ -78,6 +81,7 @@ public class ResponseApiControllerTest {
         IncomingResponse incoming = new IncomingResponse.Builder()
                 .addHeader("test_header", "test_header_value")
                 .body("response_body")
+                .tags(Arrays.asList("tag1", "tag2"))
                 .build();
 
         String json = gson.toJson(incoming, IncomingResponse.class);
@@ -98,6 +102,8 @@ public class ResponseApiControllerTest {
 
         assertThat(argumentCaptor.getValue().getBody(), is(equalTo("response_body")));
         assertThat(argumentCaptor.getValue().getHeaders(), hasEntry("test_header", "test_header_value"));
+        assertThat(argumentCaptor.getValue().getTags(), hasSize(2));
+        assertThat(argumentCaptor.getValue().getTags(), contains("tag1", "tag2"));
         assertThat(argumentCaptor.getValue().getUuid().toString().matches(UUID_REGEX), is(true));
     }
 
