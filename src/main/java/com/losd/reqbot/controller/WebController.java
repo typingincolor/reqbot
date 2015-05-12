@@ -43,13 +43,11 @@ public class WebController {
     private ResponseRepo responses = null;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Model model)
-    {
+    public String index(Model model) {
         List<String> buckets = requests.getBuckets();
 
-        if (buckets.size() > 0)
-        {
-            return "redirect:/web/bucket/" + buckets.get(0) + "/view";
+        if (buckets.size() > 0) {
+            return "redirect:/web/bucket/" + buckets.get(0);
         }
 
         model.addAttribute("mode", "request");
@@ -57,9 +55,8 @@ public class WebController {
         return "index";
     }
 
-    @RequestMapping(value = "/web/bucket/{bucket}/view", method = RequestMethod.GET)
-    public String viewBucket(@PathVariable String bucket, Model model)
-    {
+    @RequestMapping(value = "/web/bucket/{bucket}", method = RequestMethod.GET)
+    public String viewBucket(@PathVariable String bucket, Model model) {
         model.addAttribute("mode", "request");
         model.addAttribute("bucket", bucket);
         model.addAttribute("buckets", requests.getBuckets());
@@ -67,11 +64,21 @@ public class WebController {
         return "bucket-view";
     }
 
+    @RequestMapping(value = "/web/tag/{tag}", method = RequestMethod.GET)
+    public String viewTag(@PathVariable String tag, Model model) {
+        model.addAttribute("mode", "response");
+        model.addAttribute("tag", tag);
+        model.addAttribute("tags", responses.getTags());
+        model.addAttribute("responses", responses.getByTag(tag));
+
+        return "tag-view";
+    }
+
     @RequestMapping(value = "/web/responses", method = RequestMethod.GET)
     public String responses(Model model) {
         List<String> tags = responses.getTags();
 
-        if(tags.size() > 0) {
+        if (tags.size() > 0) {
             return "redirect:/web/tag/" + tags.get(0);
         }
 

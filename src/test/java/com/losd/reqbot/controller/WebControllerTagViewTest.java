@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,11 +41,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class WebcontrollerResponsesTest {
+public class WebControllerTagViewTest {
     private MockMvc mockMvc;
 
     @Mock
-    private ResponseRepo responseRepo;
+    private ResponseRepo responses;
 
     @InjectMocks
     private WebController webController;
@@ -61,23 +59,26 @@ public class WebcontrollerResponsesTest {
     }
 
     @Test
-    public void it_redirects_to_the_first_tag_page_if_there_are_tags() throws Exception {
-        List<String> tagList = new LinkedList<>(Arrays.asList("tag1","tag2","tag3"));
+    public void it_populates_the_tag_list_correctly() throws Exception {
+        List<Response> responseList = new ArrayList<>();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("header1", "value1");
 
-        when(responseRepo.getTags()).thenReturn(tagList);
+        responseList.add(new Response.Builder()
+                .headers(headers)
+                .body("body")
+                .build());
 
-        mockMvc.perform(get("/web/responses")).andExpect(status().is3xxRedirection())
-                .andExpect(view().name(is("redirect:/web/tag/tag1")));
+        when(responses.getTags()).thenReturn(Arrays.asList("tag1", "tag2", "tag3"));
+        when(responses.getByTag("tag1")).thenReturn(responseList);
 
-        verify(responseRepo, times(1)).getTags();
-    }
-
-    @Test
-    public void it_renders_the_reponse_page_if_there_are_no_tags() throws Exception {
-        when(responseRepo.getTags()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
-                .andExpect(view().name(is("index")))
-                .andExpect(model().attribute("mode", is(equalTo("response"))));
+        mockMvc.perform(get("/web/tag/tag1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name(is("tag-view")))
+                .andExpect(model().attribute("mode", is(equalTo("response"))))
+                .andExpect(model().attribute("tag", is("tag1")))
+                .andExpect(model().attribute("tags", containsInAnyOrder("tag1", "tag2", "tag3")))
+                .andExpect(model().attribute("responses", hasSize(1)))
+                .andExpect(model().attribute("responses", is(responseList)));
     }
 }

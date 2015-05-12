@@ -67,7 +67,7 @@ public class WebControllerIndexTest {
 
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name(is("redirect:/web/bucket/a/view")));
+                .andExpect(view().name(is("redirect:/web/bucket/a")));
 
         verify(requests, times(1)).getBuckets();
     }

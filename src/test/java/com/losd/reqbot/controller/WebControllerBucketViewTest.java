@@ -13,9 +13,9 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,8 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * THE SOFTWARE.
  */
 public class WebControllerBucketViewTest {
-    final List<String> bucketList = new LinkedList<>(Arrays.asList("a", "b"));
-
     private MockMvc mockMvc;
 
     @Mock
@@ -63,8 +61,7 @@ public class WebControllerBucketViewTest {
     }
 
     @Test
-    public void it_populates_the_bucket_list_correctly() throws
-            Exception {
+    public void it_populates_the_bucket_list_correctly() throws Exception {
         List<Request> requestList = new ArrayList<>();
         Map<String, String> headers = new HashMap<>();
         headers.put("header1", "value1");
@@ -81,15 +78,19 @@ public class WebControllerBucketViewTest {
                 .path("/a/path/to/somewhere")
                 .build());
 
-        when(requests.getBuckets()).thenReturn(bucketList);
+        when(requests.getBuckets()).thenReturn(Arrays.asList("a", "b"));
         when(requests.getRequestsForBucket("a")).thenReturn(requestList);
 
-        mockMvc.perform(get("/web/bucket/a/view"))
+        mockMvc.perform(get("/web/bucket/a"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(is("bucket-view")))
                 .andExpect(model().attribute("mode", is(equalTo("request"))))
                 .andExpect(model().attribute("bucket", is("a")))
+                .andExpect(model().attribute("buckets", containsInAnyOrder("a", "b")))
                 .andExpect(model().attribute("requests", hasSize(1)))
                 .andExpect(model().attribute("requests", is(requestList)));
+
+        verify(requests, times(1)).getBuckets();
+        verify(requests, times(1)).getRequestsForBucket("a");
     }
 }

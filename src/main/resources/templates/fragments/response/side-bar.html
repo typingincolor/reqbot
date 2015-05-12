@@ -9,7 +9,7 @@
         <a th:each="t : ${tags}"
            class="btn btn-lg btn-default"
            th:classappend="${t == tag}? btn-primary"
-           th:href="@{/web/tag/{tag}/view(tag = ${t})}"
+           th:href="@{/web/tag/{tag}(tag = ${t})}"
            th:text="${t}">tag</a>
     </div>
 </div>

@@ -9,7 +9,7 @@
         <a th:each="b : ${buckets}"
            class="btn btn-lg btn-default"
            th:classappend="${b == bucket}? btn-primary"
-           th:href="@{/web/bucket/{bucket}/view(bucket = ${b})}"
+           th:href="@{/web/bucket/{bucket}(bucket = ${b})}"
            th:text="${b}">bucket</a>
     </div>
     <div>
