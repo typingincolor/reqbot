@@ -3,7 +3,6 @@ package com.losd.reqbot.repository;
 import com.losd.reqbot.model.Request;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * The MIT License (MIT)
@@ -30,6 +29,6 @@ import java.util.Set;
  */
 public interface RequestRepo {
     void save(Request request);
-    List<Request> getRequestsForBucket(String bucket);
+    List<Request> getByBucket(String bucket);
     List<String> getBuckets();
 }

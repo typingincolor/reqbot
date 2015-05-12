@@ -65,7 +65,7 @@ public class RequestRedisRepo implements RequestRepo {
     }
 
     @Override
-    public List<Request> getRequestsForBucket(String bucket) {
+    public List<Request> getByBucket(String bucket) {
         int queueSize = settings.getQueueSize();
 
         List<Request> result = new ArrayList<>();

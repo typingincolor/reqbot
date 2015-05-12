@@ -130,7 +130,7 @@ public class RequestRedisRepoTest {
         List<UUID> testUuids = new ArrayList<>(Arrays.asList(request1.getUuid(), request2.getUuid(), request3.getUuid()));
 
         // run the test
-        List<Request> result = repo.getRequestsForBucket(bucket);
+        List<Request> result = repo.getByBucket(bucket);
 
         // check the results
         assertThat(result, hasSize(3));

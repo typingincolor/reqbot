@@ -60,7 +60,7 @@ public class WebController {
         model.addAttribute("mode", "request");
         model.addAttribute("bucket", bucket);
         model.addAttribute("buckets", requests.getBuckets());
-        model.addAttribute("requests", requests.getRequestsForBucket(bucket));
+        model.addAttribute("requests", requests.getByBucket(bucket));
         return "bucket-view";
     }
 

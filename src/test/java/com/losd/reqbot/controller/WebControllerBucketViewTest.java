@@ -79,7 +79,7 @@ public class WebControllerBucketViewTest {
                 .build());
 
         when(requests.getBuckets()).thenReturn(Arrays.asList("a", "b"));
-        when(requests.getRequestsForBucket("a")).thenReturn(requestList);
+        when(requests.getByBucket("a")).thenReturn(requestList);
 
         mockMvc.perform(get("/web/bucket/a"))
                 .andExpect(status().isOk())
@@ -91,6 +91,6 @@ public class WebControllerBucketViewTest {
                 .andExpect(model().attribute("requests", is(requestList)));
 
         verify(requests, times(1)).getBuckets();
-        verify(requests, times(1)).getRequestsForBucket("a");
+        verify(requests, times(1)).getByBucket("a");
     }
 }
