@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 .tab-pane {
-    height: 300px;
+    height: 310px;
     overflow-y: scroll;
 }
 
@@ -43,9 +43,33 @@
 ul#tag-list
 {
     list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 ul#bucket-list
 {
     list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.response {
+    border-radius: 25px;
+    border: 2px solid #ddd;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+.request {
+    border-radius: 25px;
+    border: 2px solid #ddd;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    margin-bottom: 10px;
 }

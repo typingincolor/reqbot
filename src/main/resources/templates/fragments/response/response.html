@@ -5,9 +5,7 @@
 <div th:fragment="response">
     <div id="response-1" th:id="'response-' + ${response.uuid}" class="response">
         <div class="tags">
-            <a href="#top">
-                <small>[top]</small>
-            </a>
+            <a href="#top">[top]</a>
             <span th:each="t : ${response.tags}" th:text="${t}" class="label" th:classappend="${t == tag} ? label-success : label-primary ">tag</span>
         </div>
         <h4>
@@ -49,7 +47,6 @@
                 <code th:text="${response.body}">response body</code>
             </div>
         </div>
-        <hr />
     </div>
 </div>
 </body>
