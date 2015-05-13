@@ -76,8 +76,7 @@ public class ResponseApiControllerTest {
     }
 
     @Test
-    public void it_saves_a_response() throws
-            Exception {
+    public void it_saves_a_response() throws Exception {
         IncomingResponse incoming = new IncomingResponse.Builder()
                 .addHeader("test_header", "test_header_value")
                 .body("response_body")

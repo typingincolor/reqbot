@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * The MIT License (MIT)
  * <p>
@@ -47,7 +50,10 @@ public class ResponseApiController {
             throw new IncomingEmptyBodyException();
         }
 
-        Response response = new Response.Builder().headers(incoming.getHeaders()).tags(incoming.getTags()).body(incoming.getBody()).build();
+        Map<String, String> headers = incoming.getHeaders();
+        List<String> tags = incoming.getTags();
+        String body = incoming.getBody();
+        Response response = new Response.Builder().headers(headers).tags(tags).body(body).build();
         repo.save(response);
 
         return response;

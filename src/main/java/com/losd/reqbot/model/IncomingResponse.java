@@ -3,10 +3,7 @@ package com.losd.reqbot.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The MIT License (MIT)
@@ -43,10 +40,16 @@ public class IncomingResponse {
     }
 
     public Map<String, String> getHeaders() {
+        if (this.headers == null) {
+            return new ImmutableMap.Builder<String, String>().build();
+        }
         return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
     }
 
     public List<String> getTags() {
+        if (this.tags == null) {
+            return new ImmutableList.Builder<String>().build();
+        }
         return new ImmutableList.Builder<String>().addAll(this.tags).build();
     }
 
