@@ -4,16 +4,13 @@
 <body>
 <div th:fragment="request">
     <div id="request-1" th:id="'request-' + ${request.uuid}" class="request">
-        <h3>
-            <a href="#top">
-                <small>[top]</small>
-            </a>
-                        <span class="label label-default" th:classappend="'label-' + ${request.method}"
-                              th:text="${request.method}">method</span> @
+        <h4>
+            <a href="#top">[top]</a>
             <span th:text="${request.timestamp}">timestamp</span>
-        </h3>
+        </h4>
 
         <div class="request-path">
+            <span class="label label-default" th:classappend="'label-' + ${request.method}" th:text="${request.method}">method</span>
             <span th:text="${request.path}">path</span>
         </div>
 
