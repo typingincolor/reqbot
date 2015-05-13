@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 .tab-pane {
-    height: 310px;
+    max-height: 310px;
     overflow-y: scroll;
 }
 
