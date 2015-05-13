@@ -5,13 +5,13 @@
 <div th:fragment="side-bar">
     <h4>Tags</h4>
 
-    <div class="btn-group-vertical">
-        <a th:each="t : ${tags}"
-           class="btn btn-lg btn-default"
-           th:classappend="${t == tag}? btn-primary"
-           th:href="@{/web/tag/{tag}(tag = ${t})}"
-           th:text="${t}">tag</a>
-    </div>
+    <ul id="tag-list">
+        <li class="tag" th:each="t : ${tags}">
+            <a th:href="@{/web/tag/{tag}(tag = ${t})}" href="#">
+                <span class="label" th:classappend="${t == tag} ? label-success : label-primary"  th:text="${t}">tag</span>
+            </a>
+        </li>
+    </ul>
 </div>
 </body>
 </html>
