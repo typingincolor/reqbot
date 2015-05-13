@@ -46,14 +46,12 @@ public class JedisConfiguration {
                 settings.getHost(),
                 settings.getPort());
 
-        JedisPool pool = new JedisPool(new JedisPoolConfig(),
+        return new JedisPool(new JedisPoolConfig(),
                 settings.getHost(),
                 settings.getPort(),
                 Protocol.DEFAULT_TIMEOUT,
                 settings.getPassword(),
                 settings.getIndex(),
                 settings.getClient());
-
-        return pool;
     }
 }
