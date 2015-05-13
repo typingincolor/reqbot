@@ -35,6 +35,15 @@ public class RedisSettings {
     private String password;
     private Integer port = 6379;
     private Integer index = 0;
+    private String client = "REQBOT";
+
+    public String getClient() {
+        return client;
+    }
+
+    public void setClient(String client) {
+        this.client = client;
+    }
 
     public Integer getPort() {
         return port;

@@ -9,8 +9,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
 
-import java.net.URI;
-
 /**
  * The MIT License (MIT)
  * <p>
@@ -48,19 +46,14 @@ public class JedisConfiguration {
                 settings.getHost(),
                 settings.getPort());
 
-        String redisUri = "redis://";
+        JedisPool pool = new JedisPool(new JedisPoolConfig(),
+                settings.getHost(),
+                settings.getPort(),
+                Protocol.DEFAULT_TIMEOUT,
+                settings.getPassword(),
+                settings.getIndex(),
+                settings.getClient());
 
-        if (settings.isPasswordSet()) {
-           redisUri += settings.getPassword() + "@";
-        }
-
-        redisUri += settings.getHost() + ":" + settings.getPort();
-
-        if (settings.getIndex() > 0) {
-            redisUri += "/" + settings.getIndex();
-        }
-
-        URI uri = new URI(redisUri);
-        return new JedisPool(new JedisPoolConfig(), uri, Protocol.DEFAULT_TIMEOUT);
+        return pool;
     }
 }
