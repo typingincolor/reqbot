@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head />
+<body>
+<div th:fragment="side-bar">
+    <h4>Buckets</h4>
+
+    <ul id="bucket-list">
+        <li class="tag" th:each="b : ${buckets}">
+            <a th:href="@{/web/bucket/{bucket}(bucket = ${b})}" href="#">
+                <span class="label" th:classappend="${b == bucket}? label-success : label-primary"  th:text="${b}">bucket</span>
+            </a>
+        </li>
+    </ul>
+    <div>
+        <a href="#">
+            <small>Create new...</small>
+        </a>
+    </div>
+</div>
+</body>
+</html>

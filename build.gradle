@@ -1,0 +1,90 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+        classpath("com.monochromeroad.gradle-plugins:gradle-aws-s3-sync:0.8")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'jacoco'
+apply plugin: 'findbugs'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    all*.exclude group: 'logback'
+    all*.exclude group: 'log4j'
+}
+
+dependencies {
+    compile('com.google.code.gson:gson:2.3.1')
+    compile('redis.clients:jedis:2.6.2')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('com.google.guava:guava:18.0')
+    compile('org.apache.commons:commons-pool2:2.3')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
+    testCompile('commons-lang:commons-lang:2.6')
+}
+
+task stage(type: Copy, dependsOn: [clean, bootRepackage, installDist]) {
+    from jar.archivePath
+    into project.rootDir
+    rename {
+        'reqbot.jar'
+    }
+}
+stage.mustRunAfter(clean)
+uploadArchives.dependsOn bootRepackage
+
+clean << {
+    project.file('reqbot.jar').delete()
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+tasks.withType(Pmd) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+
+test {
+    useJUnit {
+        excludeCategories 'com.losd.reqbot.test.IntegrationTest'
+    }
+}
+
+task integrationTest(type: Test) {
+
+}
+
+integrationTest {
+    useJUnit {
+        includeCategories 'com.losd.reqbot.test.IntegrationTest'
+    }
+}

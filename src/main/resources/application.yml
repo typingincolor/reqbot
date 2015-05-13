@@ -1,0 +1,9 @@
+reqbot:
+    request:
+        queueSize: 10
+
+    redis:
+        host: localhost
+        port: 6379
+        index: 0
+        client: REQBOT

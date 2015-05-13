@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <!-- reqbot stylesheet -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/reqbot.css}" href="/css/reqbot.css" />
+</head>
+<body>
+<div class="container-fluid">
+    <div th:replace="fragments/top-nav"></div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="sidebar-nav" th:replace="fragments/request/side-bar(bucket=${bucket},buckets=${buckets})">sidebar</div>
+        </div>
+        <div class="col-md-10">
+            <div th:replace="fragments/request/request-list(requests=${requests})">request list</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

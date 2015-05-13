@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head />
+<body>
+<div th:fragment="response">
+    <div id="response-1" th:id="'response-' + ${response.uuid}" class="response">
+        <div class="tags">
+            <a href="#top">[top]</a>
+            <span th:each="t : ${response.tags}" th:text="${t}" class="label" th:classappend="${t == tag} ? label-success : label-primary ">tag</span>
+        </div>
+        <h4>
+            Response <span th:text="${response.uuid}">1234567-2323-43343</span>
+        </h4>
+
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#1-headers" th:href="'#tab-' + ${response.uuid} + '-headers'"
+                   data-toggle="tab">headers</a>
+            </li>
+            <li th:if="${!#strings.isEmpty(response.body)}">
+                <a href="#1-body" th:href="'#tab-' + ${response.uuid} + '-body'" data-toggle="tab">body</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="1-headers"
+                 th:id="'tab-' + ${response.uuid} + '-headers'">
+                <div class="response-headers">
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Header</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="header : ${response.headers}">
+                            <td th:text="${header.key}">key</td>
+                            <td th:text="${header.value}">value</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade in" id="1-body" th:id="'tab-' + ${response.uuid} + '-body'">
+                <code th:text="${response.body}">response body</code>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

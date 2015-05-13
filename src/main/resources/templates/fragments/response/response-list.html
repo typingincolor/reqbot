@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head />
+<body>
+<div th:fragment="response-list">
+    <h2>Response List</h2>
+
+    <nav>
+        <ul class="pagination">
+            <li th:each="response, status : ${responses}">
+                <a th:href="'#response-' + ${response.uuid}" th:text="${status.count}" href="#">1</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="responses">
+        <div th:each="response : ${responses}">
+            <div th:replace="fragments/response/response(response=${response})">request goes here</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

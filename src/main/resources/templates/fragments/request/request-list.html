@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head />
+<body>
+<div th:fragment="request-list">
+    <h2>Request List for <span th:text="${bucket}">bucket</span> bucket</h2>
+
+    <nav>
+        <ul class="pagination">
+            <li th:each="request, status : ${requests}">
+                <a th:href="'#request-' + ${request.uuid}" th:text="${status.count}" href="#">1</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="requests">
+        <div th:each="request : ${requests}">
+            <div th:replace="fragments/request/request(request=${request})">request goes here</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
