@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
@@ -86,6 +84,8 @@ public class RequestRedisRepo implements RequestRepo {
         List<String> result = new LinkedList<String>();
 
         keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
+
+        Collections.sort(result);
         return result;
     }
 

@@ -126,6 +126,10 @@ public class BucketApiController {
 
         if (!isResponseHeaderSet(caseInsensitiveHeaders)) {
             response = responseRepo.get(caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE));
+
+            if (response == null) {
+                throw new ResponseNotFoundException();
+            }
             response.getHeaders().forEach(resultHeaders::add);
         }
 
@@ -177,5 +181,16 @@ public class BucketApiController {
 
     private void save(Request request) {
         requestRepo.save(request);
+    }
+
+    @ExceptionHandler(ResponseNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public @ResponseBody String handleResponseNotFound(ResponseNotFoundException e) {
+        return "Response Not Found";
+    }
+
+
+    static class ResponseNotFoundException extends RuntimeException {
+
     }
 }

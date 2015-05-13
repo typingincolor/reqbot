@@ -77,8 +77,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_get() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x";
         mockMvc.perform(get(path)).andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
@@ -88,8 +87,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_get_with_a_path() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x/a/path/to/somewhere";
         mockMvc.perform(get(path)).andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
@@ -99,8 +97,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_post() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x";
         mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
@@ -111,8 +108,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_post_with_a_path() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x/a/path/to/somewhere";
         mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
@@ -123,8 +119,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_get_with_query_parameters() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x";
         mockMvc.perform(get(path + "?a=1")).andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
@@ -136,8 +131,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_handles_a_post_with_query_parameters() throws
-            Exception
-    {
+            Exception {
         String path = "/bucket/x";
         mockMvc.perform(post(path + "?a=1").content("hello"))
                 .andExpect(status().isOk())
@@ -151,8 +145,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_goes_slow_when_asked() throws
-            Exception
-    {
+            Exception {
         Instant start = Instant.now();
         mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.GO_SLOW, 5000))
                 .andExpect(status().isOk())
@@ -165,8 +158,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_http_status_code() throws
-            Exception
-    {
+            Exception {
         mockMvc.perform(get("/bucket/x").header(ReqbotHttpHeaders.HTTP_CODE, 404))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
@@ -174,8 +166,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_correct_http_status_code_when_the_header_is_mixed_case() throws
-            Exception
-    {
+            Exception {
         mockMvc.perform(get("/bucket/x").header("X-ReQbOt-http-CODE", 404))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(HttpStatus.NOT_FOUND.getReasonPhrase()));
@@ -183,8 +174,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_a_http_ok_response_code_when_http_code_header_is_empty() throws
-            Exception
-    {
+            Exception {
         mockMvc.perform(get("/bucket/x").header("X-ReQbOt-http-CODE", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
@@ -192,8 +182,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_response_body_for_a_get() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body(RandomStringUtils.randomAlphanumeric(30))
@@ -212,8 +201,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_response_body_for_a_post() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body(RandomStringUtils.randomAlphanumeric(30))
@@ -232,8 +220,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_body_for_a_get_using_header() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body(RandomStringUtils.randomAlphanumeric(30))
@@ -241,7 +228,7 @@ public class BucketApiControllerTest {
 
         when(responseRepo.get(response.getUuid().toString())).thenReturn(response);
 
-        String path = "/bucket/x/response";
+        String path = "/bucket/x";
         mockMvc.perform(get(path).header(ReqbotHttpHeaders.RESPONSE, response.getUuid().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(response.getBody()))
@@ -252,8 +239,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_body_for_a_post_using_header() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body(RandomStringUtils.randomAlphanumeric(30))
@@ -272,8 +258,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_response_body_and_http_status_code_for_a_get() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body("hello")
@@ -292,8 +277,7 @@ public class BucketApiControllerTest {
 
     @Test
     public void it_returns_the_requested_response_body_and_http_status_code_for_a_post() throws
-            Exception
-    {
+            Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "testvalue")
                 .body("hello")
@@ -311,13 +295,32 @@ public class BucketApiControllerTest {
         validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
     }
 
+    @Test
+    public void it_handles_a_bad_expected_response_header() throws Exception {
+        when(responseRepo.get("aaaaa")).thenReturn(null);
+
+        String path = "/bucket/x";
+        mockMvc.perform(get(path).header(ReqbotHttpHeaders.RESPONSE, "aaaaaa"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Response Not Found"));
+    }
+
+    @Test
+    public void it_handles_a_bad_expected_response_pathparameter() throws Exception {
+        when(responseRepo.get("aaaaa")).thenReturn(null);
+
+        String path = "/bucket/x/response/aaaaa";
+        mockMvc.perform(get(path))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Response Not Found"));
+    }
+
     private void validate(String bucket,
                           Map<String, String> queryParameters,
                           RequestMethod method,
                           String body,
                           String path
-    )
-    {
+    ) {
         ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
         verify(requestRepo, times(1)).save(requestCaptor.capture());
 
