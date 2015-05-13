@@ -54,9 +54,15 @@ public class ResponseRedisRepo implements ResponseRepo {
     public void save(Response response) {
         String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
         Transaction t = jedis.multi();
-        t.set(key, gson.toJson(response, Response.class));
 
-        response.getTags().forEach((tag) -> t.lpush(TAG_PREFIX + tag, key));
+        if(null == response.getTags() || response.getTags().size() == 0) {
+            t.lpush(TAG_PREFIX + "none", key);
+        }
+        else {
+            response.getTags().forEach((tag) -> t.lpush(TAG_PREFIX + tag, key));
+        }
+
+        t.set(key, gson.toJson(response, Response.class));
 
         t.exec();
     }

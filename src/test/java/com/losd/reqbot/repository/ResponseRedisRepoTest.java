@@ -92,8 +92,8 @@ public class ResponseRedisRepoTest {
 
         Response result = gson.fromJson(jedis.get("response:" + response.getUuid().toString()), Response.class);
 
-        List<String> tag1 = jedis.lrange("tag:tag1", 0, jedis.llen("tag:tag1"));
-        List<String> tag2 = jedis.lrange("tag:tag2", 0, jedis.llen("tag:tag2"));
+        List<String> tag1 = jedis.lrange("tag:tag1", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "tag1"));
+        List<String> tag2 = jedis.lrange("tag:tag2", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "tag2"));
 
         assertThat(result.getBody(), is(equalTo("testresponsebody")));
         assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
@@ -103,10 +103,32 @@ public class ResponseRedisRepoTest {
         assertThat(result.getUuid(), is(equalTo(response.getUuid())));
 
         assertThat(tag1, hasSize(1));
-        assertThat(tag1, hasItem("response:" + response.getUuid()));
+        assertThat(tag1, hasItem(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid()));
 
         assertThat(tag2, hasSize(1));
-        assertThat(tag2, hasItem("response:" + response.getUuid()));
+        assertThat(tag2, hasItem(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid()));
+    }
+
+    @Test
+    public void it_saves_with_no_tags() throws Exception {
+        Response response = new Response.Builder()
+                .addHeader("test-header", "test-header-text")
+                .body("testresponsebody")
+                .build();
+
+        repo.save(response);
+
+        Response result = gson.fromJson(jedis.get(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString()), Response.class);
+        List<String> tag = jedis.lrange(ResponseRedisRepo.TAG_PREFIX + "none", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "none"));
+
+        assertThat(result.getBody(), is(equalTo("testresponsebody")));
+        assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
+        assertThat(result.getHeaders().size(), is(equalTo(1)));
+        assertThat(result.getTags(), hasSize(0));
+        assertThat(result.getUuid(), is(equalTo(response.getUuid())));
+
+        assertThat(tag, hasSize(1));
+        assertThat(tag, hasItem(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid()));
     }
 
     @Test
