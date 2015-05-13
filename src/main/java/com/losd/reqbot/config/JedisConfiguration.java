@@ -5,7 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Protocol;
+
+import java.net.URI;
 
 /**
  * The MIT License (MIT)
@@ -38,20 +42,25 @@ public class JedisConfiguration {
     Logger logger = LoggerFactory.getLogger(JedisConfiguration.class);
 
     @Bean
-    Jedis jedis() {
+    JedisPool jedisPool() throws Exception {
         logger.info("Connecting to database {} on {} port {}",
                 settings.getIndex(),
                 settings.getHost(),
                 settings.getPort());
 
-        Jedis jedis = new Jedis(settings.getHost(), settings.getPort());
+        String redisUri = "redis://";
+
         if (settings.isPasswordSet()) {
-            jedis.auth(settings.getPassword());
+           redisUri += settings.getPassword() + "@";
         }
 
+        redisUri += settings.getHost() + ":" + settings.getPort();
+
         if (settings.getIndex() > 0) {
-            jedis.select(settings.getIndex());
+            redisUri += "/" + settings.getIndex();
         }
-        return jedis;
+
+        URI uri = new URI(redisUri);
+        return new JedisPool(new JedisPoolConfig(), uri, Protocol.DEFAULT_TIMEOUT);
     }
 }

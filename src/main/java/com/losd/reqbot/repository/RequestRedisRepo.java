@@ -6,6 +6,7 @@ import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 
@@ -42,51 +43,74 @@ public class RequestRedisRepo implements RequestRepo {
     RequestSettings settings;
 
     @Autowired
-    Jedis jedis = null;
+    JedisPool pool;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public void save(Request request) {
-        int queueSize = settings.getQueueSize();
+        Jedis jedis = pool.getResource();
 
-        Transaction t = jedis.multi();
-        Response<String> key = t.lindex(getBucketKey(request.getBucket()), queueSize - 1);
-        t.lpush(getBucketKey(request.getBucket()), getRequestKey(request));
-        t.set(getRequestKey(request), gson.toJson(request));
-        t.ltrim(getBucketKey(request.getBucket()), 0, queueSize - 1);
-        t.exec();
+        try {
+            int queueSize = settings.getQueueSize();
 
-        if (key.get() != null) {
-            jedis.del(key.get());
+            Transaction t = jedis.multi();
+            Response<String> key = t.lindex(getBucketKey(request.getBucket()), queueSize - 1);
+            t.lpush(getBucketKey(request.getBucket()), getRequestKey(request));
+            t.set(getRequestKey(request), gson.toJson(request));
+            t.ltrim(getBucketKey(request.getBucket()), 0, queueSize - 1);
+            t.exec();
+
+            if (key.get() != null) {
+                jedis.del(key.get());
+            }
+        } finally {
+            if (jedis != null)
+                jedis.close();
         }
     }
 
     @Override
     public List<Request> getByBucket(String bucket) {
-        int queueSize = settings.getQueueSize();
+        Jedis jedis = pool.getResource();
 
-        List<Request> result = new ArrayList<>();
+        List<Request> result;
+        try {
+            int queueSize = settings.getQueueSize();
 
-        List<String> requests = jedis.lrange(getBucketKey(bucket), 0, queueSize - 1);
+            result = new ArrayList<>();
 
-        requests.forEach(request -> {
-            String body = jedis.get(request);
-            result.add(gson.fromJson(body, Request.class));
-        });
+            List<String> requests = jedis.lrange(getBucketKey(bucket), 0, queueSize - 1);
+
+            requests.forEach(request -> {
+                String body = jedis.get(request);
+                result.add(gson.fromJson(body, Request.class));
+            });
+        } finally {
+            if (jedis != null)
+                jedis.close();
+        }
+
 
         return result;
     }
 
     @Override
     public List<String> getBuckets() {
-        Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
-        List<String> result = new LinkedList<String>();
+        Jedis jedis = pool.getResource();
 
-        keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
+        try {
+            Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
+            List<String> result = new LinkedList<String>();
 
-        Collections.sort(result);
-        return result;
+            keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
+
+            Collections.sort(result);
+            return result;
+        } finally {
+            if (jedis != null)
+                jedis.close();
+        }
     }
 
     static String getRequestKey(Request request) {

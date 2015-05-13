@@ -7,6 +7,7 @@ import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.test.IntegrationTest;
 import org.apache.commons.lang.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 
@@ -54,13 +56,21 @@ public class ResponseRedisRepoTest {
     ResponseRepo repo;
 
     @Autowired
+    JedisPool pool;
+
     Jedis jedis;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Before
     public void setup() {
+        jedis = pool.getResource();
         jedis.flushDB();
+    }
+
+    @After
+    public void after() {
+        jedis.close();
     }
 
     @Test
