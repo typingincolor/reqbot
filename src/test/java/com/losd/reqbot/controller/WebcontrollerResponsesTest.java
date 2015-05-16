@@ -1,6 +1,8 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
+import jdk.nashorn.internal.runtime.ECMAException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -79,5 +81,19 @@ public class WebcontrollerResponsesTest {
         mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
                 .andExpect(view().name(is("index")))
                 .andExpect(model().attribute("mode", is(equalTo("response"))));
+    }
+
+    //todo this
+    @Test
+    public void it_renders_the_correct_page_for_a_single_response() throws Exception {
+        Response response = new Response.Builder().addHeader("header1", "value1").body("body").build();
+
+        when(responseRepo.get("1234")).thenReturn(response);
+
+        mockMvc.perform(get("/web/responses/1234")).andExpect(status().isOk())
+            .andExpect(view().name(is("response")))
+            .andExpect(model().attribute("response", is(equalTo(response))));
+
+        verify(responseRepo, times(1)).get("1234");
     }
 }

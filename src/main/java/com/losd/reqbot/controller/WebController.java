@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,5 +86,12 @@ public class WebController {
         model.addAttribute("mode", "response");
 
         return "index";
+    }
+
+    @RequestMapping(value = "/web/responses/{response}", method = RequestMethod.GET)
+    public String response(@PathVariable String response, Model model) {
+        Response result = responses.get(response);
+        model.addAttribute("response", result);
+        return "response";
     }
 }
