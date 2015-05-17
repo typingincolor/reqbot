@@ -1,13 +1,15 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.Response;
+import com.losd.reqbot.model.WebResponse;
 import com.losd.reqbot.repository.ResponseRepo;
-import jdk.nashorn.internal.runtime.ECMAException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -17,10 +19,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.cthul.matchers.CthulMatchers.matchesPattern;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
  * The MIT License (MIT)
@@ -83,7 +91,6 @@ public class WebcontrollerResponsesTest {
                 .andExpect(model().attribute("mode", is(equalTo("response"))));
     }
 
-    //todo this
     @Test
     public void it_renders_the_correct_page_for_a_single_response() throws Exception {
         Response response = new Response.Builder().addHeader("header1", "value1").body("body").build();
@@ -96,4 +103,13 @@ public class WebcontrollerResponsesTest {
 
         verify(responseRepo, times(1)).get("1234");
     }
+
+    @Test
+    public void it_renders_the_create_response_page() throws Exception {
+        mockMvc.perform(get("/web/response/create")).andExpect(status().isOk())
+                .andExpect(view().name(is("create-response")))
+                .andExpect(model().attribute("webResponse", isA(WebResponse.class)));
+    }
+
+
 }

@@ -1,16 +1,19 @@
 package com.losd.reqbot.controller;
 
 import com.losd.reqbot.model.Response;
+import com.losd.reqbot.model.WebResponse;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.List;
+import java.util.*;
+import java.util.regex.MatchResult;
 
 /**
  * The MIT License (MIT)
@@ -93,5 +96,54 @@ public class WebController {
         Response result = responses.get(response);
         model.addAttribute("response", result);
         return "response";
+    }
+
+    @RequestMapping(value = "/web/response/create", method = RequestMethod.GET)
+    public String renderCreateReponse(Model model) {
+        model.addAttribute("webResponse", new WebResponse());
+        return "create-response";
+    }
+
+    @RequestMapping(value = "/web/response/create", method = RequestMethod.POST)
+    public String handleCreateReponseForm(@ModelAttribute WebResponse webResponse,Model model) {
+        Map<String, String> headers = getHeadersFromFormData(webResponse.getHeaders());
+        List<String> tags = getTagsFromFormData(webResponse.getTags());
+
+        Response newResponse = new Response.Builder().headers(headers).tags(tags).body(webResponse.getBody()).build();
+
+        responses.save(newResponse);
+
+        model.addAttribute("response", newResponse);
+        return "redirect:/web/responses/" + newResponse.getUuid();
+    }
+
+    private Map<String, String> getHeadersFromFormData(String formHeaders) {
+        if (null == formHeaders || formHeaders.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        Scanner headerScanner = new Scanner(formHeaders);
+
+        while (headerScanner.hasNextLine()) {
+            Scanner lineScanner = new Scanner(headerScanner.nextLine());
+            lineScanner.findInLine("([a-z0-9A-Z-\\.]+)\\s*:\\s*([a-z0-9A-Z-\\.]+)");
+            MatchResult res = lineScanner.match();
+            headers.put(res.group(1), res.group(2));
+        }
+
+        return headers;
+    }
+
+    private List<String> getTagsFromFormData(String formTags) {
+        if (null == formTags || formTags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> tags = new LinkedList<>();
+        Scanner tagScanner = new Scanner(formTags).useDelimiter("\\s*,\\s*");
+        tagScanner.forEachRemaining((tag) -> tags.add(tag));
+
+        return tags;
     }
 }

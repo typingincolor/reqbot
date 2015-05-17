@@ -39,6 +39,7 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
     testCompile('commons-lang:commons-lang:2.6')
+    testCompile('org.cthul:cthul-matchers:1.1.0')
 }
 
 task stage(type: Copy, dependsOn: [clean, bootRepackage, installDist]) {

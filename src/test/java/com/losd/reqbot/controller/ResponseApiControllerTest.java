@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static org.cthul.matchers.object.ContainsPattern.matchesPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
@@ -103,7 +104,7 @@ public class ResponseApiControllerTest {
         assertThat(argumentCaptor.getValue().getHeaders(), hasEntry("test_header", "test_header_value"));
         assertThat(argumentCaptor.getValue().getTags(), hasSize(2));
         assertThat(argumentCaptor.getValue().getTags(), contains("tag1", "tag2"));
-        assertThat(argumentCaptor.getValue().getUuid().toString().matches(UUID_REGEX), is(true));
+        assertThat(argumentCaptor.getValue().getUuid().toString(), matchesPattern(UUID_REGEX));
     }
 
     @Test
