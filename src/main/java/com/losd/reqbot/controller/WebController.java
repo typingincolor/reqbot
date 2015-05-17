@@ -127,7 +127,7 @@ public class WebController {
 
         while (headerScanner.hasNextLine()) {
             Scanner lineScanner = new Scanner(headerScanner.nextLine());
-            lineScanner.findInLine("([a-z0-9A-Z-\\.]+)\\s*:\\s*([a-z0-9A-Z-\\.]+)");
+            lineScanner.findInLine("([a-z0-9A-Z-\\./]+)\\s*:\\s*([a-z0-9A-Z-\\./]+)");
             MatchResult res = lineScanner.match();
             headers.put(res.group(1), res.group(2));
         }

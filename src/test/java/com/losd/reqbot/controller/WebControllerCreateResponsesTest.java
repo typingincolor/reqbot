@@ -159,6 +159,27 @@ public class WebControllerCreateResponsesTest {
     }
 
     @Test
+    public void it_handles_headers_with_slashes() throws Exception {
+        mockMvc.perform(post("/web/response/create")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("headers", "header1    : a/b\r\nheader2: value2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(model().attribute("response", isA(Response.class)))
+                .andExpect(view().name(matchesPattern("redirect:/web/responses/" + "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")));
+
+        ArgumentCaptor<Response> argumentCaptor = ArgumentCaptor.forClass(Response.class);
+
+        verify(responseRepo, times(1)).save(argumentCaptor.capture());
+
+        assertThat(argumentCaptor.getValue().getHeaders().size(), is(equalTo(2)));
+        assertThat(argumentCaptor.getValue().getHeaders(), hasEntry("header1", "a/b"));
+        assertThat(argumentCaptor.getValue().getHeaders(), hasEntry("header2", "value2"));
+
+        assertThat(argumentCaptor.getValue().getUuid().toString(), matchesPattern(UUID_REGEX));
+    }
+
+
+    @Test
     public void it_handles_tags_with_spaces() throws Exception {
         mockMvc.perform(post("/web/response/create")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
