@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.google.common.base.Strings;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.model.WebResponse;
 import com.losd.reqbot.repository.RequestRepo;
@@ -118,7 +119,7 @@ public class WebController {
     }
 
     private Map<String, String> getHeadersFromFormData(String formHeaders) {
-        if (null == formHeaders || formHeaders.isEmpty()) {
+        if (Strings.isNullOrEmpty(formHeaders)) {
             return Collections.emptyMap();
         }
 
@@ -136,7 +137,7 @@ public class WebController {
     }
 
     private List<String> getTagsFromFormData(String formTags) {
-        if (null == formTags || formTags.isEmpty()) {
+        if (Strings.isNullOrEmpty(formTags)) {
             return Collections.emptyList();
         }
 

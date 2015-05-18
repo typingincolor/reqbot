@@ -1,5 +1,6 @@
 package com.losd.reqbot.controller;
 
+import com.google.common.base.Strings;
 import com.losd.reqbot.model.IncomingResponse;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
@@ -46,7 +47,7 @@ public class ResponseApiController {
     @RequestMapping(value = "/response", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Response save(@RequestBody IncomingResponse incoming) throws IncomingEmptyBodyException {
         logger.info("POST /response");
-        if (incoming.getBody() == null || incoming.getBody().isEmpty()) {
+        if (Strings.isNullOrEmpty(incoming.getBody())) {
             throw new IncomingEmptyBodyException();
         }
 
