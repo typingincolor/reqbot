@@ -122,7 +122,7 @@ public class Request {
     }
 
     public Map<String, String> getHeaders() {
-        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
+        return ImmutableMap.copyOf(this.headers);
     }
 
     public String getBody() {
@@ -130,7 +130,7 @@ public class Request {
     }
 
     public Map<String, String> getQueryParameters() {
-        return new ImmutableMap.Builder<String, String>().putAll(this.queryParameters).build();
+        return ImmutableMap.copyOf(this.queryParameters);
     }
 
     public String getMethod() {
