@@ -1,5 +1,6 @@
 package com.losd.reqbot.repository;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.RequestSettings;
@@ -92,7 +93,7 @@ public class RequestRedisRepo implements RequestRepo {
         }
 
 
-        return result;
+        return ImmutableList.copyOf(result);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class RequestRedisRepo implements RequestRepo {
             keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
 
             Collections.sort(result);
-            return result;
+            return ImmutableList.copyOf(result);
         } finally {
             if (jedis != null)
                 jedis.close();

@@ -1,5 +1,6 @@
 package com.losd.reqbot.repository;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Response;
@@ -89,7 +90,7 @@ public class ResponseRedisRepo implements ResponseRepo {
             List<Response> result = new LinkedList<>();
 
             keys.forEach((key) -> result.add(get(key.substring(RESPONSE_KEY_PREFIX.length()))));
-            return result;
+            return ImmutableList.copyOf(result);
         } finally {
             if (jedis != null)
                 jedis.close();
@@ -113,7 +114,7 @@ public class ResponseRedisRepo implements ResponseRepo {
                 result.add(gson.fromJson(response, Response.class));
             });
 
-            return result;
+            return ImmutableList.copyOf(result);
         } finally {
             if (jedis != null)
                 jedis.close();
@@ -129,7 +130,7 @@ public class ResponseRedisRepo implements ResponseRepo {
 
             tags.forEach((tag) -> result.add(tag.substring(TAG_PREFIX.length())));
             Collections.sort(result);
-            return result;
+            return ImmutableList.copyOf(result);
         } finally {
             if (jedis != null)
                 jedis.close();
