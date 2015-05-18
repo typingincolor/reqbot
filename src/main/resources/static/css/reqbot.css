@@ -40,14 +40,14 @@
     font-weight: bold;
 }
 
-ul#tag-list
+#tag-list
 {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-ul#bucket-list
+#bucket-list
 {
     list-style-type: none;
     margin: 0;
