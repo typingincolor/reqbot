@@ -5,13 +5,11 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
-        classpath("com.monochromeroad.gradle-plugins:gradle-aws-s3-sync:0.8")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'spring-boot'
-apply plugin: 'jacoco'
 apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
