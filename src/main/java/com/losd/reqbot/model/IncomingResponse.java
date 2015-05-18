@@ -43,14 +43,14 @@ public class IncomingResponse {
         if (this.headers == null) {
             return new ImmutableMap.Builder<String, String>().build();
         }
-        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
+        return ImmutableMap.copyOf(this.headers);
     }
 
     public List<String> getTags() {
         if (this.tags == null) {
             return new ImmutableList.Builder<String>().build();
         }
-        return new ImmutableList.Builder<String>().addAll(this.tags).build();
+        return ImmutableList.copyOf(this.tags);
     }
 
     public String getBody() {
