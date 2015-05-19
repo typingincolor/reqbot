@@ -76,9 +76,7 @@ public class ApiController {
         logger.info("GET /tags");
         List<String> tags = responseRepo.getTags();
 
-        if (tags.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
+        if (tags.isEmpty()) throw new ResourceNotFoundException();
 
         return tags;
     }
@@ -87,7 +85,11 @@ public class ApiController {
     @RequestMapping(value = "/tags/{tag}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     List<Response> getResponsesByTag(@PathVariable String tag) {
         logger.info("GET /tags/{}", tag);
-        return responseRepo.getByTag(tag);
+        List<Response> result = responseRepo.getByTag(tag);
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
     }
 
     @ResponseBody
@@ -96,9 +98,7 @@ public class ApiController {
         logger.info("GET /responses/{}", responseKey);
         Optional<Response> result = Optional.fromNullable(responseRepo.get(responseKey));
 
-        if (!result.isPresent()) {
-            throw new ResourceNotFoundException();
-        }
+        if (!result.isPresent()) throw new ResourceNotFoundException();
 
         return result.get();
     }

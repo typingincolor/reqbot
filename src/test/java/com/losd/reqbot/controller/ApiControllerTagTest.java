@@ -2,7 +2,9 @@ package com.losd.reqbot.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.losd.reqbot.config.GsonHttpMessageConverterConfiguration;
+import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
@@ -19,12 +21,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,8 +62,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
 public class ApiControllerTagTest {
-    public static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
-
     @Autowired
     GsonHttpMessageConverter gsonHttpMessageConverter;
 
@@ -79,18 +84,54 @@ public class ApiControllerTagTest {
     }
 
     @Test
-    public void it_can_get_a_list_of_tags() throws Exception {
+    public void it_can_get_a_list_of_tags() throws
+            Exception
+    {
         when(responseRepo.getTags()).thenReturn(Arrays.asList("a", "b", "c", "d"));
 
         MvcResult result = mockMvc.perform(get("/tags")).andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString(), is(equalTo("[\"a\",\"b\",\"c\",\"d\"]")));
+        verify(responseRepo, times(1)).getTags();
     }
 
     @Test
-    public void it_returns_a_404_if_there_are_no_tags() throws Exception {
+    public void it_returns_a_404_if_there_are_no_tags() throws
+            Exception
+    {
         when(responseRepo.getTags()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/tags")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
+        verify(responseRepo, times(1)).getTags();
+    }
+
+    @Test
+    public void it_can_get_a_list_of_responses_for_a_tag() throws
+            Exception
+    {
+        List<Response> list = new LinkedList<>();
+        list.add(new Response.Builder().addHeader("h1", "v1").tags(Arrays.asList("a", "b")).body("body1").build());
+        list.add(new Response.Builder().addHeader("h2", "v2").tags(Arrays.asList("a", "b")).body("body1").build());
+
+        Type listType = new TypeToken<LinkedList<Response>>() {
+        }.getType();
+        String listAsJson = gson.toJson(list, listType);
+
+        when(responseRepo.getByTag("a")).thenReturn(list);
+
+        MvcResult result = mockMvc.perform(get("/tags/a")).andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString(), is(equalTo(listAsJson)));
+        verify(responseRepo, times(1)).getByTag("a");
+    }
+
+    @Test
+    public void it_returns_a_404_if_there_are_no_responses_for_a_tag() throws
+            Exception
+    {
+        when(responseRepo.getByTag("a")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/tags/a")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
+        verify(responseRepo, times(1)).getByTag("a");
     }
 }
