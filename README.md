@@ -34,10 +34,10 @@ r = JSON.parse(saved_response_result)
 # this example will store it in the andrew bucket.
 #
 # you can specify the response by putting the it's uuid as a path parameter
-RestClient.get 'http://localhost:8080/bucket/andrew/repsonse/' + r['uuid']
+RestClient.get 'http://localhost:8080/andrew/repsonse/' + r['uuid']
 
 # or in the X-REQBOT-RESPONSE header
-RestClient.get 'http://localhost:8080/bucket/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
+RestClient.get 'http://localhost:8080/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
 ```
 
 ## Magic Headers
@@ -50,7 +50,7 @@ There are three magic headers that reqbot uses when calling a bucket:
 `X-REQBOT-RESPONSE` this tells reqbot what response to send back
 
 ## Web App
-Reqbot has a web application at `/` which allows you to see the requests that reqbot has received.
+Reqbot has a separate web application which allows you to see the requests that reqbot has received. Details can be found [here](https://github.com/typingincolor/reqbot-web)
 
 
 ## Running reqbot
