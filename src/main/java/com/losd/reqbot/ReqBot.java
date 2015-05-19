@@ -35,8 +35,6 @@ import org.springframework.context.annotation.ComponentScan;
 public class ReqBot {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(ReqBot.class);
-
-
         app.run(args);
     }
 }
