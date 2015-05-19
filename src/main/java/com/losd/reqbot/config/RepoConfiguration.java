@@ -1,6 +1,9 @@
 package com.losd.reqbot.config;
 
-import com.losd.reqbot.repository.*;
+import com.losd.reqbot.repository.RequestRedisRepo;
+import com.losd.reqbot.repository.RequestRepo;
+import com.losd.reqbot.repository.ResponseRedisRepo;
+import com.losd.reqbot.repository.ResponseRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

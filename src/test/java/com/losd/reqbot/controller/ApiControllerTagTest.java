@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.losd.reqbot.config.GsonHttpMessageConverterConfiguration;
 import com.losd.reqbot.model.Response;
-import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +29,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
