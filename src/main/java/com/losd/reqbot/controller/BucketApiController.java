@@ -10,11 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,13 +54,27 @@ public class BucketApiController {
     private ResponseRepo responseRepo = null;
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/response/{responseKey}", method = RequestMethod.GET)
+    @RequestMapping(value = "/buckets/{bucket}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<Request> getRequestsByBucket(@PathVariable String bucket) {
+        logger.info("GET /buckets/{}", bucket);
+        return requestRepo.getByBucket(bucket);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/buckets", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<String> getBuckets() {
+        logger.info("GET /request/buckets");
+        return requestRepo.getBuckets();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/{bucket}/response/{responseKey}", method = RequestMethod.GET)
     ResponseEntity<String> programmedGetResponse(@PathVariable String bucket,
                                                  @PathVariable String responseKey,
                                                  @RequestParam Map<String, String> queryParams,
                                                  @RequestHeader Map<String, String> headers,
                                                  HttpServletRequest request) {
-        logger.info("GET /bucket/{}/response/{}", bucket, responseKey);
+        logger.info("GET /{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
@@ -66,14 +82,14 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/response/{responseKey}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{bucket}/response/{responseKey}", method = RequestMethod.POST)
     ResponseEntity<String> programmedPostResponse(@PathVariable String bucket,
                                                   @PathVariable String responseKey,
                                                   @RequestParam Map<String, String> queryParams,
                                                   @RequestHeader Map<String, String> headers,
                                                   @RequestBody String body,
                                                   HttpServletRequest request) {
-        logger.info("POST /bucket/{}/response/{}", bucket, responseKey);
+        logger.info("POST /{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
@@ -81,13 +97,13 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/**", method = RequestMethod.POST)
+    @RequestMapping(value = "/{bucket}/**", method = RequestMethod.POST)
     ResponseEntity<String> standardPostResponse(@PathVariable String bucket,
                                                 @RequestParam Map<String, String> queryParams,
                                                 @RequestHeader Map<String, String> headers,
                                                 @RequestBody String body,
                                                 HttpServletRequest request) {
-        logger.info("POST /bucket/{}", bucket);
+        logger.info("POST /{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
@@ -95,12 +111,12 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/**", method = RequestMethod.GET)
+    @RequestMapping(value = "/{bucket}/**", method = RequestMethod.GET)
     ResponseEntity<String> standardGetResponse(@PathVariable String bucket,
                                                @RequestParam Map<String, String> queryParams,
                                                @RequestHeader Map<String, String> headers,
                                                HttpServletRequest request) {
-        logger.info("GET /bucket/{}", bucket);
+        logger.info("GET /{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
