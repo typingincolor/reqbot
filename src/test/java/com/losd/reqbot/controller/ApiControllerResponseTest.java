@@ -122,8 +122,9 @@ public class ApiControllerResponseTest {
     public void it_gets_an_error_400_if_the_response_to_be_saved_has_no_body() throws
             Exception
     {
-        mockMvc.perform(post("/response").contentType(MediaType.APPLICATION_JSON).content("{\"stuff\": \"random\"}"))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/responses").contentType(MediaType.APPLICATION_JSON).content("{\"body\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason("Response had an empty body"));
     }
 
     @Test

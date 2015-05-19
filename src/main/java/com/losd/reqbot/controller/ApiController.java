@@ -60,14 +60,22 @@ public class ApiController {
     @RequestMapping(value = "/buckets/{bucket}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     List<Request> getRequestsByBucket(@PathVariable String bucket) {
         logger.info("GET /buckets/{}", bucket);
-        return requestRepo.getByBucket(bucket);
+        List<Request> result = requestRepo.getByBucket(bucket);
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
     }
 
     @ResponseBody
     @RequestMapping(value = "/buckets", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     List<String> getBuckets() {
         logger.info("GET /buckets");
-        return requestRepo.getBuckets();
+        List<String> result = requestRepo.getBuckets();
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
     }
 
     @ResponseBody
@@ -107,9 +115,7 @@ public class ApiController {
     @RequestMapping(value = "/responses", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Response saveResponse(@RequestBody IncomingResponse incoming) {
         logger.info("POST /responses");
-        if (Strings.isNullOrEmpty(incoming.getBody())) {
-            throw new IncomingEmptyBodyException();
-        }
+        if (Strings.isNullOrEmpty(incoming.getBody())) throw new IncomingEmptyBodyException();
 
         Map<String, String> headers = incoming.getHeaders();
         List<String> tags = incoming.getTags();

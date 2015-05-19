@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.losd.reqbot.config.GsonHttpMessageConverterConfiguration;
-import com.losd.reqbot.model.Response;
+import com.losd.reqbot.model.Request;
 import com.losd.reqbot.repository.RequestRepo;
-import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +29,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,15 +58,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
-public class ApiControllerTagTest {
+public class ApiControllerBucketTest {
     @Autowired
     GsonHttpMessageConverter gsonHttpMessageConverter;
 
     MockMvc mockMvc;
-    Gson gson = new GsonBuilder().serializeNulls().create();
+    Gson gson = new GsonBuilder().create();
 
     @Mock
-    ResponseRepo responseRepo;
+    RequestRepo requestRepo;
 
     @InjectMocks
     ApiController apiController;
@@ -81,54 +78,54 @@ public class ApiControllerTagTest {
     }
 
     @Test
-    public void it_can_get_a_list_of_tags() throws
+    public void it_can_get_a_list_of_buckets() throws
             Exception
     {
-        when(responseRepo.getTags()).thenReturn(Arrays.asList("a", "b", "c", "d"));
+        when(requestRepo.getBuckets()).thenReturn(Arrays.asList("a", "b", "c", "d"));
 
-        MvcResult result = mockMvc.perform(get("/tags")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(get("/buckets")).andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString(), is(equalTo("[\"a\",\"b\",\"c\",\"d\"]")));
-        verify(responseRepo, times(1)).getTags();
+        verify(requestRepo, times(1)).getBuckets();
     }
 
     @Test
-    public void it_returns_a_404_if_there_are_no_tags() throws
+    public void it_returns_a_404_if_there_are_no_buckets() throws
             Exception
     {
-        when(responseRepo.getTags()).thenReturn(Collections.emptyList());
+        when(requestRepo.getBuckets()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/tags")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
-        verify(responseRepo, times(1)).getTags();
+        mockMvc.perform(get("/buckets")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
+        verify(requestRepo, times(1)).getBuckets();
     }
 
     @Test
-    public void it_can_get_a_list_of_responses_for_a_tag() throws
+    public void it_can_get_a_list_of_requests_for_a_bucket() throws
             Exception
     {
-        List<Response> list = new LinkedList<>();
-        list.add(new Response.Builder().addHeader("h1", "v1").tags(Arrays.asList("a", "b")).body("body1").build());
-        list.add(new Response.Builder().addHeader("h2", "v2").tags(Arrays.asList("a", "b")).body("body2").build());
+        List<Request> list = new LinkedList<>();
+        list.add(new Request.Builder().bucket("a").addHeader("h1", "v1").method("get").addQueryParameters("qp1", "qv1").body("body1").build());
+        list.add(new Request.Builder().bucket("a").addHeader("h2", "v2").method("get").addQueryParameters("qp2", "qv2").body("body2").build());
 
-        Type listType = new TypeToken<LinkedList<Response>>() {
+        Type listType = new TypeToken<LinkedList<Request>>() {
         }.getType();
         String listAsJson = gson.toJson(list, listType);
 
-        when(responseRepo.getByTag("a")).thenReturn(list);
+        when(requestRepo.getByBucket("a")).thenReturn(list);
 
-        MvcResult result = mockMvc.perform(get("/tags/a")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(get("/buckets/a")).andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString(), is(equalTo(listAsJson)));
-        verify(responseRepo, times(1)).getByTag("a");
+        verify(requestRepo, times(1)).getByBucket("a");
     }
 
     @Test
     public void it_returns_a_404_if_there_are_no_responses_for_a_tag() throws
             Exception
     {
-        when(responseRepo.getByTag("a")).thenReturn(Collections.emptyList());
+        when(requestRepo.getByBucket("a")).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/tags/a")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
-        verify(responseRepo, times(1)).getByTag("a");
+        mockMvc.perform(get("/buckets/a")).andExpect(status().isNotFound()).andExpect(status().reason("Not Found"));
+        verify(requestRepo, times(1)).getByBucket("a");
     }
 }
