@@ -57,7 +57,7 @@ import static uk.co.it.modular.hamcrest.date.IsWithin.within;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class BucketApiControllerTest {
+public class ApiControllerRequestTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -67,12 +67,12 @@ public class BucketApiControllerTest {
     private ResponseRepo responseRepo;
 
     @InjectMocks
-    private BucketApiController bucketApiController;
+    private ApiController apiController;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(bucketApiController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(apiController).build();
     }
 
     @Test
@@ -302,7 +302,7 @@ public class BucketApiControllerTest {
         String path = "/x";
         mockMvc.perform(get(path).header(ReqbotHttpHeaders.RESPONSE, "aaaaaa"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Response Not Found"));
+                .andExpect(status().reason("Unable to return the requested response"));
     }
 
     @Test
@@ -312,7 +312,7 @@ public class BucketApiControllerTest {
         String path = "/x/response/aaaaa";
         mockMvc.perform(get(path))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Response Not Found"));
+                .andExpect(status().reason("Unable to return the requested response"));
     }
 
     private void validate(String bucket,

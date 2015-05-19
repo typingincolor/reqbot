@@ -120,6 +120,12 @@ public class ResponseRedisRepoTest {
     }
 
     @Test
+    public void it_handles_not_finding_anything() throws Exception {
+        Response result = repo.get("rubbish");
+        assertThat(result, is(nullValue()));
+    }
+
+    @Test
     public void it_saves_with_no_tags() throws Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "test-header-text")
@@ -203,6 +209,12 @@ public class ResponseRedisRepoTest {
 
         assertThat(tags, hasSize(4));
         assertThat(tags, containsInAnyOrder("tag1", "tag2", "tag3", "tag4"));
+    }
+
+    @Test
+    public void it_handles_there_being_no_tags() throws Exception {
+        List<String> tags = repo.getTags();
+        assertThat(tags, hasSize(0));
     }
 }
 
