@@ -23,7 +23,7 @@ random_body = (0...10).map { ('a'..'z').to_a[rand(26)] }.join
 programmed_response = {'headers' => {'header1' => 'value1'}, 'body' => random_body}
 
 # tell reqbot about the response you want
-saved_response_result = RestClient.post 'http://localhost:8080/response',
+saved_response_result = RestClient.post 'http://localhost:8080/responses',
                                         programmed_response.to_json,
                                         :content_type => :json
 
