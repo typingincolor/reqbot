@@ -73,7 +73,7 @@ This will start everything at `http://localhost:5000/` by default.
 
 Foreman is useful as it uses the Procfile which heroku uses if you deploy there.
 
-## Redis settings
+## Environment settings
 
 The connect settings are found in the application.yml, but can be override using environment variables.
 
@@ -87,3 +87,5 @@ export REQBOT_REDIS_HOST=localhost
 export REQBOT_REDIS_PORT=6379
 export REQBOT_REDIS_INDEX=1
 ```
+
+If you use foreman, the port that reqbot listens on can be set using the `PORT` environment variable.
