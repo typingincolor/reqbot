@@ -10,6 +10,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'findbugs'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -23,6 +24,12 @@ repositories {
 configurations {
     all*.exclude group: 'logback'
     all*.exclude group: 'log4j'
+}
+
+findbugs {
+    ignoreFailures true
+    effort = "max"
+    reportLevel = "medium"
 }
 
 dependencies {
@@ -52,25 +59,14 @@ clean << {
     project.file('reqbot.jar').delete()
 }
 
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-tasks.withType(Pmd) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 
 test {
+    jacoco {
+        append false
+    }
     useJUnit {
         excludeCategories 'com.losd.reqbot.test.IntegrationTest'
     }
