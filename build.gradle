@@ -24,6 +24,8 @@ repositories {
 configurations {
     all*.exclude group: 'logback'
     all*.exclude group: 'log4j'
+    compile.exclude module: "sping-boot-starter-tomcat"
+
 }
 
 findbugs {
@@ -33,11 +35,12 @@ findbugs {
 }
 
 dependencies {
-    compile('com.google.code.gson:gson:2.3.1')
-    compile('redis.clients:jedis:2.6.2')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-undertow')
     compile('com.google.guava:guava:18.0')
     compile('org.apache.commons:commons-pool2:2.3')
+    compile('com.google.code.gson:gson:2.3.1')
+    compile('redis.clients:jedis:2.6.2')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
