@@ -20,7 +20,7 @@ require 'json'
 random_body = (0...10).map { ('a'..'z').to_a[rand(26)] }.join
 
 # you can also tell reqbot what headers to put in the response
-programmed_response = {'headers' => {'header1' => 'value1'}, 'body' => random_body}
+programmed_response = {'headers' => {'header1' => 'value1'}, 'tags' => [:tag1, :tag2], 'body' => random_body}
 
 # tell reqbot about the response you want
 saved_response_result = RestClient.post 'http://localhost:8080/responses',
@@ -39,6 +39,10 @@ RestClient.get 'http://localhost:8080/andrew/repsonse/' + r['uuid']
 # or in the X-REQBOT-RESPONSE header
 RestClient.get 'http://localhost:8080/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
 ```
+
+* `headers` specifies the headers that will be set on the request response
+* `tags` allows you to take a response to make it easier to find in the UI
+* `body` specifies the response body that will be returned
 
 ## Magic Headers
 There are three magic headers that reqbot uses when calling a bucket:
