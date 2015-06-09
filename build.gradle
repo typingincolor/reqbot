@@ -15,8 +15,6 @@ apply plugin: 'jacoco'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '1.0'
-
 repositories {
     jcenter()
 }
@@ -25,7 +23,6 @@ configurations {
     all*.exclude group: 'logback'
     all*.exclude group: 'log4j'
     compile.exclude module: "sping-boot-starter-tomcat"
-
 }
 
 findbugs {

@@ -32,9 +32,9 @@ import org.springframework.context.annotation.Configuration;
 public class RedisConfiguration {
     @Bean
     RedisSettings redisSettings() {
-        String host = System.getenv("REDIS_HOST");
-        String password = System.getenv("REDIS_PASSWORD");
-        String port = System.getenv("REDIS_PORT");
+        String host = System.getenv("REQBOT_REDIS_HOST");
+        String password = System.getenv("REQBOT_REDIS_PASSWORD");
+        String port = System.getenv("REQBOT_REDIS_PORT");
 
         int portInt = (port == null ? 0 : Integer.parseInt(port));
 
