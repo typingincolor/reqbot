@@ -80,6 +80,7 @@ public class ApiControllerRequestTest {
             Exception {
         String path = "/x";
         mockMvc.perform(get(path)).andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
@@ -90,6 +91,7 @@ public class ApiControllerRequestTest {
             Exception {
         String path = "/x/a/path/to/somewhere";
         mockMvc.perform(get(path)).andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.GET, null, path);
@@ -101,6 +103,7 @@ public class ApiControllerRequestTest {
         String path = "/x";
         mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
@@ -112,6 +115,7 @@ public class ApiControllerRequestTest {
         String path = "/x/a/path/to/somewhere";
         mockMvc.perform(post(path).content("hello"))
                 .andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         validate("x", Collections.emptyMap(), RequestMethod.POST, "hello", path);
@@ -122,6 +126,7 @@ public class ApiControllerRequestTest {
             Exception {
         String path = "/x";
         mockMvc.perform(get(path + "?a=1")).andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
@@ -135,6 +140,7 @@ public class ApiControllerRequestTest {
         String path = "/x";
         mockMvc.perform(post(path + "?a=1").content("hello"))
                 .andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         Map<String, String> queryParams = new HashMap<>();

@@ -209,6 +209,8 @@ public class ApiController {
             response.getHeaders().forEach(resultHeaders::add);
         }
 
+        resultHeaders.add("X-REQBOT-PATH", path);
+
         return new ResponseEntity<>(response.getBody(), resultHeaders, status);
     }
 
