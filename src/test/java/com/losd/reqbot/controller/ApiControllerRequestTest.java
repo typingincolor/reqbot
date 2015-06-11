@@ -127,9 +127,26 @@ public class ApiControllerRequestTest {
         String path = "/x";
         mockMvc.perform(get(path + "?a=1")).andExpect(status().isOk())
                 .andExpect(header().string("X-REQBOT-PATH", path))
+                .andExpect(header().string("X-REQBOT-QUERYSTRING", "a=1"))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("a", "1");
+
+        validate("x", queryParams, RequestMethod.GET, null, path);
+    }
+
+    @Test
+    public void it_handles_a_get_with_multiple_query_parameters() throws
+            Exception {
+        String path = "/x";
+        mockMvc.perform(get(path + "?a=1&b=2&c=3")).andExpect(status().isOk())
+                .andExpect(header().string("X-REQBOT-PATH", path))
+                .andExpect(header().string("X-REQBOT-QUERYSTRING", "a=1&b=2&c=3"))
+                .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("a", "1");
+        queryParams.put("b", "2");
+        queryParams.put("c", "3");
 
         validate("x", queryParams, RequestMethod.GET, null, path);
     }
@@ -141,6 +158,7 @@ public class ApiControllerRequestTest {
         mockMvc.perform(post(path + "?a=1").content("hello"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-REQBOT-PATH", path))
+                .andExpect(header().string("X-REQBOT-QUERYSTRING", "a=1"))
                 .andExpect(content().string(HttpStatus.OK.getReasonPhrase()));
 
         Map<String, String> queryParams = new HashMap<>();

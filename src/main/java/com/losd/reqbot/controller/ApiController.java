@@ -211,7 +211,20 @@ public class ApiController {
 
         resultHeaders.add("X-REQBOT-PATH", path);
 
+        resultHeaders.add("X-REQBOT-QUERYSTRING", buildQueryString(queryParams));
+
         return new ResponseEntity<>(response.getBody(), resultHeaders, status);
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        StringBuilder queryString = new StringBuilder();
+        params.forEach((key, value) -> {
+            queryString.append("&").append(key).append("=").append(value);
+        });
+
+        if (queryString.length()>0) queryString.deleteCharAt(0);
+
+        return queryString.toString();
     }
 
     private boolean isResponseHeaderSet(TreeMap<String, String> caseInsensitiveHeaders) {
