@@ -2,6 +2,7 @@ package com.losd.reqbot.controller;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.losd.reqbot.config.GitConfiguration;
 import com.losd.reqbot.constant.ReqbotHttpHeaders;
 import com.losd.reqbot.model.IncomingResponse;
 import com.losd.reqbot.model.Request;
@@ -55,6 +56,17 @@ public class ApiController {
 
     @Autowired
     private ResponseRepo responseRepo = null;
+
+    @Autowired
+    private GitConfiguration gitConfiguration = null;
+
+    @ResponseBody
+    @RequestMapping(value = "/version", method = RequestMethod.GET, produces = {MediaType.TEXT_PLAIN_VALUE})
+    String getVersion() {
+        logger.info("GET /version");
+
+        return gitConfiguration.getShortCommitId();
+    }
 
     @ResponseBody
     @RequestMapping(value = "/buckets/{bucket}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
