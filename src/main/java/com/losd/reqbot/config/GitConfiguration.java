@@ -39,6 +39,10 @@ public class GitConfiguration {
         return shortCommitId;
     }
 
+    public void setShortCommitId(String commitId) {
+        this.shortCommitId = commitId;
+    }
+
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfig() {
         return new PropertySourcesPlaceholderConfigurer();
