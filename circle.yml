@@ -1,6 +1,11 @@
 machine:
   java:
     version: oraclejdk8
+  services:
+    - redis
+  environment:
+    REQBOT_REDIS_HOST=localhost
+    REQBOT_REDIS_PORT=6379
 general:
   artifacts:
     - build/reports/tests
@@ -9,3 +14,7 @@ test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+  override:
+    - gradle test integrationTest
+  post:
+    - gradle jar
