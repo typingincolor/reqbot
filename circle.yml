@@ -10,11 +10,15 @@ general:
   artifacts:
     - build/reports/tests
     - build/libs/reqbot.jar
+    - build/reports/jacoco/test/html
+    - build/reports/findbugs
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
   override:
-    - ./gradlew test integrationTest
+    - ./gradlew check 
+    - ./gradlew integrationTest
   post:
+    - ./gradlew jacocoTestReport
     - ./gradlew jar
