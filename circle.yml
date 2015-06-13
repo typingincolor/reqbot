@@ -4,8 +4,8 @@ machine:
   services:
     - redis
   environment:
-    REQBOT_REDIS_HOST=localhost
-    REQBOT_REDIS_PORT=6379
+    REQBOT_REDIS_HOST:localhost
+    REQBOT_REDIS_PORT:6379
 general:
   artifacts:
     - build/reports/tests
