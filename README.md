@@ -1,6 +1,6 @@
 # reqbot
 
-* [![Build Status](https://travis-ci.org/typingincolor/reqbot.svg?branch=master)](https://travis-ci.org/typingincolor/reqbot) - Master
+[![Build Status](https://snap-ci.com/typingincolor/reqbot/branch/v0.0.2/build_image)](https://snap-ci.com/typingincolor/reqbot/branch/v0.0.2)
 
 ## What is it?
 
