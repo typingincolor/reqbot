@@ -1,5 +1,6 @@
 package com.losd.reqbot.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.Instant;
@@ -31,6 +32,7 @@ import java.util.UUID;
  * THE SOFTWARE.
  */
 @SuppressWarnings("all")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Request {
     private String bucket;
     private Map<String, String> headers;

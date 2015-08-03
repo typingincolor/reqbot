@@ -3,19 +3,15 @@ package com.losd.reqbot.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.losd.reqbot.config.GsonHttpMessageConverterConfiguration;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,8 +52,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
 public class ApiControllerTagTest {
     @Autowired
     GsonHttpMessageConverter gsonHttpMessageConverter;
@@ -74,7 +68,7 @@ public class ApiControllerTagTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(apiController).setMessageConverters(gsonHttpMessageConverter).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(apiController).build();
     }
 
     @Test

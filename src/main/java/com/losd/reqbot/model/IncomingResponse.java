@@ -36,7 +36,23 @@ public class IncomingResponse {
     String body;
     List<String> tags;
 
-    private IncomingResponse(Map<String, String> headers, String body, List<String> tags) {
+    public IncomingResponse() {
+
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public IncomingResponse(Map<String, String> headers, String body, List<String> tags) {
         this.headers = headers;
         this.body = body;
         this.tags = tags;
@@ -59,6 +75,7 @@ public class IncomingResponse {
     public String getBody() {
         return body;
     }
+
 
     public static class Builder {
         Map<String, String> headers = new HashMap<>();

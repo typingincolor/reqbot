@@ -1,24 +1,19 @@
 package com.losd.reqbot.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.losd.reqbot.config.GsonHttpMessageConverterConfiguration;
 import com.losd.reqbot.model.IncomingResponse;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
 import com.losd.reqbot.repository.ResponseRepo;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -59,13 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {GsonHttpMessageConverterConfiguration.class})
 public class ApiControllerResponseTest {
     public static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
-
-    @Autowired
-    GsonHttpMessageConverter gsonHttpMessageConverter;
 
     MockMvc mockMvc;
     Gson gson = new GsonBuilder().serializeNulls().create();
@@ -82,7 +72,7 @@ public class ApiControllerResponseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(apiController).setMessageConverters(gsonHttpMessageConverter).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(apiController).build();
     }
 
     @Test
@@ -95,7 +85,9 @@ public class ApiControllerResponseTest {
                 .tags(Arrays.asList("tag1", "tag2"))
                 .build();
 
-        String json = gson.toJson(incoming, IncomingResponse.class);
+        ObjectMapper mapper = new ObjectMapper();
+
+        String json = mapper.writeValueAsString(incoming);
 
         MvcResult mvcResult = mockMvc.perform(post("/responses").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
