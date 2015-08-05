@@ -1,23 +1,29 @@
 machine:
+  timezone:
+    Europe/London
   java:
     version: oraclejdk8
   services:
+    - docker
     - redis
-  environment:
-    REQBOT_REDIS_HOST: localhost
-    REQBOT_REDIS_PORT: 6379
-general:
-  artifacts:
-    - build/reports/tests
-    - build/libs/reqbot.jar
-    - build/reports/jacoco/test/html
-    - build/reports/findbugs
 test:
+  pre:
+    - ./gradlew --quiet findbugsMain
+    - ./gradlew --quiet findbugsTest
+  override:
+    - ./gradlew --quiet test
+    - ./gradlew --quiet integrationTest
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-  override:
-    - ./gradlew check integrationTest
-  post:
-    - ./gradlew jacocoTestReport
-    - ./gradlew jar
+    - mkdir -p $CIRCLE_ARTIFACTS/findbugs
+    - find . -type f -regex ".*/build/reports/findbugs/.*html" -exec cp {} $CIRCLE_ARTIFACTS/findbugs/ \;
+deployment:
+  hub:
+    branch: master
+    commands:
+      - ./gradlew --quiet assemble
+      - docker build -t typingincolor/reqbot:build_$CIRCLE_BUILD_NUM .
+      - docker build -t typingincolor/reqbot:latest .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push typingincolor/reqbot
