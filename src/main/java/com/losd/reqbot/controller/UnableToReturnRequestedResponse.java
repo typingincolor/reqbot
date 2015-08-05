@@ -1,4 +1,9 @@
-/*
+package com.losd.reqbot.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+/**
  * The MIT License (MIT)
  * <p>
  * Copyright (c) 2015 Andrew Braithwaite
@@ -21,55 +26,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-.tab-pane {
-    max-height: 310px;
-    overflow-y: scroll;
-}
-
-.label-POST {
-    background-color: red;
-}
-
-.label-GET {
-    background-color: green;
-}
-
-.request-path {
-    padding-top: 5px;
-    padding-bottom: 15px;
-    font-weight: bold;
-}
-
-ul#tag-list
-{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-ul#bucket-list
-{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.response {
-    border-radius: 25px;
-    border: 2px solid #ddd;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin-bottom: 10px;
-}
-
-.request {
-    border-radius: 25px;
-    border: 2px solid #ddd;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin-bottom: 10px;
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Unable to return the requested response")
+public class UnableToReturnRequestedResponse extends RuntimeException {
 }

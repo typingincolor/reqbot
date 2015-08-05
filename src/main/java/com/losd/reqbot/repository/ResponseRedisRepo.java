@@ -1,12 +1,14 @@
 package com.losd.reqbot.repository;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Transaction;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,98 +43,72 @@ public class ResponseRedisRepo implements ResponseRepo {
     public static final String TAG_PREFIX = "tag:";
 
     @Autowired
-    JedisPool pool;
+    StringRedisTemplate template;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public Response get(String uuid) {
-        Jedis jedis = pool.getResource();
+        String response = template.opsForValue().get(RESPONSE_KEY_PREFIX + uuid);
 
-        try {
-            String response = jedis.get(RESPONSE_KEY_PREFIX + uuid);
-
-            return gson.fromJson(response, Response.class);
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        return gson.fromJson(response, Response.class);
     }
 
     @Override
     public void save(Response response) {
-        Jedis jedis = pool.getResource();
-        try {
-            String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
-            Transaction t = jedis.multi();
+        String key = RESPONSE_KEY_PREFIX + response.getUuid().toString();
 
-            if (null == response.getTags() || response.getTags().size() == 0) {
-                t.lpush(TAG_PREFIX + "none", key);
-            } else {
-                response.getTags().forEach((tag) -> t.lpush(TAG_PREFIX + tag, key));
+        template.execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
+
+                if (null == response.getTags() || response.getTags().size() == 0) {
+                    operations.opsForList().leftPush(TAG_PREFIX + "none", key);
+                } else {
+                    response.getTags().forEach((tag) -> operations.opsForList().leftPush(TAG_PREFIX + tag, key));
+                }
+
+                operations.opsForValue().set(key, gson.toJson(response, Response.class));
+
+                return operations.exec();
             }
-
-            t.set(key, gson.toJson(response, Response.class));
-
-            t.exec();
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        });
     }
 
     @Override
     public List<Response> getAll() {
-        Jedis jedis = pool.getResource();
-        try {
-            Set<String> keys = jedis.keys(RESPONSE_KEY_PREFIX + "*");
-            List<Response> result = new LinkedList<>();
+        Set<String> keys = template.keys(RESPONSE_KEY_PREFIX + "*");
+        List<Response> result = new LinkedList<>();
 
-            keys.forEach((key) -> result.add(get(key.substring(RESPONSE_KEY_PREFIX.length()))));
-            return result;
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        keys.forEach((key) -> result.add(get(key.substring(RESPONSE_KEY_PREFIX.length()))));
+        return ImmutableList.copyOf(result);
     }
 
     @Override
     public List<Response> getByTag(String tag) {
-        Jedis jedis = pool.getResource();
+        String tagKey = TAG_PREFIX + tag;
+        long length = template.opsForList().size(tagKey);
 
-        try {
-            String tagKey = TAG_PREFIX + tag;
-            long length = jedis.llen(tagKey);
+        List<String> keys = template.opsForList().range(tagKey, 0, length);
 
-            List<String> keys = jedis.lrange(tagKey, 0, length);
+        List<Response> result = new LinkedList<>();
 
-            List<Response> result = new LinkedList<>();
+        keys.forEach((key) -> {
+            String response = template.opsForValue().get(key);
+            result.add(gson.fromJson(response, Response.class));
+        });
 
-            keys.forEach((key) -> {
-                String response = jedis.get(key);
-                result.add(gson.fromJson(response, Response.class));
-            });
-
-            return result;
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        return ImmutableList.copyOf(result);
     }
 
     @Override
     public List<String> getTags() {
-        Jedis jedis = pool.getResource();
-        try {
-            Set<String> tags = jedis.keys(TAG_PREFIX + "*");
-            List<String> result = new LinkedList<>();
+        Set<String> tags = template.keys(TAG_PREFIX + "*");
+        List<String> result = new LinkedList<>();
 
-            tags.forEach((tag) -> result.add(tag.substring(TAG_PREFIX.length())));
-            Collections.sort(result);
-            return result;
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        tags.forEach((tag) -> result.add(tag.substring(TAG_PREFIX.length())));
+        Collections.sort(result);
+        return ImmutableList.copyOf(result);
     }
 }

@@ -3,7 +3,10 @@ package com.losd.reqbot.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The MIT License (MIT)
@@ -33,7 +36,23 @@ public class IncomingResponse {
     String body;
     List<String> tags;
 
-    private IncomingResponse(Map<String, String> headers, String body, List<String> tags) {
+    public IncomingResponse() {
+
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public IncomingResponse(Map<String, String> headers, String body, List<String> tags) {
         this.headers = headers;
         this.body = body;
         this.tags = tags;
@@ -43,19 +62,20 @@ public class IncomingResponse {
         if (this.headers == null) {
             return new ImmutableMap.Builder<String, String>().build();
         }
-        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
+        return ImmutableMap.copyOf(this.headers);
     }
 
     public List<String> getTags() {
         if (this.tags == null) {
             return new ImmutableList.Builder<String>().build();
         }
-        return new ImmutableList.Builder<String>().addAll(this.tags).build();
+        return ImmutableList.copyOf(this.tags);
     }
 
     public String getBody() {
         return body;
     }
+
 
     public static class Builder {
         Map<String, String> headers = new HashMap<>();

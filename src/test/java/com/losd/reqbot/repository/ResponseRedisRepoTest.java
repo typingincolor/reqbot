@@ -7,16 +7,14 @@ import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.test.IntegrationTest;
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 
@@ -56,21 +54,14 @@ public class ResponseRedisRepoTest {
     ResponseRepo repo;
 
     @Autowired
-    JedisPool pool;
-
-    Jedis jedis;
+    StringRedisTemplate template;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Before
     public void setup() {
-        jedis = pool.getResource();
-        jedis.flushDB();
-    }
-
-    @After
-    public void after() {
-        jedis.close();
+        Set<String> keys = template.keys("*");
+        template.delete(keys);
     }
 
     @Test
@@ -80,7 +71,7 @@ public class ResponseRedisRepoTest {
 
         Response response = new Response.Builder().addHeader(headerKey, headerValue).build();
 
-        jedis.set("response:" + response.getUuid().toString(), gson.toJson(response, Response.class));
+        template.opsForValue().set("response:" + response.getUuid().toString(), gson.toJson(response, Response.class));
 
         Response result = repo.get(response.getUuid().toString());
 
@@ -100,10 +91,10 @@ public class ResponseRedisRepoTest {
 
         repo.save(response);
 
-        Response result = gson.fromJson(jedis.get("response:" + response.getUuid().toString()), Response.class);
+        Response result = gson.fromJson(template.opsForValue().get("response:" + response.getUuid().toString()), Response.class);
 
-        List<String> tag1 = jedis.lrange("tag:tag1", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "tag1"));
-        List<String> tag2 = jedis.lrange("tag:tag2", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "tag2"));
+        List<String> tag1 = template.opsForList().range("tag:tag1", 0, template.opsForList().size(ResponseRedisRepo.TAG_PREFIX + "tag1"));
+        List<String> tag2 = template.opsForList().range("tag:tag2", 0, template.opsForList().size(ResponseRedisRepo.TAG_PREFIX + "tag2"));
 
         assertThat(result.getBody(), is(equalTo("testresponsebody")));
         assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
@@ -120,6 +111,12 @@ public class ResponseRedisRepoTest {
     }
 
     @Test
+    public void it_handles_not_finding_anything() throws Exception {
+        Response result = repo.get("rubbish");
+        assertThat(result, is(nullValue()));
+    }
+
+    @Test
     public void it_saves_with_no_tags() throws Exception {
         Response response = new Response.Builder()
                 .addHeader("test-header", "test-header-text")
@@ -128,8 +125,8 @@ public class ResponseRedisRepoTest {
 
         repo.save(response);
 
-        Response result = gson.fromJson(jedis.get(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString()), Response.class);
-        List<String> tag = jedis.lrange(ResponseRedisRepo.TAG_PREFIX + "none", 0, jedis.llen(ResponseRedisRepo.TAG_PREFIX + "none"));
+        Response result = gson.fromJson(template.opsForValue().get(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString()), Response.class);
+        List<String> tag = template.opsForList().range(ResponseRedisRepo.TAG_PREFIX + "none", 0, template.opsForList().size(ResponseRedisRepo.TAG_PREFIX + "none"));
 
         assertThat(result.getBody(), is(equalTo("testresponsebody")));
         assertThat(result.getHeaders(), hasEntry("test-header", "test-header-text"));
@@ -149,7 +146,7 @@ public class ResponseRedisRepoTest {
                     .body("body" + i)
                     .build();
 
-            jedis.set(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid(), gson.toJson(response, Response.class));
+            template.opsForValue().set(ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid(), gson.toJson(response, Response.class));
         }
 
         List<Response> result = repo.getAll();
@@ -178,11 +175,11 @@ public class ResponseRedisRepoTest {
                     .body("body" + i)
                     .build();
 
-            uuids[i%2][i/2] = response.getUuid().toString();
+            uuids[i % 2][i / 2] = response.getUuid().toString();
 
 
-            jedis.set("response:" + response.getUuid(), gson.toJson(response, Response.class));
-            jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag" + i % 2, ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString());
+            template.opsForValue().set("response:" + response.getUuid(), gson.toJson(response, Response.class));
+            template.opsForList().leftPush(ResponseRedisRepo.TAG_PREFIX + "tag" + i % 2, ResponseRedisRepo.RESPONSE_KEY_PREFIX + response.getUuid().toString());
         }
 
         List<Response> tag1Result = repo.getByTag("tag1");
@@ -194,15 +191,21 @@ public class ResponseRedisRepoTest {
 
     @Test
     public void it_gets_a_list_of_buckets() throws Exception {
-        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag1", "a");
-        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag2", "b");
-        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag3", "c");
-        jedis.lpush(ResponseRedisRepo.TAG_PREFIX + "tag4", "d");
+        template.opsForList().leftPush(ResponseRedisRepo.TAG_PREFIX + "tag1", "a");
+        template.opsForList().leftPush(ResponseRedisRepo.TAG_PREFIX + "tag2", "b");
+        template.opsForList().leftPush(ResponseRedisRepo.TAG_PREFIX + "tag3", "c");
+        template.opsForList().leftPush(ResponseRedisRepo.TAG_PREFIX + "tag4", "d");
 
         List<String> tags = repo.getTags();
 
         assertThat(tags, hasSize(4));
         assertThat(tags, containsInAnyOrder("tag1", "tag2", "tag3", "tag4"));
+    }
+
+    @Test
+    public void it_handles_there_being_no_tags() throws Exception {
+        List<String> tags = repo.getTags();
+        assertThat(tags, hasSize(0));
     }
 }
 

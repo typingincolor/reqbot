@@ -1,6 +1,6 @@
 package com.losd.reqbot.controller;
 
-import com.losd.reqbot.repository.ResponseRepo;
+import com.losd.reqbot.config.GitConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -8,17 +8,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * The MIT License (MIT)
@@ -43,41 +37,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class WebcontrollerResponsesTest {
+public class ApiControllerVersionTest {
     private MockMvc mockMvc;
 
-    @Mock
-    private ResponseRepo responseRepo;
-
     @InjectMocks
-    private WebController webController;
+    private ApiController apiController;
+
+    @Mock
+    private GitConfiguration git;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("blah");
-        mockMvc = MockMvcBuilders.standaloneSetup(webController).setViewResolvers(viewResolver).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(apiController).build();
     }
 
     @Test
-    public void it_redirects_to_the_first_tag_page_if_there_are_tags() throws Exception {
-        List<String> tagList = new LinkedList<>(Arrays.asList("tag1","tag2","tag3"));
-
-        when(responseRepo.getTags()).thenReturn(tagList);
-
-        mockMvc.perform(get("/web/responses")).andExpect(status().is3xxRedirection())
-                .andExpect(view().name(is("redirect:/web/tag/tag1")));
-
-        verify(responseRepo, times(1)).getTags();
-    }
-
-    @Test
-    public void it_renders_the_reponse_page_if_there_are_no_tags() throws Exception {
-        when(responseRepo.getTags()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/web/responses")).andExpect(status().isOk())
-                .andExpect(view().name(is("index")))
-                .andExpect(model().attribute("mode", is(equalTo("response"))));
+    public void test_get_version_works() throws Exception {
+        when(git.getShortCommitId()).thenReturn("abcdef");
+        mockMvc.perform(get("/version"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("abcdef"));
     }
 }

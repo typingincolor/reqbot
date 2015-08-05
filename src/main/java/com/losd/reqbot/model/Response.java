@@ -45,7 +45,7 @@ public class Response {
     }
 
     public Map<String, String> getHeaders() {
-        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
+        return ImmutableMap.copyOf(this.headers);
     }
 
     public String getBody() {
@@ -57,7 +57,7 @@ public class Response {
     }
 
     public List<String> getTags() {
-        return new ImmutableList.Builder<String>().addAll(this.tags).build();
+        return ImmutableList.copyOf(this.tags);
     }
 
     public static class Builder {

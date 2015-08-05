@@ -1,44 +1,48 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
-        classpath("com.monochromeroad.gradle-plugins:gradle-aws-s3-sync:0.8")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'spring-boot'
-apply plugin: 'jacoco'
 apply plugin: 'findbugs'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '1.0'
-
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 configurations {
     all*.exclude group: 'logback'
     all*.exclude group: 'log4j'
+    compile.exclude module: "sping-boot-starter-tomcat"
+}
+
+findbugs {
+    ignoreFailures true
+    effort = "max"
+    reportLevel = "medium"
 }
 
 dependencies {
-    compile('com.google.code.gson:gson:2.3.1')
-    compile('redis.clients:jedis:2.6.2')
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.springframework.boot:spring-boot-starter-undertow')
+    compile('org.springframework.boot:spring-boot-starter-redis')
     compile('com.google.guava:guava:18.0')
     compile('org.apache.commons:commons-pool2:2.3')
+    compile('com.google.code.gson:gson:2.3.1')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
     testCompile('commons-lang:commons-lang:2.6')
+    testCompile('org.cthul:cthul-matchers:1.1.0')
 }
 
 task stage(type: Copy, dependsOn: [clean, bootRepackage, installDist]) {
@@ -55,25 +59,14 @@ clean << {
     project.file('reqbot.jar').delete()
 }
 
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-tasks.withType(Pmd) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 
 test {
+    jacoco {
+        append false
+    }
     useJUnit {
         excludeCategories 'com.losd.reqbot.test.IntegrationTest'
     }
@@ -88,3 +81,33 @@ integrationTest {
         includeCategories 'com.losd.reqbot.test.IntegrationTest'
     }
 }
+
+task generateGitProperties {
+    doLast {
+        try {
+            def shortRevision = 'git rev-parse --short HEAD'.execute().text.trim()
+            def revision = 'git rev-list --max-count 1 --timestamp HEAD'.execute().text.trim()
+            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ") : null
+
+            File resourcesDir = new File(project.getBuildDir(), 'resources/main')
+            File propertiesFile = new File(resourcesDir, 'git.properties')
+
+            if(timestamp) {
+                // The project may not have any resources, so create the directories and file
+                if(!propertiesFile.exists()) {
+                    resourcesDir.mkdirs()
+                    propertiesFile.createNewFile()
+                }
+            } else {
+                project.logger.info('Unable to generate Git properties file:  will try SOURCE_VERSION environment variable')
+                def env = System.getenv()
+                shortRevision = env['SOURCE_VERSION'].substring(0, 7);
+            }
+            propertiesFile.text = """git.short.commit.id=${shortRevision}"""
+        } catch (e) {
+            project.logger.error('Unable to generate Git properties file.', e)
+        }
+    }
+}
+
+project.tasks.jar.dependsOn('generateGitProperties')

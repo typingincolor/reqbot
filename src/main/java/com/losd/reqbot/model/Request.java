@@ -1,5 +1,6 @@
 package com.losd.reqbot.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.Instant;
@@ -31,6 +32,7 @@ import java.util.UUID;
  * THE SOFTWARE.
  */
 @SuppressWarnings("all")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Request {
     private String bucket;
     private Map<String, String> headers;
@@ -122,7 +124,7 @@ public class Request {
     }
 
     public Map<String, String> getHeaders() {
-        return new ImmutableMap.Builder<String, String>().putAll(this.headers).build();
+        return ImmutableMap.copyOf(this.headers);
     }
 
     public String getBody() {
@@ -130,7 +132,7 @@ public class Request {
     }
 
     public Map<String, String> getQueryParameters() {
-        return new ImmutableMap.Builder<String, String>().putAll(this.queryParameters).build();
+        return ImmutableMap.copyOf(this.queryParameters);
     }
 
     public String getMethod() {

@@ -1,9 +1,7 @@
-package com.losd.reqbot.repository;
+package com.losd.reqbot.controller;
 
-import com.losd.reqbot.config.RedisSettings;
-import com.losd.reqbot.config.RequestSettings;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * The MIT License (MIT)
@@ -28,29 +26,6 @@ import org.springframework.context.annotation.Configuration;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@Configuration
-public class RedisConfiguration {
-    @Bean
-    RedisSettings redisSettings() {
-        String host = System.getenv("REQBOT_REDIS_HOST");
-        String password = System.getenv("REQBOT_REDIS_PASSWORD");
-        String port = System.getenv("REQBOT_REDIS_PORT");
-
-        int portInt = (port == null ? 0 : Integer.parseInt(port));
-
-        RedisSettings settings = new RedisSettings();
-        settings.setHost(host == null ? "localhost" : host);
-        settings.setPort(portInt == 0 ? 6379 : portInt);
-        settings.setPassword(password == null ? null : password);
-
-        return settings;
-    }
-
-    @Bean
-    RequestSettings requestSettings() {
-        RequestSettings settings = new RequestSettings();
-        settings.setQueueSize(3);
-
-        return settings;
-    }
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Response had an empty body")
+public class IncomingEmptyBodyException extends RuntimeException {
 }

@@ -1,3 +1,32 @@
 machine:
+  timezone:
+    Europe/London
+  java:
+    version: oraclejdk8
+  services:
+    - docker
+    - redis
+test:
+  pre:
+    - ./gradlew --quiet findbugsMain
+    - ./gradlew --quiet findbugsTest
+  override:
+    - ./gradlew --quiet test
+    - ./gradlew --quiet integrationTest
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mkdir -p $CIRCLE_ARTIFACTS/findbugs
+    - find . -type f -regex ".*/build/reports/findbugs/.*html" -exec cp {} $CIRCLE_ARTIFACTS/findbugs/ \;
+deployment:
+  hub:
+    branch: master
+    commands:
+      - ./gradlew --quiet assemble
+      - docker build -t typingincolor/reqbot:build_$CIRCLE_BUILD_NUM .
+      - docker build -t typingincolor/reqbot:latest .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push typingincolor/reqbot
+=======
   java:
     version: oraclejdk8

@@ -1,10 +1,10 @@
 package com.losd.reqbot.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
  * The MIT License (MIT)
@@ -30,12 +30,21 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
  * THE SOFTWARE.
  */
 @Configuration
-public class GsonHttpMessageConverterConfiguration {
+@PropertySource("classpath:git.properties")
+public class GitConfiguration {
+    @Value("${git.short.commit.id}")
+    private String shortCommitId;
+
+    public String getShortCommitId() {
+        return shortCommitId;
+    }
+
+    public void setShortCommitId(String commitId) {
+        this.shortCommitId = commitId;
+    }
+
     @Bean
-    public GsonHttpMessageConverter gsonHttpMessageConverter() {
-        Gson gson = new GsonBuilder().create();
-        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-        converter.setGson(gson);
-        return converter;
+    public static PropertySourcesPlaceholderConfigurer propertyConfig() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 }

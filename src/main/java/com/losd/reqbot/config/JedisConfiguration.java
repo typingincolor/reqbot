@@ -1,13 +1,10 @@
 package com.losd.reqbot.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
  * The MIT License (MIT)
@@ -37,21 +34,19 @@ public class JedisConfiguration {
     @Autowired
     RedisSettings settings;
 
-    Logger logger = LoggerFactory.getLogger(JedisConfiguration.class);
+    @Bean
+    JedisConnectionFactory connectionFactory() {
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setDatabase(settings.getIndex());
+        factory.setHostName(settings.getHost());
+        factory.setPort(settings.getPort());
+        factory.setUsePool(true);
+
+        return factory;
+    }
 
     @Bean
-    JedisPool jedisPool() throws Exception {
-        logger.info("Connecting to database {} on {} port {}",
-                settings.getIndex(),
-                settings.getHost(),
-                settings.getPort());
-
-        return new JedisPool(new JedisPoolConfig(),
-                settings.getHost(),
-                settings.getPort(),
-                Protocol.DEFAULT_TIMEOUT,
-                settings.getPassword(),
-                settings.getIndex(),
-                settings.getClient());
+    StringRedisTemplate template() {
+        return new StringRedisTemplate(connectionFactory());
     }
 }

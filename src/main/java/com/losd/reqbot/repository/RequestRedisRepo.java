@@ -1,14 +1,15 @@
 package com.losd.reqbot.repository;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.RequestSettings;
 import com.losd.reqbot.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.*;
 
@@ -43,74 +44,58 @@ public class RequestRedisRepo implements RequestRepo {
     RequestSettings settings;
 
     @Autowired
-    JedisPool pool;
+    StringRedisTemplate template;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public void save(Request request) {
-        Jedis jedis = pool.getResource();
+        int queueSize = settings.getQueueSize();
 
-        try {
-            int queueSize = settings.getQueueSize();
+        List<Object> txResults = template.execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
 
-            Transaction t = jedis.multi();
-            Response<String> key = t.lindex(getBucketKey(request.getBucket()), queueSize - 1);
-            t.lpush(getBucketKey(request.getBucket()), getRequestKey(request));
-            t.set(getRequestKey(request), gson.toJson(request));
-            t.ltrim(getBucketKey(request.getBucket()), 0, queueSize - 1);
-            t.exec();
-
-            if (key.get() != null) {
-                jedis.del(key.get());
+                operations.opsForList().index(getBucketKey(request.getBucket()), queueSize - 1);
+                operations.opsForList().leftPush(getBucketKey(request.getBucket()), getRequestKey(request));
+                operations.opsForValue().set(getRequestKey(request), gson.toJson(request));
+                operations.opsForList().trim(getBucketKey(request.getBucket()), 0, queueSize - 1);
+                return operations.exec();
             }
-        } finally {
-            if (jedis != null)
-                jedis.close();
+        });
+
+        if (txResults.get(0) != null) {
+            template.delete((String) txResults.get(0));
         }
     }
 
     @Override
     public List<Request> getByBucket(String bucket) {
-        Jedis jedis = pool.getResource();
-
         List<Request> result;
-        try {
-            int queueSize = settings.getQueueSize();
+        int queueSize = settings.getQueueSize();
 
-            result = new ArrayList<>();
+        result = new ArrayList<>();
 
-            List<String> requests = jedis.lrange(getBucketKey(bucket), 0, queueSize - 1);
+        List<String> requests = template.opsForList().range(getBucketKey(bucket), 0, queueSize - 1);
 
-            requests.forEach(request -> {
-                String body = jedis.get(request);
-                result.add(gson.fromJson(body, Request.class));
-            });
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        requests.forEach(request -> {
+            String body = template.opsForValue().get(request);
+            result.add(gson.fromJson(body, Request.class));
+        });
 
-
-        return result;
+        return ImmutableList.copyOf(result);
     }
 
     @Override
     public List<String> getBuckets() {
-        Jedis jedis = pool.getResource();
+        Set<String> keys = template.keys(BUCKET_KEY_PREFIX + "*");
+        List<String> result = new LinkedList<String>();
 
-        try {
-            Set<String> keys = jedis.keys(BUCKET_KEY_PREFIX + "*");
-            List<String> result = new LinkedList<String>();
+        keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
 
-            keys.forEach((key) -> result.add(key.substring(BUCKET_KEY_PREFIX.length())));
-
-            Collections.sort(result);
-            return result;
-        } finally {
-            if (jedis != null)
-                jedis.close();
-        }
+        Collections.sort(result);
+        return ImmutableList.copyOf(result);
     }
 
     static String getRequestKey(Request request) {

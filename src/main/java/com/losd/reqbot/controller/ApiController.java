@@ -1,6 +1,10 @@
 package com.losd.reqbot.controller;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.losd.reqbot.config.GitConfiguration;
 import com.losd.reqbot.constant.ReqbotHttpHeaders;
+import com.losd.reqbot.model.IncomingResponse;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.repository.RequestRepo;
@@ -10,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,8 +48,8 @@ import java.util.TreeMap;
  * THE SOFTWARE.
  */
 @RestController
-public class BucketApiController {
-    Logger logger = LoggerFactory.getLogger(BucketApiController.class);
+public class ApiController {
+    Logger logger = LoggerFactory.getLogger(ApiController.class);
 
     @Autowired
     private RequestRepo requestRepo = null;
@@ -51,14 +57,95 @@ public class BucketApiController {
     @Autowired
     private ResponseRepo responseRepo = null;
 
+    @Autowired
+    private GitConfiguration gitConfiguration = null;
+
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/response/{responseKey}", method = RequestMethod.GET)
-    ResponseEntity<String> programmedGetResponse(@PathVariable String bucket,
+    @RequestMapping(value = "/version", method = RequestMethod.GET, produces = {MediaType.TEXT_PLAIN_VALUE})
+    String getVersion() {
+        logger.info("GET /version");
+
+        return gitConfiguration.getShortCommitId();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/buckets/{bucket}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<Request> getRequestsByBucket(@PathVariable String bucket) {
+        logger.info("GET /buckets/{}", bucket);
+        List<Request> result = requestRepo.getByBucket(bucket);
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/buckets", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<String> getBuckets() {
+        logger.info("GET /buckets");
+        List<String> result = requestRepo.getBuckets();
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/tags", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<String> getTags() {
+        logger.info("GET /tags");
+        List<String> tags = responseRepo.getTags();
+
+        if (tags.isEmpty()) throw new ResourceNotFoundException();
+
+        return tags;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/tags/{tag}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    List<Response> getResponsesByTag(@PathVariable String tag) {
+        logger.info("GET /tags/{}", tag);
+        List<Response> result = responseRepo.getByTag(tag);
+
+        if (result.isEmpty()) throw new ResourceNotFoundException();
+
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/responses/{responseKey}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    Response getResponse(@PathVariable String responseKey) {
+        logger.info("GET /responses/{}", responseKey);
+        Optional<Response> result = Optional.fromNullable(responseRepo.get(responseKey));
+
+        if (!result.isPresent()) throw new ResourceNotFoundException();
+
+        return result.get();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/responses", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Response saveResponse(@RequestBody IncomingResponse incoming) {
+        logger.info("POST /responses");
+        if (Strings.isNullOrEmpty(incoming.getBody())) throw new IncomingEmptyBodyException();
+
+        Map<String, String> headers = incoming.getHeaders();
+        List<String> tags = incoming.getTags();
+        String body = incoming.getBody();
+        Response response = new Response.Builder().headers(headers).tags(tags).body(body).build();
+        responseRepo.save(response);
+
+        return response;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/{bucket}/response/{responseKey}", method = RequestMethod.GET)
+    ResponseEntity<String> requestWithResponse(@PathVariable String bucket,
                                                  @PathVariable String responseKey,
                                                  @RequestParam Map<String, String> queryParams,
                                                  @RequestHeader Map<String, String> headers,
                                                  HttpServletRequest request) {
-        logger.info("GET /bucket/{}/response/{}", bucket, responseKey);
+        logger.info("GET /{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
@@ -66,14 +153,14 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/response/{responseKey}", method = RequestMethod.POST)
-    ResponseEntity<String> programmedPostResponse(@PathVariable String bucket,
+    @RequestMapping(value = "/{bucket}/response/{responseKey}", method = RequestMethod.POST)
+    ResponseEntity<String> requestWithResponse(@PathVariable String bucket,
                                                   @PathVariable String responseKey,
                                                   @RequestParam Map<String, String> queryParams,
                                                   @RequestHeader Map<String, String> headers,
                                                   @RequestBody String body,
                                                   HttpServletRequest request) {
-        logger.info("POST /bucket/{}/response/{}", bucket, responseKey);
+        logger.info("POST /{}/response/{}", bucket, responseKey);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         headers.put(ReqbotHttpHeaders.RESPONSE, responseKey);
@@ -81,13 +168,13 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/**", method = RequestMethod.POST)
-    ResponseEntity<String> standardPostResponse(@PathVariable String bucket,
+    @RequestMapping(value = "/{bucket}/**", method = RequestMethod.POST)
+    ResponseEntity<String> request(@PathVariable String bucket,
                                                 @RequestParam Map<String, String> queryParams,
                                                 @RequestHeader Map<String, String> headers,
                                                 @RequestBody String body,
                                                 HttpServletRequest request) {
-        logger.info("POST /bucket/{}", bucket);
+        logger.info("POST /{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
@@ -95,12 +182,12 @@ public class BucketApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/bucket/{bucket}/**", method = RequestMethod.GET)
-    ResponseEntity<String> standardGetResponse(@PathVariable String bucket,
+    @RequestMapping(value = "/{bucket}/**", method = RequestMethod.GET)
+    ResponseEntity<String> request(@PathVariable String bucket,
                                                @RequestParam Map<String, String> queryParams,
                                                @RequestHeader Map<String, String> headers,
                                                HttpServletRequest request) {
-        logger.info("GET /bucket/{}", bucket);
+        logger.info("GET /{}", bucket);
         String path = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
@@ -108,11 +195,12 @@ public class BucketApiController {
     }
 
     private ResponseEntity<String> handleRequest(String method,
-                                                 String bucket,
-                                                 Map<String, String> queryParams,
-                                                 Map<String, String> headers,
-                                                 String body,
-                                                 String path) {
+                                                String bucket,
+                                                Map<String, String> queryParams,
+                                                Map<String, String> headers,
+                                                String body,
+                                                String path)
+    {
         saveRequest(method, bucket, queryParams, headers, body, path);
 
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -128,12 +216,27 @@ public class BucketApiController {
             response = responseRepo.get(caseInsensitiveHeaders.get(ReqbotHttpHeaders.RESPONSE));
 
             if (response == null) {
-                throw new ResponseNotFoundException();
+                throw new UnableToReturnRequestedResponse();
             }
             response.getHeaders().forEach(resultHeaders::add);
         }
 
+        resultHeaders.add("X-REQBOT-PATH", path);
+
+        resultHeaders.add("X-REQBOT-QUERYSTRING", buildQueryString(queryParams));
+
         return new ResponseEntity<>(response.getBody(), resultHeaders, status);
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        StringBuilder queryString = new StringBuilder();
+        params.forEach((key, value) -> {
+            queryString.append("&").append(key).append("=").append(value);
+        });
+
+        if (queryString.length()>0) queryString.deleteCharAt(0);
+
+        return queryString.toString();
     }
 
     private boolean isResponseHeaderSet(TreeMap<String, String> caseInsensitiveHeaders) {
@@ -174,23 +277,13 @@ public class BucketApiController {
 
         try {
             Thread.sleep(Integer.parseInt(x_reqbot_go_slow));
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             throw new RuntimeException("InterruptedException", e);
         }
     }
 
     private void save(Request request) {
         requestRepo.save(request);
-    }
-
-    @ExceptionHandler(ResponseNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody String handleResponseNotFound(ResponseNotFoundException e) {
-        return "Response Not Found";
-    }
-
-
-    static class ResponseNotFoundException extends RuntimeException {
-
     }
 }

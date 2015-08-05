@@ -1,6 +1,8 @@
 # reqbot
 
+=======
 [![Build Status](https://snap-ci.com/typingincolor/reqbot/branch/master/build_image)](https://snap-ci.com/typingincolor/reqbot/branch/master)
+>>>>>>> master
 
 ## What is it?
 
@@ -20,10 +22,10 @@ require 'json'
 random_body = (0...10).map { ('a'..'z').to_a[rand(26)] }.join
 
 # you can also tell reqbot what headers to put in the response
-programmed_response = {'headers' => {'header1' => 'value1'}, 'body' => random_body}
+programmed_response = {'headers' => {'header1' => 'value1'}, 'tags' => [:tag1, :tag2], 'body' => random_body}
 
 # tell reqbot about the response you want
-saved_response_result = RestClient.post 'http://localhost:8080/response',
+saved_response_result = RestClient.post 'http://localhost:8080/responses',
                                         programmed_response.to_json,
                                         :content_type => :json
 
@@ -34,11 +36,15 @@ r = JSON.parse(saved_response_result)
 # this example will store it in the andrew bucket.
 #
 # you can specify the response by putting the it's uuid as a path parameter
-RestClient.get 'http://localhost:8080/bucket/andrew/repsonse/' + r['uuid']
+RestClient.get 'http://localhost:8080/andrew/repsonse/' + r['uuid']
 
 # or in the X-REQBOT-RESPONSE header
-RestClient.get 'http://localhost:8080/bucket/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
+RestClient.get 'http://localhost:8080/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
 ```
+
+* `headers` specifies the headers that will be set on the request response
+* `tags` allows you to take a response to make it easier to find in the UI
+* `body` specifies the response body that will be returned
 
 ## Magic Headers
 There are three magic headers that reqbot uses when calling a bucket:
@@ -50,7 +56,7 @@ There are three magic headers that reqbot uses when calling a bucket:
 `X-REQBOT-RESPONSE` this tells reqbot what response to send back
 
 ## Web App
-Reqbot has a web application at `/` which allows you to see the requests that reqbot has received.
+Reqbot has a separate web application which allows you to see the requests that reqbot has received. Details can be found [here](https://github.com/typingincolor/reqbot-web)
 
 
 ## Running reqbot
@@ -73,7 +79,7 @@ This will start everything at `http://localhost:5000/` by default.
 
 Foreman is useful as it uses the Procfile which heroku uses if you deploy there.
 
-## Redis settings
+## Environment settings
 
 The connect settings are found in the application.yml, but can be override using environment variables.
 
@@ -87,3 +93,5 @@ export REQBOT_REDIS_HOST=localhost
 export REQBOT_REDIS_PORT=6379
 export REQBOT_REDIS_INDEX=1
 ```
+
+If you use foreman, the port that reqbot listens on can be set using the `PORT` environment variable.
