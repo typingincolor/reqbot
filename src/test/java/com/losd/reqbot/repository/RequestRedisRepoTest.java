@@ -3,21 +3,20 @@ package com.losd.reqbot.repository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.losd.reqbot.config.JedisConfiguration;
+import com.losd.reqbot.config.RedisSettings;
 import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Request;
 import com.losd.reqbot.test.IntegrationTest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 
@@ -49,16 +48,14 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
  * THE SOFTWARE.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class})
+@ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class, RedisSettings.class})
 @Category(IntegrationTest.class)
 public class RequestRedisRepoTest {
     @Autowired
     RequestRepo repo;
 
     @Autowired
-    JedisPool pool;
-
-    private Jedis jedis;
+    StringRedisTemplate template;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -66,17 +63,11 @@ public class RequestRedisRepoTest {
 
     @Before
     public void setup() {
-        jedis = pool.getResource();
-
-        jedis.flushDB();
+        Set<String> keys = template.keys("*");
+        template.delete(keys);
 
         // generate a bucket to put requests in
         bucket = RandomStringUtils.randomAlphabetic(10);
-    }
-
-    @After
-    public void after() {
-        jedis.close();
     }
 
     @Test
@@ -97,7 +88,7 @@ public class RequestRedisRepoTest {
     }
 
     private Long getBucketLength(String bucket) {
-        return jedis.llen(RequestRedisRepo.getBucketKey(bucket));
+        return template.opsForList().size(RequestRedisRepo.getBucketKey(bucket));
     }
 
     @Test
@@ -117,11 +108,11 @@ public class RequestRedisRepoTest {
         }
 
         // expecting 4 keys, 3 for the request and 1 for the bucket
-        assertThat(jedis.dbSize(), is(equalTo(4L)));
+        assertThat(template.keys("*").size(), is(equalTo(4)));
     }
 
     private String getRequest(Request request) {
-        return jedis.get(RequestRedisRepo.getRequestKey(request));
+        return template.opsForValue().get(RequestRedisRepo.getRequestKey(request));
     }
 
     @Test
@@ -154,10 +145,10 @@ public class RequestRedisRepoTest {
 
     @Test
     public void it_can_get_a_set_containing_all_of_the_buckets() {
-        jedis.lpush(RequestRedisRepo.getBucketKey("a"), "element");
-        jedis.lpush(RequestRedisRepo.getBucketKey("b"), "element");
-        jedis.lpush(RequestRedisRepo.getBucketKey("c"), "element");
-        jedis.lpush(RequestRedisRepo.getBucketKey("d"), "element");
+        template.opsForList().leftPush(RequestRedisRepo.getBucketKey("a"), "element");
+        template.opsForList().leftPush(RequestRedisRepo.getBucketKey("b"), "element");
+        template.opsForList().leftPush(RequestRedisRepo.getBucketKey("c"), "element");
+        template.opsForList().leftPush(RequestRedisRepo.getBucketKey("d"), "element");
 
         List<String> buckets = repo.getBuckets();
         assertThat(buckets, Matchers.hasSize(4));
@@ -167,10 +158,10 @@ public class RequestRedisRepoTest {
     private void putRequestInRedis(String bucket,
                                    Request request) {
         // a bucket is a list to which the uuid of the request is added
-        jedis.lpush(RequestRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
+        template.opsForList().leftPush(RequestRedisRepo.getBucketKey(bucket), RequestRedisRepo.getRequestKey(request));
 
         // the request is store in redis against its uuid
-        jedis.set(RequestRedisRepo.getRequestKey(request), gson.toJson(request));
+        template.opsForValue().set(RequestRedisRepo.getRequestKey(request), gson.toJson(request));
     }
 
     private Request buildRequest(String bucket) {

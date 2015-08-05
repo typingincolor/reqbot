@@ -34,10 +34,10 @@ findbugs {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-undertow')
+    compile('org.springframework.boot:spring-boot-starter-redis')
     compile('com.google.guava:guava:18.0')
     compile('org.apache.commons:commons-pool2:2.3')
     compile('com.google.code.gson:gson:2.3.1')
-    compile('redis.clients:jedis:2.6.2')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('uk.co.modular-it:hamcrest-date:0.9.5')
