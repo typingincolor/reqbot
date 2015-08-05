@@ -1,8 +1,7 @@
 # reqbot
 
 =======
-[![Build Status](https://snap-ci.com/typingincolor/reqbot/branch/master/build_image)](https://snap-ci.com/typingincolor/reqbot/branch/master)
->>>>>>> master
+[![Circle CI](https://circleci.com/gh/typingincolor/reqbot.svg?style=svg)](https://circleci.com/gh/typingincolor/reqbot)
 
 ## What is it?
 
