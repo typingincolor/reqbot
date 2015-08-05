@@ -1,6 +1,8 @@
 # reqbot
 
-[![Build Status](https://snap-ci.com/typingincolor/reqbot/branch/v0.0.2/build_image)](https://snap-ci.com/typingincolor/reqbot/branch/v0.0.2)
+=======
+[![Build Status](https://snap-ci.com/typingincolor/reqbot/branch/master/build_image)](https://snap-ci.com/typingincolor/reqbot/branch/master)
+>>>>>>> master
 
 ## What is it?
 
