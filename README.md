@@ -1,6 +1,5 @@
 # reqbot
 
-=======
 [![Circle CI](https://circleci.com/gh/typingincolor/reqbot.svg?style=svg)](https://circleci.com/gh/typingincolor/reqbot)
 
 ## What is it?
