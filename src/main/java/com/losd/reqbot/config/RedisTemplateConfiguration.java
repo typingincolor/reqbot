@@ -30,7 +30,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * THE SOFTWARE.
  */
 @Configuration
-public class JedisConfiguration {
+public class RedisTemplateConfiguration {
     @Autowired
     RedisSettings settings;
 

@@ -2,7 +2,7 @@ package com.losd.reqbot.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.losd.reqbot.config.JedisConfiguration;
+import com.losd.reqbot.config.RedisTemplateConfiguration;
 import com.losd.reqbot.config.RepoConfiguration;
 import com.losd.reqbot.model.Response;
 import com.losd.reqbot.test.IntegrationTest;
@@ -47,7 +47,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
  * THE SOFTWARE.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, JedisConfiguration.class})
+@ContextConfiguration(classes = {RedisConfiguration.class, RepoConfiguration.class, RedisTemplateConfiguration.class})
 @Category(IntegrationTest.class)
 public class ResponseRedisRepoTest {
     @Autowired
