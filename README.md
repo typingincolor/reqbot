@@ -34,7 +34,7 @@ r = JSON.parse(saved_response_result)
 # this example will store it in the andrew bucket.
 #
 # you can specify the response by putting the it's uuid as a path parameter
-RestClient.get 'http://localhost:8080/andrew/repsonse/' + r['uuid']
+RestClient.get 'http://localhost:8080/andrew/response/' + r['uuid']
 
 # or in the X-REQBOT-RESPONSE header
 RestClient.get 'http://localhost:8080/andrew/a/path/to/somewhere', 'X-REQBOT-RESPONSE' => r['uuid']
